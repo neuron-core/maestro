@@ -144,10 +144,6 @@ class DefaultController extends CommandController
         /** @var ApprovalRequest $approvalRequest */
         $approvalRequest = $interrupt->getRequest();
 
-        // Display approval request message
-        $this->display($approvalRequest->getMessage());
-        $this->newline();
-
         // Display each action and get user approval
         foreach ($approvalRequest->getPendingActions() as $action) {
             $description = mb_strlen((string) $action->description) > 250
