@@ -30,7 +30,7 @@ It runs locally on your machine and provides intelligent assistance for coding, 
 Install Coding Agent globally on your system to use it from any directory:
 
 ```bash
-composer global require synapse-core/synapse
+composer global require neuron-core/synapse
 ```
 
 Make sure Composer's global bin directory is in your PATH:
@@ -48,7 +48,7 @@ composer global config bin-dir --absolute
 Install Coding Agent as a dev dependency in your project to avoid system-level configuration:
 
 ```bash
-composer require --dev synapse-core/synapse
+composer require --dev neuron-core/synapse
 ```
 
 Then configure a custom composer script in your `composer.json` to run the agent conveniently:
@@ -74,9 +74,9 @@ composer synapse "your prompt here"
 
 Before using Coding Agent, you need to configure your AI provider and API key.
 
-### Setting Up `.neuron/settings.json`
+### Setting Up `.synapse/settings.json`
 
-Create a `.neuron` directory in your project and add a `settings.json` file:
+Create a `.synapse` directory in your project and add a `settings.json` file:
 
 ```bash
 mkdir -p .synapse && printf "{\n}" > .synapse/settings.json
