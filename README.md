@@ -25,7 +25,7 @@ It runs locally on your machine and provides intelligent assistance for coding, 
 
 ## Installation
 
-### Global Installation (Recommended)
+### Global Installation
 
 Install Coding Agent globally on your system to use it from any directory:
 
@@ -41,6 +41,33 @@ export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 
 # Or run this to see your global bin directory
 composer global config bin-dir --absolute
+```
+
+### Local Installation (Project-Specific)
+
+Install Coding Agent as a dev dependency in your project to avoid system-level configuration:
+
+```bash
+composer require --dev neuron-core/coding-agent
+```
+
+Then configure a custom composer script in your `composer.json` to run the agent conveniently:
+
+```json
+{
+    "scripts": {
+        "neuron": "vendor/bin/neuron"
+    }
+}
+```
+
+> **Note**: On native Windows (not WSL/Git Bash), use `".\\vendor\\bin\\neuron"` instead.
+
+Now you can run the agent from your project directory:
+
+```bash
+composer neuron
+composer neuron "your prompt here"
 ```
 
 ## Configuration
