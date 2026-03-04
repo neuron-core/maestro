@@ -28,8 +28,7 @@ use const JSON_PRETTY_PRINT;
 /**
  * ChatCommand - Interactive chat with the Coding Agent.
  *
- * Usage: php synapse chat "your message here"
- *        php synapse chat (for interactive mode)
+ * Usage: synapse (starts interactive mode)
  */
 class DefaultController extends CommandController
 {
@@ -67,62 +66,18 @@ class DefaultController extends CommandController
             return;
         }
 
-        $this->start($settings);
-    }
-
-    /**
-     * @throws Throwable
-     */
-    protected function start(SettingsInterface $settings): void
-    {
-        // Pass validated settings to the agent
-        $this->agent = CodingAgent::make($settings);
-
-        $message = $this->hasParam('message')
-            ? $this->getParam('message')
-            : ($this->getArgs()[0] ?? null);
-
-        if ($message !== null) {
-            $this->singleMessage($message);
-            return;
-        }
-
-        $this->interactiveMode();
-    }
-
-    /**
-     * Handle a single message and print the response.
-     * @throws Throwable
-     */
-    protected function singleMessage(string $message): void
-    {
-        $this->out("Thinking...", "default");
-
-        try {
-            $response = $this->agent->chat(new UserMessage($message))->getMessage();
-
-            // Clear "Thinking..." line
-            $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
-
-            // Print response
-            $this->newline();
-            $content = $response->getContent() ?? 'No response received.';
-            $this->display($content);
-            $this->newline();
-        } catch (WorkflowInterrupt $interrupt) {
-            $this->handleWorkflowInterrupt($interrupt);
-        } catch (Exception $e) {
-            $this->error("Error: " . $e->getMessage());
-            $this->newline();
-        }
+        $this->interactiveMode($settings);
     }
 
     /**
      * Interactive mode for continuous conversation.
      * @throws Throwable
      */
-    protected function interactiveMode(): void
+    protected function interactiveMode(SettingsInterface $settings): void
     {
+        // Initialize agent
+        $this->agent = CodingAgent::make($settings);
+
         $this->info("=== Coding Agent - Interactive Mode ===");
         $this->info("Type 'exit' or 'quit' to end the conversation.");
         $this->newline();

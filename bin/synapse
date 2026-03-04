@@ -10,7 +10,6 @@ declare(strict_types=1);
  *
  * Usage:
  *   synapse              - Start interactive chat mode
- *   synapse "message"    - Send a single message
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -24,25 +23,21 @@ $autoloadPaths = [
     __DIR__ . '/../../../../autoload.php',
 ];
 
-$autoloaderFound = false;
 foreach ($autoloadPaths as $autoloadPath) {
     if (file_exists($autoloadPath)) {
         require_once $autoloadPath;
-        $autoloaderFound = true;
         break;
     }
 }
 
 use Minicli\App;
 
-// If no command is provided (just `synapse`), default to chat mode
-if (!isset($argv[1])) {
-    $argv[] = 'chat';
-}
+// Always default to chat mode
+$argv[] = 'chat';
 
 $app = new App([
     'app_path' => [
-        __DIR__ . '/src/Command',
+        dirname(__DIR__) . '/src/Command',
     ],
     'theme' => '\Unicorn',
     'debug' => false,
