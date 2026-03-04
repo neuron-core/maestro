@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Coding Agent - CLI Entry Point
+ *
+ * AI-powered coding assistant built with Neuron AI framework and Minicli.
+ *
+ * Usage:
+ *   neuron              - Start interactive chat mode
+ *   neuron "message"    - Send a single message
+ */
+
+if (php_sapi_name() !== 'cli') {
+    exit;
+}
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Minicli\App;
+
+// If no command is provided (just `neuron`), default to chat mode
+if (!isset($argv[1])) {
+    $argv[] = 'chat';
+}
+
+$app = new App([
+    'app_path' => [
+        __DIR__ . '/src/Command',
+    ],
+    'theme' => '\Unicorn',
+    'debug' => false,
+]);
+
+$app->runCommand($argv);

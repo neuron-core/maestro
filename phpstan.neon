@@ -1,0 +1,30 @@
+includes:
+    - vendor/tomasvotruba/type-coverage/config/extension.neon
+
+parameters:
+
+    type_coverage:
+        return: 100
+        param: 100
+        property: 100
+        declare: 100
+        constant: 0
+
+
+    paths:
+        - src
+        - tests
+
+
+    # The level 9 is the highest level
+    level: 5
+
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        - identifier: generator.valueType
+
+    excludePaths:
+
+    editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+
