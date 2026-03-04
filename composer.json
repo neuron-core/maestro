@@ -9,7 +9,6 @@
         "claude",
         "coding",
         "assistant",
-        "bin/synapse",
         "minicli",
         "cli"
     ],
