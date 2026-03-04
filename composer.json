@@ -9,7 +9,7 @@
         "claude",
         "coding",
         "assistant",
-        "neuron",
+        "bin/neuron",
         "minicli",
         "cli"
     ],
@@ -49,7 +49,7 @@
         }
     },
     "bin": [
-        "neuron"
+        "bin/neuron"
     ],
     "scripts": {
         "analyse": [
