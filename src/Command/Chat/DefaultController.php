@@ -78,7 +78,7 @@ class DefaultController extends CommandController
         // Initialize agent
         $this->agent = CodingAgent::make($settings);
 
-        $this->info("=== Coding Agent - Interactive Mode ===");
+        $this->info("=== Synapse Coding Agent - built with Neuron AI framework ===");
         $this->info("Type 'exit' or 'quit' to end the conversation.");
         $this->newline();
 
@@ -144,9 +144,7 @@ class DefaultController extends CommandController
         // Clear any "Thinking..." output
         $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
 
-        // Display approval request header
-        $this->newline();
-        $this->info("─── Tool Approval Required ───", true);
+        // Display approval request message
         $this->display($approvalRequest->getMessage());
         $this->newline();
 
@@ -162,21 +160,24 @@ class DefaultController extends CommandController
             $this->processDecision($action, $decision);
         }
 
-        $this->info("─── Approval Complete ───", true);
         $this->newline();
 
         // Resume the workflow with updated approvals
-        // Resume the chat with the updated approval request
         $this->rawOutput("Resuming workflow...");
-        $response = $this->agent->chat(interrupt: $approvalRequest)->getMessage();
+        try {
+            $response = $this->agent->chat(interrupt: $approvalRequest)->getMessage();
 
-        // Clear the "Resuming workflow..." message
-        $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
+            // Clear the "Resuming workflow..." message
+            $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
 
-        // Print the response
-        $content = $response->getContent() ?? 'No response received.';
-        $this->display($content);
-        $this->newline();
+            // Print the response
+            $content = $response->getContent() ?? 'No response received.';
+            $this->display($content);
+            $this->newline();
+        } catch (WorkflowInterrupt $nestedInterrupt) {
+            // Handle the next interruption that occurred during resumption
+            $this->handleWorkflowInterrupt($nestedInterrupt);
+        }
     }
 
     /**
