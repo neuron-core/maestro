@@ -147,8 +147,7 @@ class DefaultController extends CommandController
 
         // Display each action and get user approval
         foreach ($approvalRequest->getPendingActions() as $action) {
-            $this->info(sprintf("%s( %s )", $action->name, $action->description), true);
-            $this->newline();
+            $this->display(sprintf("%s( %s )", $action->name, $action->description), true);
 
             // Get user decision
             $decision = $this->askDecision();
@@ -156,8 +155,6 @@ class DefaultController extends CommandController
             // Process the decision
             $this->processDecision($action, $decision);
         }
-
-        $this->newline();
 
         // Resume the workflow with updated approvals
         $this->out("Thinking...", "default");
@@ -185,8 +182,7 @@ class DefaultController extends CommandController
     private function askDecision(): string
     {
         while (true) {
-            $this->display("Approve this action? [Y/n]: ");
-            $decision = (new Input(prompt: ' '))->read();
+            $decision = (new Input(prompt: 'Approve this action? ("n" to reject):  '))->read();
             $decision = strtolower(trim($decision));
 
             if (in_array($decision, ['', 'y', 'yes'], true)) {
