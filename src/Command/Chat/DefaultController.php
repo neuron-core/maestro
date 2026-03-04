@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\CodingAgent\Command\Chat;
+namespace NeuronCore\Synapse\Command\Chat;
 
 use Minicli\Command\CommandController;
 use NeuronAI\Chat\Messages\UserMessage;
 use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\Workflow\Interrupt\ApprovalRequest;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
-use NeuronCore\CodingAgent\Agent\CodingAgent;
-use NeuronCore\CodingAgent\Settings\Settings;
-use NeuronCore\CodingAgent\Settings\SettingsInterface;
+use NeuronCore\Synapse\Agent\CodingAgent;
+use NeuronCore\Synapse\Settings\Settings;
+use NeuronCore\Synapse\Settings\SettingsInterface;
 use Exception;
 use Throwable;
 
@@ -28,8 +28,8 @@ use const JSON_PRETTY_PRINT;
 /**
  * ChatCommand - Interactive chat with the Coding Agent.
  *
- * Usage: php neuron chat "your message here"
- *        php neuron chat (for interactive mode)
+ * Usage: php synapse chat "your message here"
+ *        php synapse chat (for interactive mode)
  */
 class DefaultController extends CommandController
 {

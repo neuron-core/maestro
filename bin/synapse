@@ -9,8 +9,8 @@ declare(strict_types=1);
  * AI-powered coding assistant built with Neuron AI framework and Minicli.
  *
  * Usage:
- *   neuron              - Start interactive chat mode
- *   neuron "message"    - Send a single message
+ *   synapse              - Start interactive chat mode
+ *   synapse "message"    - Send a single message
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -21,7 +21,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Minicli\App;
 
-// If no command is provided (just `neuron`), default to chat mode
+// If no command is provided (just `synapse`), default to chat mode
 if (!isset($argv[1])) {
     $argv[] = 'chat';
 }

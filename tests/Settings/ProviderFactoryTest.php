@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\CodingAgent\Tests\Settings;
+namespace NeuronCore\Synapse\Tests\Settings;
 
 use NeuronAI\Providers\AIProviderInterface;
-use NeuronCore\CodingAgent\Settings\ProviderFactory;
-use NeuronCore\CodingAgent\Settings\ProviderFactoryInterface;
+use NeuronCore\Synapse\Settings\ProviderFactory;
+use NeuronCore\Synapse\Settings\ProviderFactoryInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -260,7 +260,7 @@ class ProviderFactoryTest extends TestCase
     {
         $mockProvider = $this->createMock(AIProviderInterface::class);
 
-        $this->factory->register('custom', fn () => $mockProvider);
+        $this->factory->register('custom', fn (): \PHPUnit\Framework\MockObject\MockObject => $mockProvider);
 
         $provider = $this->factory->create(['provider' => ['type' => 'custom']]);
 
@@ -271,7 +271,7 @@ class ProviderFactoryTest extends TestCase
     {
         $mockProvider = $this->createMock(AIProviderInterface::class);
 
-        $this->factory->register('anthropic', fn () => $mockProvider);
+        $this->factory->register('anthropic', fn (): \PHPUnit\Framework\MockObject\MockObject => $mockProvider);
 
         $provider = $this->factory->create([
             'provider' => [

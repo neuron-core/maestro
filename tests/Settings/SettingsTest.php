@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\CodingAgent\Tests\Settings;
+namespace NeuronCore\Synapse\Tests\Settings;
 
-use NeuronCore\CodingAgent\Settings\Settings;
-use NeuronCore\CodingAgent\Settings\SettingsInterface;
+use NeuronCore\Synapse\Settings\ProviderFactoryInterface;
+use NeuronCore\Synapse\Settings\Settings;
+use NeuronCore\Synapse\Settings\SettingsInterface;
 use NeuronAI\Providers\AIProviderInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -61,7 +62,7 @@ class SettingsTest extends TestCase
 
     public function testLoadSettingsFromDefaultPath(): void
     {
-        $defaultPath = getcwd() . '/.neuron/settings.json';
+        $defaultPath = getcwd() . '/.synapse/settings.json';
 
         if (file_exists($defaultPath)) {
             $original = file_get_contents($defaultPath);
@@ -212,7 +213,7 @@ class SettingsTest extends TestCase
     public function testSetProviderFactory(): void
     {
         $mockFactory = $this->createMock(
-            \NeuronCore\CodingAgent\Settings\ProviderFactoryInterface::class
+            ProviderFactoryInterface::class
         );
 
         $settings = new Settings($this->tempSettingsPath);
@@ -226,7 +227,7 @@ class SettingsTest extends TestCase
         $mockProvider = $this->createMock(AIProviderInterface::class);
 
         $mockFactory = $this->createMock(
-            \NeuronCore\CodingAgent\Settings\ProviderFactoryInterface::class
+            ProviderFactoryInterface::class
         );
         $mockFactory->expects($this->once())
             ->method('create')

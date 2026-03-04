@@ -9,7 +9,7 @@
         "claude",
         "coding",
         "assistant",
-        "bin/neuron",
+        "bin/synapse",
         "minicli",
         "cli"
     ],
@@ -40,16 +40,16 @@
     },
     "autoload": {
         "psr-4": {
-            "NeuronCore\\CodingAgent\\": "src/"
+            "NeuronCore\\Synapse\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "NeuronCore\\CodingAgent\\Tests\\": "tests/"
+            "NeuronCore\\Synapse\\Tests\\": "tests/"
         }
     },
     "bin": [
-        "bin/neuron"
+        "bin/synapse"
     ],
     "scripts": {
         "analyse": [

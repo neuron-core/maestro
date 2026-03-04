@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\CodingAgent\Settings;
+namespace NeuronCore\Synapse\Settings;
 
 use NeuronAI\Providers\AIProviderInterface;
 use NeuronAI\MCP\McpConnector;
@@ -19,7 +19,7 @@ use function sprintf;
 use function str_contains;
 
 /**
- * Loads and manages agent configuration from .neuron/settings.json.
+ * Loads and manages agent configuration from .synapse/settings.json.
  */
 class Settings implements SettingsInterface
 {
@@ -29,7 +29,7 @@ class Settings implements SettingsInterface
 
     public function __construct(?string $settingsPath = null, private ?ProviderFactoryInterface $providerFactory = new ProviderFactory())
     {
-        $this->settingsPath = $settingsPath ?? getcwd() . '/.neuron/settings.json';
+        $this->settingsPath = $settingsPath ?? getcwd() . '/.synapse/settings.json';
         $this->load();
     }
 

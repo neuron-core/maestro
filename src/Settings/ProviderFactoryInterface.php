@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\CodingAgent\Settings;
+namespace NeuronCore\Synapse\Settings;
 
 use NeuronAI\Providers\AIProviderInterface;
 use RuntimeException;
