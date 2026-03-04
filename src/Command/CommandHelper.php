@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NeuronCore\Synapse\Command;
+
+use function str_repeat;
 
 trait CommandHelper
 {

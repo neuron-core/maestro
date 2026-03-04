@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\Synapse\Command\Chat;
+namespace NeuronCore\Synapse\Command\Synapse;
 
 use Minicli\Command\CommandController;
+use Minicli\Input;
 use NeuronAI\Chat\Messages\UserMessage;
 use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\Workflow\Interrupt\ApprovalRequest;
@@ -16,7 +17,6 @@ use NeuronCore\Synapse\Settings\SettingsInterface;
 use Exception;
 use Throwable;
 
-use function str_repeat;
 use function in_array;
 use function json_encode;
 use function readline;
@@ -86,19 +86,16 @@ class DefaultController extends CommandController
         $this->newline();
 
         while (true) {
-            $input = readline('> ');
+            $input=new Input(prompt: "> ");
+            $userInput = $input->read();
 
-            if ($input === false) {
+            $userInput = trim($userInput);
+
+            if (in_array($userInput, ['', 'exit', 'quit'], true)) {
                 break;
             }
 
-            $input = trim($input);
-
-            if (in_array($input, ['', 'exit', 'quit'], true)) {
-                break;
-            }
-
-            $this->processUserInput($input);
+            $this->processUserInput($userInput);
         }
 
         $this->info("Goodbye!");
