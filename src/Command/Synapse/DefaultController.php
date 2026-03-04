@@ -19,7 +19,6 @@ use Throwable;
 
 use function in_array;
 use function json_encode;
-use function readline;
 use function sprintf;
 use function strtolower;
 use function trim;
@@ -86,7 +85,7 @@ class DefaultController extends CommandController
         $this->newline();
 
         while (true) {
-            $input=new Input(prompt: "> ");
+            $input = new Input(prompt: "> ");
             $userInput = $input->read();
 
             $userInput = trim($userInput);
@@ -186,7 +185,8 @@ class DefaultController extends CommandController
     private function askDecision(): string
     {
         while (true) {
-            $decision = $this->ask('Approve this action? [Y/n]: ', 'info');
+            $this->display("Approve this action? [Y/n]: ");
+            $decision = (new Input(prompt: ' '))->read();
             $decision = strtolower(trim($decision));
 
             if (in_array($decision, ['', 'y', 'yes'], true)) {
