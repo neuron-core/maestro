@@ -10,6 +10,7 @@ use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\Workflow\Interrupt\ApprovalRequest;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
 use NeuronCore\Synapse\Agent\CodingAgent;
+use NeuronCore\Synapse\Command\CommandHelper;
 use NeuronCore\Synapse\Settings\Settings;
 use NeuronCore\Synapse\Settings\SettingsInterface;
 use Exception;
@@ -32,6 +33,8 @@ use const JSON_PRETTY_PRINT;
  */
 class DefaultController extends CommandController
 {
+    use CommandHelper;
+
     protected ?CodingAgent $agent = null;
 
     /**
@@ -115,13 +118,14 @@ class DefaultController extends CommandController
             $response = $this->agent->chat(new UserMessage($input))->getMessage();
 
             // Clear the "Thinking..." line
-            $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
+            $this->clearOutput();
 
             // Print the response
             $content = $response->getContent() ?? 'No response received.';
             $this->display($content);
             $this->newline();
         } catch (WorkflowInterrupt $interrupt) {
+            $this->clearOutput();
             $this->handleWorkflowInterrupt($interrupt);
         } catch (Exception $e) {
             $this->error("Error: " . $e->getMessage());
@@ -140,9 +144,6 @@ class DefaultController extends CommandController
     {
         /** @var ApprovalRequest $approvalRequest */
         $approvalRequest = $interrupt->getRequest();
-
-        // Clear any "Thinking..." output
-        $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
 
         // Display approval request message
         $this->display($approvalRequest->getMessage());
@@ -163,18 +164,18 @@ class DefaultController extends CommandController
         $this->newline();
 
         // Resume the workflow with updated approvals
-        $this->rawOutput("Resuming workflow...");
+        $this->out("Thinking...", "default");
         try {
             $response = $this->agent->chat(interrupt: $approvalRequest)->getMessage();
 
-            // Clear the "Resuming workflow..." message
-            $this->rawOutput("\r" . str_repeat(' ', 50) . "\r");
+            $this->clearOutput();
 
             // Print the response
             $content = $response->getContent() ?? 'No response received.';
             $this->display($content);
             $this->newline();
         } catch (WorkflowInterrupt $nestedInterrupt) {
+            $this->clearOutput();
             // Handle the next interruption that occurred during resumption
             $this->handleWorkflowInterrupt($nestedInterrupt);
         }
@@ -213,10 +214,8 @@ class DefaultController extends CommandController
     {
         if ($decision === 'y') {
             $action->approve();
-            $this->success(sprintf("Approved: %s", $action->name));
         } else {
             $action->reject();
-            $this->error(sprintf("Rejected: %s", $action->name));
         }
         $this->newline();
     }
