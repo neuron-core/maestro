@@ -7,11 +7,23 @@ namespace NeuronCore\CodingAgent\Command\Chat;
 use Minicli\Command\CommandController;
 use NeuronAI\Chat\Messages\UserMessage;
 use NeuronAI\Exceptions\WorkflowException;
+use NeuronAI\Workflow\Interrupt\ApprovalRequest;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
 use NeuronCore\CodingAgent\Agent\CodingAgent;
 use NeuronCore\CodingAgent\Settings\Settings;
 use NeuronCore\CodingAgent\Settings\SettingsInterface;
+use Exception;
+use Throwable;
+
 use function str_repeat;
+use function in_array;
+use function json_encode;
+use function readline;
+use function sprintf;
+use function strtolower;
+use function trim;
+
+use const JSON_PRETTY_PRINT;
 
 /**
  * ChatCommand - Interactive chat with the Coding Agent.
@@ -25,7 +37,7 @@ class DefaultController extends CommandController
 
     /**
      * Handle the chat command.
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function handle(): void
     {
@@ -59,7 +71,7 @@ class DefaultController extends CommandController
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function start(SettingsInterface $settings): void
     {
@@ -80,7 +92,7 @@ class DefaultController extends CommandController
 
     /**
      * Handle a single message and print the response.
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function singleMessage(string $message): void
     {
@@ -99,7 +111,7 @@ class DefaultController extends CommandController
             $this->newline();
         } catch (WorkflowInterrupt $interrupt) {
             $this->handleWorkflowInterrupt($interrupt);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("Error: " . $e->getMessage());
             $this->newline();
         }
@@ -107,7 +119,7 @@ class DefaultController extends CommandController
 
     /**
      * Interactive mode for continuous conversation.
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function interactiveMode(): void
     {
@@ -124,7 +136,7 @@ class DefaultController extends CommandController
 
             $input = trim($input);
 
-            if ($input === '' || $input === 'exit' || $input === 'quit') {
+            if (in_array($input, ['', 'exit', 'quit'], true)) {
                 break;
             }
 
@@ -138,7 +150,7 @@ class DefaultController extends CommandController
      * Process user input in interactive mode.
      *
      * @param string $input The user's input message
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function processUserInput(string $input): void
     {
@@ -156,7 +168,7 @@ class DefaultController extends CommandController
             $this->newline();
         } catch (WorkflowInterrupt $interrupt) {
             $this->handleWorkflowInterrupt($interrupt);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("Error: " . $e->getMessage());
             $this->newline();
         }
@@ -167,10 +179,11 @@ class DefaultController extends CommandController
      *
      * @throws WorkflowInterrupt
      * @throws WorkflowException
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function handleWorkflowInterrupt(WorkflowInterrupt $interrupt): void
     {
+        /** @var ApprovalRequest $approvalRequest */
         $approvalRequest = $interrupt->getRequest();
 
         // Clear any "Thinking..." output
@@ -222,7 +235,7 @@ class DefaultController extends CommandController
             $decision = $this->ask('Approve this action? [Y/n]: ', 'info');
             $decision = strtolower(trim($decision));
 
-            if ($decision === '' || $decision === 'y' || $decision === 'yes') {
+            if (in_array($decision, ['', 'y', 'yes'], true)) {
                 return 'y';
             }
 
@@ -239,7 +252,6 @@ class DefaultController extends CommandController
      *
      * @param object $action The action to process
      * @param string $decision The user's decision ('y' or 'n')
-     * @return void
      */
     private function processDecision(object $action, string $decision): void
     {

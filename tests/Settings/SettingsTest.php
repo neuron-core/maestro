@@ -7,8 +7,18 @@ namespace NeuronCore\CodingAgent\Tests\Settings;
 use NeuronCore\CodingAgent\Settings\Settings;
 use NeuronCore\CodingAgent\Settings\SettingsInterface;
 use NeuronAI\Providers\AIProviderInterface;
-use NeuronAI\MCP\McpConnector;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function getcwd;
+use function json_encode;
+use function rename;
+use function sys_get_temp_dir;
+use function uniqid;
+use function unlink;
 
 class SettingsTest extends TestCase
 {
@@ -190,7 +200,7 @@ class SettingsTest extends TestCase
 
     public function testProviderThrowsExceptionWhenNoApiKey(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $config = ['provider' => ['type' => 'anthropic']];
         file_put_contents($this->tempSettingsPath, json_encode($config));
@@ -202,7 +212,7 @@ class SettingsTest extends TestCase
     public function testSetProviderFactory(): void
     {
         $mockFactory = $this->createMock(
-            'NeuronCore\CodingAgent\Settings\ProviderFactoryInterface'
+            \NeuronCore\CodingAgent\Settings\ProviderFactoryInterface::class
         );
 
         $settings = new Settings($this->tempSettingsPath);
@@ -216,7 +226,7 @@ class SettingsTest extends TestCase
         $mockProvider = $this->createMock(AIProviderInterface::class);
 
         $mockFactory = $this->createMock(
-            'NeuronCore\CodingAgent\Settings\ProviderFactoryInterface'
+            \NeuronCore\CodingAgent\Settings\ProviderFactoryInterface::class
         );
         $mockFactory->expects($this->once())
             ->method('create')
@@ -239,7 +249,6 @@ class SettingsTest extends TestCase
         $settings = new Settings($this->tempSettingsPath);
         $servers = $settings->mcpServers();
 
-        $this->assertIsArray($servers);
         $this->assertEmpty($servers);
     }
 
@@ -259,8 +268,6 @@ class SettingsTest extends TestCase
         $settings = new Settings($this->tempSettingsPath);
         $servers = $settings->mcpServers();
 
-        // The echo command isn't a valid MCP server, so it will be skipped
-        $this->assertIsArray($servers);
         // The invalid server should be skipped (error is logged)
         $this->assertArrayNotHasKey('filesystem', $servers);
     }
@@ -279,8 +286,6 @@ class SettingsTest extends TestCase
         $settings = new Settings($this->tempSettingsPath);
         $servers = $settings->mcpServers();
 
-        // The valid one may still fail during actual connection, but the invalid one should be skipped
-        $this->assertIsArray($servers);
         // Invalid config should be skipped (not throw exception)
         $this->assertArrayNotHasKey('invalid', $servers);
     }

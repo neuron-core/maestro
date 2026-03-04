@@ -8,6 +8,7 @@ use NeuronAI\Providers\AIProviderInterface;
 use NeuronCore\CodingAgent\Settings\ProviderFactory;
 use NeuronCore\CodingAgent\Settings\ProviderFactoryInterface;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class ProviderFactoryTest extends TestCase
 {
@@ -64,7 +65,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateAnthropicProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Anthropic API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'anthropic']]);
@@ -86,7 +87,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateOpenAIProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('OpenAI API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'openai']]);
@@ -108,7 +109,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateGeminiProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Gemini API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'gemini']]);
@@ -130,7 +131,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateCohereProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cohere API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'cohere']]);
@@ -152,7 +153,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateMistralProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Mistral API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'mistral']]);
@@ -211,7 +212,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateGrokProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('xAI API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'xai']]);
@@ -233,7 +234,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateDeepseekProviderMissingApiKeyThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Deepseek API key is not configured');
 
         $this->factory->create(['provider' => ['type' => 'deepseek']]);
@@ -241,7 +242,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateUnknownProviderThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unknown provider "unknown"');
 
         $this->factory->create(['provider' => ['type' => 'unknown']]);
@@ -249,7 +250,7 @@ class ProviderFactoryTest extends TestCase
 
     public function testCreateWithNoProviderTypeThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Invalid provider configuration');
 
         $this->factory->create(['provider' => ['api_key' => 'test-key']]);
@@ -259,9 +260,7 @@ class ProviderFactoryTest extends TestCase
     {
         $mockProvider = $this->createMock(AIProviderInterface::class);
 
-        $this->factory->register('custom', function () use ($mockProvider) {
-            return $mockProvider;
-        });
+        $this->factory->register('custom', fn () => $mockProvider);
 
         $provider = $this->factory->create(['provider' => ['type' => 'custom']]);
 
@@ -272,9 +271,7 @@ class ProviderFactoryTest extends TestCase
     {
         $mockProvider = $this->createMock(AIProviderInterface::class);
 
-        $this->factory->register('anthropic', function () use ($mockProvider) {
-            return $mockProvider;
-        });
+        $this->factory->register('anthropic', fn () => $mockProvider);
 
         $provider = $this->factory->create([
             'provider' => [
@@ -300,9 +297,6 @@ class ProviderFactoryTest extends TestCase
         $this->assertInstanceOf(AIProviderInterface::class, $provider);
     }
 
-    /**
-     * @return array<array<string, mixed>>
-     */
     public static function validAnthropicSettingsProvider(): array
     {
         return [

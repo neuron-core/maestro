@@ -12,6 +12,9 @@ use NeuronAI\MCP\McpConnector;
 use NeuronCore\CodingAgent\Settings\SettingsInterface;
 use NeuronAI\Providers\AIProviderInterface;
 use NeuronAI\Tools\Toolkits\FileSystem\FileSystemToolkit;
+use Exception;
+
+use function array_reduce;
 
 /**
  * Coding Agent - An AI-powered coding assistant using the Neuron AI framework.
@@ -58,7 +61,7 @@ class CodingAgent extends Agent
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function tools(): array
     {

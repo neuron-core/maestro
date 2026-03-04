@@ -6,6 +6,17 @@ namespace NeuronCore\CodingAgent\Settings;
 
 use NeuronAI\Providers\AIProviderInterface;
 use NeuronAI\MCP\McpConnector;
+use Throwable;
+
+use function error_log;
+use function explode;
+use function file_exists;
+use function file_get_contents;
+use function getcwd;
+use function is_array;
+use function json_decode;
+use function sprintf;
+use function str_contains;
 
 /**
  * Loads and manages agent configuration from .neuron/settings.json.
@@ -13,14 +24,12 @@ use NeuronAI\MCP\McpConnector;
 class Settings implements SettingsInterface
 {
     private array $settings = [];
-    private ProviderFactoryInterface $providerFactory;
-    private string $settingsPath;
+    private readonly string $settingsPath;
     private bool $fileExists = false;
 
-    public function __construct(?string $settingsPath = null, ?ProviderFactoryInterface $providerFactory = null)
+    public function __construct(?string $settingsPath = null, private ?ProviderFactoryInterface $providerFactory = new ProviderFactory())
     {
         $this->settingsPath = $settingsPath ?? getcwd() . '/.neuron/settings.json';
-        $this->providerFactory = $providerFactory ?? new ProviderFactory();
         $this->load();
     }
 
@@ -85,7 +94,7 @@ class Settings implements SettingsInterface
         foreach ($this->settings['mcp_servers'] as $name => $config) {
             try {
                 $connectors[$name] = McpConnector::make($config);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 error_log(sprintf('Failed to create MCP connector "%s": %s', $name, $e->getMessage()));
             }
         }
