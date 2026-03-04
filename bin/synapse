@@ -32,8 +32,10 @@ foreach ($autoloadPaths as $autoloadPath) {
 
 use Minicli\App;
 
-// Always default to chat mode
-$argv[] = 'chat';
+// Default to synapse command if no command provided
+if (count($argv) < 2) {
+    $argv[] = 'synapse';
+}
 
 $app = new App([
     'app_path' => [
