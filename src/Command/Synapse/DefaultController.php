@@ -85,7 +85,7 @@ class DefaultController extends CommandController
                 'provider' => [
                     'type' => 'openai',
                     'api_key' => 'your-api-key',
-                    'model' => 'gpt-4',
+                    'model' => 'gpt-5',
                 ],
             ], JSON_PRETTY_PRINT));
             $this->newline();
@@ -115,7 +115,7 @@ class DefaultController extends CommandController
         $this->alwaysAllowedActions = $this->settings->getAllowedTools();
 
         $this->info("=== Synapse Coding Agent - built with Neuron AI framework ===");
-        $this->info("Type 'exit' or 'quit' to end the conversation.");
+        $this->info("Type 'exit' to end the conversation.");
         $this->newline();
 
         while (true) {
@@ -124,7 +124,7 @@ class DefaultController extends CommandController
 
             $userInput = trim($userInput);
 
-            if (in_array($userInput, ['', 'exit', 'quit'], true)) {
+            if (in_array($userInput, ['', 'exit'], true)) {
                 break;
             }
 
@@ -142,6 +142,7 @@ class DefaultController extends CommandController
      */
     protected function processUserInput(string $input): void
     {
+        $this->newline();
         $this->out("Thinking...", "default");
 
         try {
@@ -233,7 +234,7 @@ class DefaultController extends CommandController
     {
         $this->newline();
         $this->display("Options:");
-        $this->display("  1) Allow - Execute this action once");
+        $this->display("  1) Allow - Execute this action once (or Enter to process)");
         $this->display("  2) Session allow - Allow this tool for the current session");
         $this->display("  3) Always allow - Allow this tool permanently (saved to settings.json)");
         $this->display("  4) Reject - Do not execute this action");
@@ -242,7 +243,7 @@ class DefaultController extends CommandController
             $decision = (new Input(prompt: 'Enter your choice (1/2/3/4):  '))->read();
             $decision = strtolower(trim($decision));
 
-            if (in_array($decision, ['1', 'allow'], true)) {
+            if (in_array($decision, ['', '1', 'allow'], true)) {
                 return 'allow';
             }
 
