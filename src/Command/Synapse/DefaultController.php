@@ -176,18 +176,14 @@ class DefaultController extends CommandController
 
         // Display each action and get user approval
         foreach ($approvalRequest->getPendingActions() as $action) {
-            $description = mb_strlen((string) $action->description) > 250
-                ? mb_substr((string) $action->description, 0, 247) . '...'
-                : $action->description;
-
             // Try to render using the renderer registry
-            $rendered = $this->rendererRegistry->render($action->name, $description);
+            $rendered = $this->rendererRegistry->render($action->name, $action->description);
 
             if ($rendered !== null) {
                 $this->rawOutput($rendered);
             } else {
                 // Fallback to simple display
-                $this->display(sprintf("%s( %s )", $action->name, $description), true);
+                $this->display(sprintf("%s( %s )", $action->name, $action->description), true);
             }
 
             // Check if this action is always allowed (persists across sessions)
