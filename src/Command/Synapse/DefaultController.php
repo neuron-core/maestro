@@ -27,12 +27,11 @@ use function mb_substr;
 use function escapeshellarg;
 use function passthru;
 use function shell_exec;
-use function file_put_contents;
-use function sys_get_temp_dir;
-use function tempnam;
-use function unlink;
 
 use const JSON_PRETTY_PRINT;
+use const STDIN;
+use const STDOUT;
+use const STDERR;
 
 /**
  * ChatCommand - Interactive chat with the Coding Agent.
@@ -278,10 +277,7 @@ class DefaultController extends CommandController
     {
         if ($this->isGlowInstalled()) {
             // Use glow for beautiful markdown rendering
-            $tempFile = tempnam(sys_get_temp_dir(), 'synapse_');
-            file_put_contents($tempFile, $content);
-            passthru('glow ' . escapeshellarg($tempFile));
-            @unlink($tempFile);
+            passthru("echo " . escapeshellarg($content) . " | glow -");
         } else {
             // Fall back to plain display with a recommendation
             $this->display($content);
