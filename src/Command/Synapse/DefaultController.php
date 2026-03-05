@@ -20,8 +20,6 @@ use Throwable;
 
 use function in_array;
 use function json_encode;
-use function mb_strlen;
-use function mb_substr;
 use function sprintf;
 use function strtolower;
 use function trim;

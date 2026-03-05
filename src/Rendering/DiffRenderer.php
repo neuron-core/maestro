@@ -12,7 +12,7 @@ use Tempest\Highlight\Highlighter;
  */
 class DiffRenderer
 {
-    private Highlighter $highlighter;
+    private readonly Highlighter $highlighter;
 
     public function __construct()
     {
@@ -32,8 +32,6 @@ class DiffRenderer
 
     /**
      * Get the underlying highlighter instance.
-     *
-     * @return Highlighter
      */
     public function getHighlighter(): Highlighter
     {

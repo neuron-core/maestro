@@ -14,6 +14,9 @@ use function is_dir;
 use function is_writable;
 use function json_encode;
 use function mb_strlen;
+use function implode;
+use function preg_match_all;
+use function preg_split;
 
 /**
  * Create a new file with content.
@@ -87,7 +90,7 @@ class CreateFileTool extends Tool
 
         // Calculate line count
         $lineCount = preg_match_all('/\r\n|\r|\n/', $content, $matches);
-        $lineCount = $lineCount + 1; // Add 1 for the last line
+        $lineCount += 1; // Add 1 for the last line
 
         return json_encode([
             'status' => 'proposed',

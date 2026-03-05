@@ -9,6 +9,8 @@ use NeuronCore\Synapse\Rendering\ToolResultRendererInterface;
 use NeuronCore\Synapse\Rendering\ToolResultRendererRegistry;
 use PHPUnit\Framework\TestCase;
 
+use function json_encode;
+
 class ToolResultRendererRegistryTest extends TestCase
 {
     private ToolResultRendererRegistry $registry;

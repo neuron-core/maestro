@@ -8,12 +8,12 @@ use NeuronCore\Synapse\Tools\Coding\PatchFileTool;
 use PHPUnit\Framework\TestCase;
 
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
 use function json_decode;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
+use function count;
 
 class PatchFileToolTest extends TestCase
 {

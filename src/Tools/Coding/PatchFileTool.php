@@ -15,11 +15,15 @@ use function file_get_contents;
 use function is_readable;
 use function is_writable;
 use function json_encode;
-use function mb_strlen;
 use function preg_match;
-use function preg_replace_callback;
 use function sprintf;
-use function str_replace;
+use function array_filter;
+use function implode;
+use function max;
+use function min;
+use function preg_split;
+use function str_starts_with;
+use function substr;
 
 /**
  * Apply a unified diff patch to a file.
@@ -149,8 +153,6 @@ class PatchFileTool extends Tool
         $lines = $originalLines;
         $patchLines = explode("\n", $patch);
         $hunksApplied = 0;
-        $lineIndex = 0;
-        $originalIndex = 0;
 
         // Parse patch
         $hunks = $this->parseHunks($patchLines);
@@ -192,7 +194,7 @@ class PatchFileTool extends Tool
 
         foreach ($patchLines as $line) {
             // Match hunk header: @@ -original_start,original_count +new_start,new_count @@
-            if (preg_match('/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/', $line, $matches)) {
+            if (preg_match('/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/', (string) $line, $matches)) {
                 if ($currentHunk !== null) {
                     $hunks[] = $currentHunk;
                 }
@@ -209,14 +211,14 @@ class PatchFileTool extends Tool
                 $type = ' ';
                 $content = $line;
 
-                if (str_starts_with($line, '+')) {
+                if (str_starts_with((string) $line, '+')) {
                     $type = '+';
-                    $content = substr($line, 1);
-                } elseif (str_starts_with($line, '-')) {
+                    $content = substr((string) $line, 1);
+                } elseif (str_starts_with((string) $line, '-')) {
                     $type = '-';
-                    $content = substr($line, 1);
-                } elseif (str_starts_with($line, ' ')) {
-                    $content = substr($line, 1);
+                    $content = substr((string) $line, 1);
+                } elseif (str_starts_with((string) $line, ' ')) {
+                    $content = substr((string) $line, 1);
                 }
 
                 $currentHunk['lines'][] = [
@@ -244,7 +246,6 @@ class PatchFileTool extends Tool
     {
         $newLines = [];
         $lineIndex = max(0, $hunk['original_start'] - 1);
-        $originalIndex = 0;
 
         // Copy lines before the hunk
         for ($i = 0; $i < $lineIndex; $i++) {
@@ -261,28 +262,27 @@ class PatchFileTool extends Tool
             } elseif ($hunkLine['type'] === '+') {
                 // Add new line
                 $newLines[] = $hunkLine['content'];
-            } else {
+            } elseif ($lineIndex < count($lines) && $lines[$lineIndex] === $hunkLine['content']) {
                 // Context line - verify it matches
-                if ($lineIndex < count($lines) && $lines[$lineIndex] === $hunkLine['content']) {
-                    $newLines[] = $lines[$lineIndex];
-                    $lineIndex++;
-                } else {
-                    // Context mismatch
-                    return [
-                        'status' => 'error',
-                        'message' => sprintf(
-                            'Context mismatch at line %d. Expected "%s", got "%s".',
-                            $lineIndex + 1,
-                            $hunkLine['content'],
-                            $lines[$lineIndex] ?? '<end of file>'
-                        ),
-                    ];
-                }
+                $newLines[] = $lines[$lineIndex];
+                $lineIndex++;
+            } else {
+                // Context mismatch
+                return [
+                    'status' => 'error',
+                    'message' => sprintf(
+                        'Context mismatch at line %d. Expected "%s", got "%s".',
+                        $lineIndex + 1,
+                        $hunkLine['content'],
+                        $lines[$lineIndex] ?? '<end of file>'
+                    ),
+                ];
             }
         }
+        $counter = count($lines);
 
         // Copy remaining lines
-        for ($i = $lineIndex; $i < count($lines); $i++) {
+        for ($i = $lineIndex; $i < $counter; $i++) {
             $newLines[] = $lines[$i];
         }
 
@@ -336,8 +336,8 @@ class PatchFileTool extends Tool
             } elseif ($inHunk) {
                 // Close hunk
                 if (count($hunkLines) > 0) {
-                    $originalCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '-'));
-                    $newCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '+'));
+                    $originalCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '-'));
+                    $newCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '+'));
 
                     $diff .= "@@ -{$hunkStartOriginal},{$originalCount} +{$hunkStartNew},{$newCount} @@\n";
                     foreach ($hunkLines as $line) {
@@ -352,8 +352,8 @@ class PatchFileTool extends Tool
 
         // Close any remaining hunk
         if (count($hunkLines) > 0) {
-            $originalCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '-'));
-            $newCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '+'));
+            $originalCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '-'));
+            $newCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '+'));
 
             $diff .= "@@ -{$hunkStartOriginal},{$originalCount} +{$hunkStartNew},{$newCount} @@\n";
             foreach ($hunkLines as $line) {

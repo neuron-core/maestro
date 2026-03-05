@@ -7,7 +7,6 @@ namespace NeuronCore\Synapse\Tests\Themes;
 use NeuronCore\Synapse\Themes\DiffTerminalTheme;
 use PHPUnit\Framework\TestCase;
 use Tempest\Highlight\Highlighter;
-use Tempest\Highlight\Themes\TerminalStyle;
 
 class DiffTerminalThemeTest extends TestCase
 {

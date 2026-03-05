@@ -7,7 +7,6 @@ namespace NeuronCore\Synapse\Themes;
 use Tempest\Highlight\TerminalTheme;
 use Tempest\Highlight\Themes\TerminalStyle;
 use Tempest\Highlight\Tokens\TokenType;
-use Tempest\Highlight\Tokens\TokenTypeEnum;
 use Tempest\Highlight\Themes\EscapesTerminalTheme;
 
 /**

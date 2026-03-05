@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace NeuronCore\Synapse\Rendering;
 
-use function array_map;
-
 /**
  * Registry for tool result renderers.
  *
@@ -23,7 +21,6 @@ class ToolResultRendererRegistry
      * Register a renderer.
      *
      * @param ToolResultRendererInterface $renderer The renderer to register
-     * @return self
      */
     public function register(ToolResultRendererInterface $renderer): self
     {
@@ -35,7 +32,6 @@ class ToolResultRendererRegistry
      * Register multiple renderers.
      *
      * @param ToolResultRendererInterface[] $renderers The renderers to register
-     * @return self
      */
     public function registerAll(array $renderers): self
     {
@@ -91,8 +87,6 @@ class ToolResultRendererRegistry
 
     /**
      * Create a registry with default renderers.
-     *
-     * @return self
      */
     public static function withDefaults(): self
     {

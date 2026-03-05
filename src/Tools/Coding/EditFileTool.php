@@ -14,9 +14,13 @@ use function file_get_contents;
 use function is_readable;
 use function is_writable;
 use function json_encode;
-use function mb_strlen;
-use function preg_replace_callback;
 use function str_replace;
+use function array_filter;
+use function max;
+use function min;
+use function preg_split;
+use function str_contains;
+use function substr_count;
 
 /**
  * Edit a file by applying search-and-replace operations.
@@ -116,8 +120,8 @@ class EditFileTool extends Tool
             $replace = $edit['replace'];
 
             // Check if search string exists
-            if (str_contains($newContent, $search)) {
-                $occurrences = substr_count($newContent, $search);
+            if (str_contains($newContent, (string) $search)) {
+                $occurrences = substr_count($newContent, (string) $search);
                 $newContent = str_replace($search, $replace, $newContent);
                 $appliedEdits[] = [
                     'index' => $i,
@@ -151,7 +155,7 @@ class EditFileTool extends Tool
             'file_path' => $file_path,
             'edits' => $appliedEdits,
             'total_edits' => count($edits),
-            'successful_edits' => count(array_filter($appliedEdits, fn ($e) => $e['status'] === 'applied')),
+            'successful_edits' => count(array_filter($appliedEdits, fn (array $e): bool => $e['status'] === 'applied')),
             'stats' => $stats,
             'diff' => $diff,
             'original' => $originalContent,
@@ -206,8 +210,8 @@ class EditFileTool extends Tool
             } elseif ($inHunk) {
                 // Close hunk on next non-change
                 if (count($hunkLines) > 0) {
-                    $originalCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '-'));
-                    $newCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '+'));
+                    $originalCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '-'));
+                    $newCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '+'));
 
                     $diff .= "@@ -{$hunkStartOriginal},{$originalCount} +{$hunkStartNew},{$newCount} @@\n";
                     foreach ($hunkLines as $line) {
@@ -222,8 +226,8 @@ class EditFileTool extends Tool
 
         // Close any remaining hunk
         if (count($hunkLines) > 0) {
-            $originalCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '-'));
-            $newCount = count(array_filter($hunkLines, fn ($l) => $l['type'] === ' ' || $l['type'] === '+'));
+            $originalCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '-'));
+            $newCount = count(array_filter($hunkLines, fn (array $l): bool => $l['type'] === ' ' || $l['type'] === '+'));
 
             $diff .= "@@ -{$hunkStartOriginal},{$originalCount} +{$hunkStartNew},{$newCount} @@\n";
             foreach ($hunkLines as $line) {

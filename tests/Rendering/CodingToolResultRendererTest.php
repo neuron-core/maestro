@@ -7,7 +7,8 @@ namespace NeuronCore\Synapse\Tests\Rendering;
 use NeuronCore\Synapse\Rendering\CodingToolResultRenderer;
 use NeuronCore\Synapse\Rendering\DiffRenderer;
 use PHPUnit\Framework\TestCase;
-use Tempest\Highlight\Highlighter;
+
+use function json_encode;
 
 class CodingToolResultRendererTest extends TestCase
 {

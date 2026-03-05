@@ -12,10 +12,14 @@ use function file_exists;
 use function file_get_contents;
 use function is_writable;
 use function mb_strlen;
-use function mb_str_split;
 use function preg_split;
 use function rtrim;
-use function str_replace;
+use function array_fill;
+use function count;
+use function dirname;
+use function in_array;
+use function json_encode;
+use function max;
 
 /**
  * Write or overwrite a file with new content.
@@ -101,8 +105,7 @@ class WriteFileTool extends Tool
         $diff = $this->generateUnifiedDiff(
             $file_path,
             $originalLines,
-            $newLines,
-            $isExisting ? 'Original' : 'New file'
+            $newLines
         );
 
         // Calculate statistics
@@ -131,10 +134,9 @@ class WriteFileTool extends Tool
      * @param string $file_path File path for the diff header
      * @param array $originalLines Original file lines
      * @param array $newLines New file lines
-     * @param string $label Label for the original content
      * @return string Unified diff string
      */
-    private function generateUnifiedDiff(string $file_path, array $originalLines, array $newLines, string $label): string
+    private function generateUnifiedDiff(string $file_path, array $originalLines, array $newLines): string
     {
         if ($originalLines === $newLines) {
             return "No changes detected.\n";
@@ -188,7 +190,8 @@ class WriteFileTool extends Tool
 
         // Changed lines are counted when a context line has both removal and addition nearby
         $changed = 0;
-        for ($i = 0; $i < count($hunks); $i++) {
+        $counter = count($hunks);
+        for ($i = 0; $i < $counter; $i++) {
             $lines = $hunks[$i]['lines'];
             for ($j = 1; $j < count($lines) - 1; $j++) {
                 if ($lines[$j]['type'] === '-' && $lines[$j + 1]['type'] === '+') {
@@ -225,11 +228,7 @@ class WriteFileTool extends Tool
 
         for ($i = 1; $i <= $m; $i++) {
             for ($j = 1; $j <= $n; $j++) {
-                if ($a[$i - 1] === $b[$j - 1]) {
-                    $dp[$i][$j] = $dp[$i - 1][$j - 1] + 1;
-                } else {
-                    $dp[$i][$j] = max($dp[$i - 1][$j], $dp[$i][$j - 1]);
-                }
+                $dp[$i][$j] = $a[$i - 1] === $b[$j - 1] ? $dp[$i - 1][$j - 1] + 1 : max($dp[$i - 1][$j], $dp[$i][$j - 1]);
             }
         }
 
@@ -320,7 +319,6 @@ class WriteFileTool extends Tool
      *
      * @param array $hunks Hunks array to add to
      * @param array $hunkLines Hunk lines array
-     * @return void
      */
     private function finalizeHunk(array &$hunks, array &$hunkLines): void
     {
@@ -350,7 +348,7 @@ class WriteFileTool extends Tool
         }
 
         // Adjust start lines based on previous hunks
-        if (!empty($hunks)) {
+        if ($hunks !== []) {
             $lastHunk = $hunks[count($hunks) - 1];
             $originalStart = $lastHunk['original_start'] + $lastHunk['original_count'];
             $newStart = $lastHunk['new_start'] + $lastHunk['new_count'];

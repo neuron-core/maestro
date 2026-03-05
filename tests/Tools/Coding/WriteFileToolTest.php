@@ -8,11 +8,12 @@ use NeuronCore\Synapse\Tools\Coding\WriteFileTool;
 use PHPUnit\Framework\TestCase;
 
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
 use function json_decode;
 use function sys_get_temp_dir;
 use function unlink;
+use function count;
+use function uniqid;
 
 class WriteFileToolTest extends TestCase
 {

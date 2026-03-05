@@ -13,6 +13,10 @@ use function sys_get_temp_dir;
 use function rmdir;
 use function touch;
 use function unlink;
+use function is_dir;
+use function mkdir;
+use function strlen;
+use function uniqid;
 
 class CreateFileToolTest extends TestCase
 {

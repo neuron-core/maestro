@@ -14,6 +14,10 @@ use function file_get_contents;
 use function is_file;
 use function is_writable;
 use function json_encode;
+use function max;
+use function preg_match_all;
+use function preg_split;
+use function strlen;
 
 /**
  * Delete a file from the filesystem.
@@ -83,8 +87,8 @@ class DeleteFileTool extends Tool
 
         $size = strlen($content);
         $lineCount = preg_match_all('/\r\n|\r|\n/', $content, $matches);
-        $lineCount = $lineCount + 1; // Add 1 for the last line
-        $lineCount = $lineCount > 1 ? $lineCount : 1;
+        $lineCount += 1; // Add 1 for the last line
+        $lineCount = max($lineCount, 1);
 
         // Generate diff showing deletion
         $lines = preg_split('/\r\n|\r|\n/', $content);

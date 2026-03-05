@@ -7,14 +7,14 @@ namespace NeuronCore\Synapse\Rendering;
 use function is_array;
 use function json_decode;
 use function sprintf;
+use function in_array;
+use function strtoupper;
 
 /**
  * Renders coding tool results with formatted diff output.
  */
 class CodingToolResultRenderer implements ToolResultRendererInterface
 {
-    private DiffRenderer $diffRenderer;
-
     /**
      * List of coding tool names that this renderer handles.
      */
@@ -26,9 +26,8 @@ class CodingToolResultRenderer implements ToolResultRendererInterface
         'delete_file',
     ];
 
-    public function __construct(?DiffRenderer $diffRenderer = null)
+    public function __construct(private readonly ?DiffRenderer $diffRenderer = new DiffRenderer())
     {
-        $this->diffRenderer = $diffRenderer ?? new DiffRenderer();
     }
 
     public function canRender(string $toolName, string $result): bool
@@ -50,7 +49,7 @@ class CodingToolResultRenderer implements ToolResultRendererInterface
             return $this->renderError($toolName, $data);
         }
 
-        return $this->renderSuccess($toolName, $data);
+        return $this->renderSuccess($data);
     }
 
     /**
@@ -86,11 +85,10 @@ class CodingToolResultRenderer implements ToolResultRendererInterface
     /**
      * Render a successful result with diff.
      *
-     * @param string $toolName The tool name
      * @param array $data The parsed success data
      * @return string Formatted output with diff
      */
-    private function renderSuccess(string $toolName, array $data): string
+    private function renderSuccess(array $data): string
     {
         $output = '';
 
@@ -134,8 +132,6 @@ class CodingToolResultRenderer implements ToolResultRendererInterface
 
     /**
      * Get the diff renderer instance.
-     *
-     * @return DiffRenderer
      */
     public function getDiffRenderer(): DiffRenderer
     {

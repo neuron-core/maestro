@@ -8,14 +8,15 @@ use NeuronCore\Synapse\Tools\Coding\DeleteFileTool;
 use PHPUnit\Framework\TestCase;
 
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
-use function is_file;
 use function is_dir;
 use function json_decode;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
+use function mkdir;
+use function rmdir;
+use function strlen;
 
 class DeleteFileToolTest extends TestCase
 {
