@@ -27,6 +27,11 @@ use function mb_substr;
 use function escapeshellarg;
 use function passthru;
 use function shell_exec;
+use function file_put_contents;
+use function is_dir;
+use function mkdir;
+use function uniqid;
+use function unlink;
 
 use const JSON_PRETTY_PRINT;
 

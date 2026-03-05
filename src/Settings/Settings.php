@@ -22,6 +22,7 @@ use function array_values;
 use function file_put_contents;
 use function in_array;
 use function json_encode;
+use function dirname;
 
 use const JSON_PRETTY_PRINT;
 
