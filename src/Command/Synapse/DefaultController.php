@@ -166,16 +166,12 @@ class DefaultController extends CommandController
 
             // Check if this action is always allowed (persists across sessions)
             if (in_array($action->name, $this->alwaysAllowedActions, true)) {
-                $this->info("Automatically approved (always allowed).");
-                $this->newline();
                 $action->approve();
                 continue;
             }
 
             // Check if this action is session-allowed (current session only)
             if (in_array($action->name, $this->sessionAllowedActions, true)) {
-                $this->info("Automatically approved (session allowed).");
-                $this->newline();
                 $action->approve();
                 continue;
             }
@@ -254,7 +250,6 @@ class DefaultController extends CommandController
 
             if ($decision === 'session') {
                 $this->sessionAllowedActions[] = $action->name;
-                $this->info("Tool '{$action->name}' is now allowed for this session.");
             } elseif ($decision === 'always') {
                 // Add to both arrays (session for immediate use, and settings for persistence)
                 $this->alwaysAllowedActions[] = $action->name;
