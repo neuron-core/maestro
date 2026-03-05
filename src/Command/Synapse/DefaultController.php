@@ -12,6 +12,7 @@ use NeuronAI\Workflow\Interrupt\ApprovalRequest;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
 use NeuronCore\Synapse\Agent\CodingAgent;
 use NeuronCore\Synapse\Command\CommandHelper;
+use NeuronCore\Synapse\Rendering\ToolResultRendererRegistry;
 use NeuronCore\Synapse\Settings\Settings;
 use NeuronCore\Synapse\Settings\SettingsInterface;
 use Exception;
@@ -19,11 +20,11 @@ use Throwable;
 
 use function in_array;
 use function json_encode;
+use function mb_strlen;
+use function mb_substr;
 use function sprintf;
 use function strtolower;
 use function trim;
-use function mb_strlen;
-use function mb_substr;
 use function escapeshellarg;
 use function passthru;
 use function shell_exec;
@@ -59,11 +60,19 @@ class DefaultController extends CommandController
     protected SettingsInterface $settings;
 
     /**
+     * Registry for tool result renderers.
+     */
+    private ToolResultRendererRegistry $rendererRegistry;
+
+    /**
      * Handle the chat command.
      * @throws Throwable
      */
     public function handle(): void
     {
+        // Initialize renderer registry with default renderers
+        $this->rendererRegistry = ToolResultRendererRegistry::withDefaults();
+
         // Load and validate settings
         $this->settings = new Settings();
 
@@ -169,7 +178,16 @@ class DefaultController extends CommandController
             $description = mb_strlen((string) $action->description) > 250
                 ? mb_substr((string) $action->description, 0, 247) . '...'
                 : $action->description;
-            $this->display(sprintf("%s( %s )", $action->name, $description), true);
+
+            // Try to render using the renderer registry
+            $rendered = $this->rendererRegistry->render($action->name, $description);
+
+            if ($rendered !== null) {
+                $this->rawOutput($rendered);
+            } else {
+                // Fallback to simple display
+                $this->display(sprintf("%s( %s )", $action->name, $description), true);
+            }
 
             // Check if this action is always allowed (persists across sessions)
             if (in_array($action->name, $this->alwaysAllowedActions, true)) {
