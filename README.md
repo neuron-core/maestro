@@ -59,13 +59,6 @@ vendor/bin/synapse
 
 > **Note**: On Windows (not WSL/Git Bash), use `".\vendor\bin\synapse"` instead.
 
-Now you can run the agent from your project directory:
-
-```bash
-composer synapse
-composer synapse "your prompt here"
-```
-
 ## Configuration
 
 Before using Coding Agent, you need to configure your AI provider and API key.
