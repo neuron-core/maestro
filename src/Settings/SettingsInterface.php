@@ -12,6 +12,10 @@ use NeuronAI\MCP\McpConnector;
  */
 interface SettingsInterface
 {
+    public function dirPath(): string;
+
+    public function filePath(): string;
+
     /**
      * Get the configured AI provider.
      */

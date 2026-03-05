@@ -27,7 +27,8 @@
     "require": {
         "php": "^8.1",
         "neuron-core/neuron-ai": "^3.0",
-        "minicli/minicli": "^4.2"
+        "minicli/minicli": "^4.2",
+        "tempest/highlight": "^2.17"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.75",

@@ -29,9 +29,6 @@ use function passthru;
 use function shell_exec;
 
 use const JSON_PRETTY_PRINT;
-use const STDIN;
-use const STDOUT;
-use const STDERR;
 
 /**
  * ChatCommand - Interactive chat with the Coding Agent.
@@ -54,6 +51,8 @@ class DefaultController extends CommandController
 
     protected ?CodingAgent $agent = null;
 
+    protected SettingsInterface $settings;
+
     /**
      * Handle the chat command.
      * @throws Throwable
@@ -61,10 +60,10 @@ class DefaultController extends CommandController
     public function handle(): void
     {
         // Load and validate settings
-        $settings = new Settings();
+        $this->settings = new Settings();
 
-        if (!$settings->fileExists()) {
-            $this->error("Warning: Settings file not found at " . $settings->getSettingsPath());
+        if (!$this->settings->fileExists()) {
+            $this->error("Warning: Settings file not found at " . $this->settings->getSettingsPath());
             $this->error("The agent requires AI provider connection information.");
             $this->newline();
             $this->info("Create a settings.json file with your AI provider configuration:");
@@ -79,27 +78,27 @@ class DefaultController extends CommandController
             return;
         }
 
-        if (!$settings->hasValidProvider()) {
+        if (!$this->settings->hasValidProvider()) {
             $this->error("Warning: Settings file is missing valid provider configuration.");
             $this->error("The 'provider.type' setting is required.");
             $this->newline();
             return;
         }
 
-        $this->interactiveMode($settings);
+        $this->interactiveMode();
     }
 
     /**
      * Interactive mode for continuous conversation.
      * @throws Throwable
      */
-    protected function interactiveMode(SettingsInterface $settings): void
+    protected function interactiveMode(): void
     {
         // Initialize agent
-        $this->agent = CodingAgent::make($settings);
+        $this->agent = CodingAgent::make($this->settings);
 
         // Load always-allowed tools from settings (persists across sessions)
-        $this->alwaysAllowedActions = $settings->getAllowedTools();
+        $this->alwaysAllowedActions = $this->settings->getAllowedTools();
 
         $this->info("=== Synapse Coding Agent - built with Neuron AI framework ===");
         $this->info("Type 'exit' or 'quit' to end the conversation.");
@@ -277,15 +276,22 @@ class DefaultController extends CommandController
     {
         if ($this->isGlowInstalled()) {
             // Use glow for beautiful markdown rendering
-            passthru("echo " . escapeshellarg($content) . " | glow -");
+            $dir = $this->settings->dirPath();
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $tempFile = $dir . '/' . uniqid('output_', true) . '.md';
+            file_put_contents($tempFile, $content);
+            passthru("glow " . escapeshellarg($tempFile));
+            @unlink($tempFile);
         } else {
             // Fall back to plain display with a recommendation
             $this->display($content);
             $this->newline();
             $this->info("Tip: Install 'glow' for better markdown rendering:");
-            $this->display("  - Ubuntu/Debian: sudo snap install glow");
-            $this->display("  - macOS: brew install glow");
-            $this->display("  - Via cargo: cargo install glow");
+            $this->display(" - Ubuntu/Debian: sudo snap install glow");
+            $this->display(" - macOS: brew install glow");
+            $this->display(" - Via cargo: cargo install glow");
             $this->newline();
         }
     }

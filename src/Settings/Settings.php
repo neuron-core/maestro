@@ -30,20 +30,30 @@ use const JSON_PRETTY_PRINT;
  */
 class Settings implements SettingsInterface
 {
-    private array $settings = [];
-    private readonly string $settingsPath;
-    private bool $fileExists = false;
+    protected array $settings = [];
+    protected readonly string $settingsPath;
+    protected bool $fileExists = false;
 
-    public function __construct(?string $settingsPath = null, private ?ProviderFactoryInterface $providerFactory = new ProviderFactory())
+    public function __construct(?string $settingsPath = null, protected ?ProviderFactoryInterface $providerFactory = new ProviderFactory())
     {
         $this->settingsPath = $settingsPath ?? getcwd() . '/.synapse/settings.json';
         $this->load();
     }
 
+    public function dirPath(): string
+    {
+        return dirname($this->settingsPath);
+    }
+
+    public function filePath(): string
+    {
+        return $this->settingsPath;
+    }
+
     /**
      * Save settings to the settings file.
      */
-    private function save(): void
+    protected function save(): void
     {
         file_put_contents(
             $this->settingsPath,
@@ -54,7 +64,7 @@ class Settings implements SettingsInterface
     /**
      * Load settings from the specified path or default location.
      */
-    private function load(): void
+    protected function load(): void
     {
         $this->fileExists = file_exists($this->settingsPath);
 
