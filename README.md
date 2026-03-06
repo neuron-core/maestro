@@ -176,6 +176,38 @@ Additional supported providers with similar configuration:
 | **Grok (xAI)** | `"xai"` or `"grok"` | `api_key` |
 | **Deepseek** | `"deepseek"` | `api_key` |
 
+### Context File Configuration
+
+You can provide project-specific instructions by adding a `context_file` setting. The agent will load this file and append its content to its system instructions.
+
+If no `context_file` is specified, the agent will look for `Agents.md` in the project root. If the file doesn't exist, no additional context is attached.
+
+```json
+{
+    "provider": {
+        "type": "anthropic",
+        "api_key": "sk-ant-your-api-key-here"
+    },
+    "context_file": "docs/Agent.md"
+}
+```
+
+The `Agents.md` (or your custom file) should contain project-specific guidelines:
+
+```markdown
+# Project Guidelines
+
+## Coding Standards
+- Use PSR-12 coding style
+- All methods must have return type declarations
+- Maximum line length: 120 characters
+
+## Architecture Notes
+- Controllers should only handle HTTP concerns
+- Business logic belongs in the Service layer
+- Use dependency injection for all dependencies
+```
+
 ### MCP Server Configuration
 
 Add Model Context Protocol servers to extend the agent's capabilities:

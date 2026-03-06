@@ -75,4 +75,14 @@ interface SettingsInterface
      * @return bool True if removed, false if not found
      */
     public function removeAllowedTool(string $toolName): bool;
+
+    /**
+     * Get the path to the context file containing project-specific instructions.
+     *
+     * Checks for the 'context_file' option in settings, falls back to 'Agents.md'.
+     * Returns null if the file doesn't exist.
+     *
+     * @return string|null The file path or null if not found
+     */
+    public function getAgentInstructionsFile(): ?string;
 }

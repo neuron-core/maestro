@@ -224,4 +224,27 @@ class Settings implements SettingsInterface
         $this->save();
         return true;
     }
+
+    /**
+     * Get the path to the agent instructions file.
+     *
+     * Checks for the 'context_file' option in settings, falls back to 'Agent.md'.
+     * Returns null if the file doesn't exist.
+     *
+     * @return string|null The file path or null if not found
+     */
+    public function getAgentInstructionsFile(): ?string
+    {
+        $file = $this->get('context_file');
+
+        // Fall back to Agent.md if not specified
+        if ($file === null) {
+            $file = 'Agents.md';
+        }
+
+        // Make the path relative to the settings directory
+        $fullPath = $this->dirPath() . '/' . $file;
+
+        return file_exists($fullPath) ? $fullPath : null;
+    }
 }

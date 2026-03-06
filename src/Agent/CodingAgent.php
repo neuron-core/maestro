@@ -85,7 +85,7 @@ class CodingAgent extends Agent
      */
     protected function instructions(): string
     {
-        return <<<'PROMPT'
+        $instructions = <<<'PROMPT'
 You are an expert coding assistant with deep knowledge of software engineering, programming languages, and development best practices.
 
 ## Your Role
@@ -125,5 +125,16 @@ You are knowledgeable about:
 
 Remember: Your goal is to help developers write better code faster while maintaining high standards of quality and security.
 PROMPT;
+
+        // Append project-specific instructions from Agents.md (or custom context file) if it exists
+        $agentFile = $this->settings->getAgentInstructionsFile();
+        if ($agentFile !== null) {
+            $agentInstructions = file_get_contents($agentFile);
+            if ($agentInstructions !== false) {
+                $instructions .= "\n\n---\n\n## Project-Specific Guidelines\n\n" . trim($agentInstructions);
+            }
+        }
+
+        return $instructions;
     }
 }
