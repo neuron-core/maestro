@@ -252,49 +252,9 @@ When the agent proposes a tool operation, you'll be prompted to approve it. Choo
 - **Always allow**: Approve permanently (saved to `allowed_tools` in settings)
 - **Deny**: Reject this operation
 
-## Development
-
-### Running Tests
-
-```bash
-composer test
-```
-
-Run a single test file:
-
-```bash
-vendor/bin/phpunit tests/Rendering/DiffRendererTest.php
-```
-
-Run a single test method:
-
-```bash
-vendor/bin/phpunit --filter testMethodName tests/Path/ToTest.php
-```
-
-### Code Analysis
-
-```bash
-composer analyse  # PHPStan static analysis (memory-limit=1G)
-```
-
-### Code Formatting
-
-```bash
-composer format  # Rector (refactor) + PHP CS Fixer (style)
-composer style    # PHP CS Fixer only
-composer refactor # Rector only
-```
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
@@ -305,8 +265,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Built with:
 - [Neuron AI](https://docs.neuron-ai.dev/) - PHP agentic framework
 - [Symfony Console](https://symfony.com/doc/current/console.html) - CLI component
-- [Tempest Highlight](https://github.com/tempestphp/highlight) - Syntax highlighting
 
 ---
 
-Made with ❤️ by [Valerio Barbera](https://github.com/valerio)
+Made with ❤️ by [Neuron AI](https://github.com/neuron-core/neuron-ai) team
