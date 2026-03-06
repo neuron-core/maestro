@@ -7,6 +7,8 @@ with interactive tool approval.
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+[![](assets/cover.png)](https://github.com/neuron-core/neuron-ai)
+
 ## About Synapse
 
 While most AI coding agents are written in Python or TypeScript, Synapse demonstrates that PHP can deliver a world-class AI developer experience. Built on the modern [Neuron AI framework](https://docs.neuron-ai.dev), Synapse provides:
