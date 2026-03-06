@@ -67,7 +67,7 @@ class SynapseCommand extends Command
         }
 
         $dispatcher = new EventDispatcher();
-        $listener = new CliOutputListener($output, $settings, ToolRendererMap::default());
+        $listener = new CliOutputListener($input, $output, $settings, ToolRendererMap::default());
 
         $dispatcher->subscribe(AgentThinkingEvent::class, $listener->onThinking(...));
         $dispatcher->subscribe(AgentResponseEvent::class, $listener->onResponse(...));
@@ -75,9 +75,9 @@ class SynapseCommand extends Command
 
         $orchestrator = new AgentOrchestrator(CodingAgent::make($settings), $dispatcher);
 
-        $output->writeln('<info>=== Synapse Coding Agent - built with Neuron AI framework ===</info>');
+        $output->writeln("\n\n<info>=|=|= Synapse Coding Agent - built with Neuron AI framework =|=|=</info>");
         $output->writeln("<info>Type 'exit' to end the conversation.</info>");
-        $output->writeln('');
+        $output->writeln("\n\n");
 
         while (true) {
             $userInput = trim($this->readInput('> '));

@@ -77,13 +77,19 @@ class EditFileRenderer implements ToolRenderer
         $colored = [];
 
         foreach ($lines as $line) {
-            if (str_starts_with($line, '---') || str_starts_with($line, '+++')) {
+            if (str_starts_with($line, '---')) {
                 // Skip file headers
                 continue;
-            } elseif (str_starts_with($line, '@@')) {
+            }
+            if (str_starts_with($line, '+++')) {
+                // Skip file headers
+                continue;
+            }
+            if (str_starts_with($line, '@@')) {
                 // Skip hunk headers
                 continue;
-            } elseif (str_starts_with($line, '-')) {
+            }
+            if (str_starts_with($line, '-')) {
                 // Deletions - red
                 $colored[] = self::RED . $line . self::RESET;
             } elseif (str_starts_with($line, '+')) {
@@ -92,14 +98,12 @@ class EditFileRenderer implements ToolRenderer
             } elseif (str_starts_with($line, ' ')) {
                 // Context - gray
                 $colored[] = self::GRAY . $line . self::RESET;
+            } elseif ($line !== '') {
+                // Keep other non-empty lines
+                $colored[] = $line;
             } elseif (str_starts_with($line, '\ No newline')) {
                 // Skip diff metadata lines
                 continue;
-            } else {
-                // Keep other non-empty lines
-                if ($line !== '') {
-                    $colored[] = $line;
-                }
             }
         }
 
