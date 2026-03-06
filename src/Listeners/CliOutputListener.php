@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeuronCore\Synapse\Listeners;
 
+use NeuronCore\Synapse\Console\SelectMenuHelper;
 use NeuronCore\Synapse\Events\AgentResponseEvent;
 use NeuronCore\Synapse\Events\AgentThinkingEvent;
 use NeuronCore\Synapse\Events\ToolApprovalRequestedEvent;
@@ -11,15 +12,8 @@ use NeuronCore\Synapse\Rendering\ToolRendererMap;
 use NeuronCore\Synapse\Settings\SettingsInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function fgets;
-use function function_exists;
 use function in_array;
-use function readline;
 use function str_repeat;
-use function strtolower;
-use function trim;
-
-use const STDIN;
 
 class CliOutputListener
 {
@@ -66,34 +60,16 @@ class CliOutputListener
 
     private function askDecision(): string
     {
-        $this->output->writeln('Options:');
-        $this->output->writeln('  1) Allow');
-        $this->output->writeln('  2) Session allow');
-        $this->output->writeln('  3) Always allow');
-        $this->output->writeln('  4) Reject');
-        $this->output->writeln('');
+        $values = ['allow', 'session', 'always', 'reject'];
 
-        while (true) {
-            $decision = strtolower(trim($this->readInput('Enter your choice: ')));
+        $index = (new SelectMenuHelper($this->output))->ask('Options:', [
+            'Allow once',
+            'Allow for session',
+            'Always allow',
+            'Reject',
+        ]);
 
-            if (in_array($decision, ['', '1', 'allow'], true)) {
-                return 'allow';
-            }
-
-            if (in_array($decision, ['2', 'session', 's'], true)) {
-                return 'session';
-            }
-
-            if (in_array($decision, ['3', 'always', 'a'], true)) {
-                return 'always';
-            }
-
-            if (in_array($decision, ['4', 'reject', 'no', 'n', 'r'], true)) {
-                return 'reject';
-            }
-
-            $this->output->writeln('<error>Invalid choice. Please enter 1, 2, 3, or 4.</error>');
-        }
+        return $values[$index];
     }
 
     private function processDecision(object $action, string $decision): void
@@ -119,15 +95,5 @@ class CliOutputListener
     private function clearLine(): void
     {
         $this->output->write("\r" . str_repeat(' ', 50) . "\r");
-    }
-
-    private function readInput(string $prompt): string
-    {
-        if (function_exists('readline')) {
-            return (string) readline($prompt);
-        }
-
-        echo $prompt;
-        return (string) fgets(STDIN);
     }
 }

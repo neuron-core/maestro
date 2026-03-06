@@ -18,6 +18,8 @@ use function sprintf;
 use function stream_get_meta_data;
 use function tmpfile;
 
+use const PHP_OS_FAMILY;
+
 class FileChangeRenderer implements ToolRenderer
 {
     public function __construct(private readonly DiffRenderer $diffRenderer)
@@ -37,6 +39,13 @@ class FileChangeRenderer implements ToolRenderer
 
         // write_file / create_file: full content replacement
         if (isset($args['content'])) {
+            if (!$this->isDiffAvailable()) {
+                return $this->header($toolName, $path)
+                    . $args['content']
+                    . "\n\n<comment>Tip: install the \"diff\" command to see a formatted diff: "
+                    . $this->diffInstallHint() . '</comment>';
+            }
+
             $diff = $this->generateDiff($path, $current, $args['content']);
             return $this->header($toolName, $path) . $this->diffRenderer->render($diff);
         }
@@ -47,6 +56,20 @@ class FileChangeRenderer implements ToolRenderer
     private function header(string $toolName, string $path): string
     {
         return sprintf("\n● %s( %s )\n\n", $toolName, $path);
+    }
+
+    private function isDiffAvailable(): bool
+    {
+        return shell_exec('command -v diff 2>/dev/null') !== null;
+    }
+
+    private function diffInstallHint(): string
+    {
+        return match (PHP_OS_FAMILY) {
+            'Darwin'  => 'brew install diffutils',
+            'Windows' => '',
+            default   => 'sudo apt-get install diffutils  (or the equivalent for your distro)',
+        };
     }
 
     private function generateDiff(string $filename, string $current, string $proposed): string

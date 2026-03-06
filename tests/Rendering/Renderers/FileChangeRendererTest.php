@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class FileChangeRendererTest extends TestCase
 {
-    private DiffRenderer $diffRenderer;
+    private \PHPUnit\Framework\MockObject\MockObject $diffRenderer;
     private FileChangeRenderer $renderer;
 
     protected function setUp(): void
