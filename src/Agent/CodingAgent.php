@@ -15,6 +15,8 @@ use NeuronAI\Tools\Toolkits\FileSystem\FileSystemToolkit;
 use Exception;
 
 use function array_reduce;
+use function file_get_contents;
+use function trim;
 
 /**
  * Coding Agent - An AI-powered coding assistant using the Neuron AI framework.
