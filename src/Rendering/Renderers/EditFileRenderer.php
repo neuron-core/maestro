@@ -92,9 +92,14 @@ class EditFileRenderer implements ToolRenderer
             } elseif (str_starts_with($line, ' ')) {
                 // Context - gray
                 $colored[] = self::GRAY . $line . self::RESET;
+            } elseif (str_starts_with($line, '\ No newline')) {
+                // Skip diff metadata lines
+                continue;
             } else {
-                // Keep other lines (like "No newline at end of file")
-                $colored[] = $line;
+                // Keep other non-empty lines
+                if ($line !== '') {
+                    $colored[] = $line;
+                }
             }
         }
 
