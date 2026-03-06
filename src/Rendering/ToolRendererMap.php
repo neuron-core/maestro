@@ -12,7 +12,7 @@ use NeuronCore\Synapse\Rendering\Renderers\SnippetRenderer;
 class ToolRendererMap
 {
     /** @var array<string, ToolRenderer> */
-    private array $map = [];
+    protected array $map = [];
 
     public function __construct(private readonly ToolRenderer $fallback)
     {

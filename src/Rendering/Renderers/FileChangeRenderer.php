@@ -53,17 +53,17 @@ class FileChangeRenderer implements ToolRenderer
         return (new GenericRenderer())->render($toolName, $arguments);
     }
 
-    private function header(string $toolName, string $path): string
+    protected function header(string $toolName, string $path): string
     {
         return sprintf("\n● %s( %s )\n\n", $toolName, $path);
     }
 
-    private function isDiffAvailable(): bool
+    protected function isDiffAvailable(): bool
     {
         return shell_exec('command -v diff 2>/dev/null') !== null;
     }
 
-    private function diffInstallHint(): string
+    protected function diffInstallHint(): string
     {
         return match (PHP_OS_FAMILY) {
             'Darwin'  => 'brew install diffutils',
@@ -72,7 +72,7 @@ class FileChangeRenderer implements ToolRenderer
         };
     }
 
-    private function generateDiff(string $filename, string $current, string $proposed): string
+    protected function generateDiff(string $filename, string $current, string $proposed): string
     {
         $oldFile = tmpfile();
         $newFile = tmpfile();

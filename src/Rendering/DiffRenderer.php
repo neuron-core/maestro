@@ -12,7 +12,7 @@ use Tempest\Highlight\Highlighter;
  */
 class DiffRenderer
 {
-    private readonly Highlighter $highlighter;
+    protected readonly Highlighter $highlighter;
 
     public function __construct()
     {
