@@ -43,7 +43,7 @@ class SelectMenuHelper
      */
     public function __construct(
         private readonly OutputInterface $output,
-        $inputStream = null,
+        mixed $inputStream = null,
     ) {
         $this->inputStream = $inputStream ?? STDIN;
     }

@@ -19,7 +19,7 @@ class SelectMenuHelperTest extends TestCase
      *
      * @param resource $inputStream
      */
-    private function makeFallback(BufferedOutput $output, $inputStream): SelectMenuHelper
+    private function makeFallback(BufferedOutput $output, mixed $inputStream): SelectMenuHelper
     {
         return new class ($output, $inputStream) extends SelectMenuHelper {
             protected function isInteractive(): bool
@@ -32,7 +32,7 @@ class SelectMenuHelperTest extends TestCase
     /**
      * @param resource $inputStream
      */
-    private function writeInput($inputStream, string $content): void
+    private function writeInput(mixed $inputStream, string $content): void
     {
         fwrite($inputStream, $content);
         rewind($inputStream);

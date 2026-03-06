@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeuronCore\Synapse\Orchestrator;
 
 use NeuronAI\Chat\Messages\UserMessage;
+use NeuronAI\Workflow\Interrupt\ApprovalRequest;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
 use NeuronCore\Synapse\Agent\CodingAgent;
 use NeuronCore\Synapse\Events\AgentResponseEvent;
@@ -12,6 +13,8 @@ use NeuronCore\Synapse\Events\AgentThinkingEvent;
 use NeuronCore\Synapse\Events\ToolApprovalRequestedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
+
+use function assert;
 
 class AgentOrchestrator
 {
@@ -42,6 +45,7 @@ class AgentOrchestrator
     private function handleInterrupt(WorkflowInterrupt $interrupt): void
     {
         $approvalRequest = $interrupt->getRequest();
+        assert($approvalRequest instanceof ApprovalRequest);
 
         $this->dispatcher->dispatch(new ToolApprovalRequestedEvent($approvalRequest));
 

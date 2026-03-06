@@ -28,7 +28,7 @@ class DiffRendererTest extends TestCase
 
         $result = $this->renderer->render($diff);
 
-        $this->assertIsString($result);
+        $this->assertNotEmpty($result);
     }
 
     public function testRenderPreservesDiffContent(): void
