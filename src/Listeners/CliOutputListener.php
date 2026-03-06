@@ -7,7 +7,7 @@ namespace NeuronCore\Synapse\Listeners;
 use NeuronCore\Synapse\Events\AgentResponseEvent;
 use NeuronCore\Synapse\Events\AgentThinkingEvent;
 use NeuronCore\Synapse\Events\ToolApprovalRequestedEvent;
-use NeuronCore\Synapse\Rendering\ToolResultRendererRegistry;
+use NeuronCore\Synapse\Rendering\ToolRendererMap;
 use NeuronCore\Synapse\Settings\SettingsInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -15,7 +15,6 @@ use function fgets;
 use function function_exists;
 use function in_array;
 use function readline;
-use function sprintf;
 use function str_repeat;
 use function strtolower;
 use function trim;
@@ -30,7 +29,7 @@ class CliOutputListener
     public function __construct(
         private readonly OutputInterface $output,
         private readonly SettingsInterface $settings,
-        private readonly ToolResultRendererRegistry $rendererRegistry,
+        private readonly ToolRendererMap $rendererMap,
     ) {
         $this->alwaysAllowedActions = $settings->getAllowedTools();
     }
@@ -52,13 +51,7 @@ class CliOutputListener
         $this->clearLine();
 
         foreach ($event->approvalRequest->getPendingActions() as $action) {
-            $rendered = $this->rendererRegistry->render($action->name, $action->description);
-
-            if ($rendered !== null) {
-                $this->output->write($rendered);
-            } else {
-                $this->output->writeln(sprintf('%s( %s )', $action->name, $action->description));
-            }
+            $this->output->write($this->rendererMap->render($action->name, $action->description));
 
             if (in_array($action->name, $this->alwaysAllowedActions, true) ||
                 in_array($action->name, $this->sessionAllowedActions, true)) {

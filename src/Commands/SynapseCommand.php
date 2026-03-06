@@ -12,7 +12,7 @@ use NeuronCore\Synapse\Events\AgentThinkingEvent;
 use NeuronCore\Synapse\Events\ToolApprovalRequestedEvent;
 use NeuronCore\Synapse\Listeners\CliOutputListener;
 use NeuronCore\Synapse\Orchestrator\AgentOrchestrator;
-use NeuronCore\Synapse\Rendering\ToolResultRendererRegistry;
+use NeuronCore\Synapse\Rendering\ToolRendererMap;
 use NeuronCore\Synapse\Settings\Settings;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -67,7 +67,7 @@ class SynapseCommand extends Command
         }
 
         $dispatcher = new EventDispatcher();
-        $listener = new CliOutputListener($output, $settings, ToolResultRendererRegistry::withDefaults());
+        $listener = new CliOutputListener($output, $settings, ToolRendererMap::default());
 
         $dispatcher->subscribe(AgentThinkingEvent::class, [$listener, 'onThinking']);
         $dispatcher->subscribe(AgentResponseEvent::class, [$listener, 'onResponse']);
