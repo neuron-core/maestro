@@ -4,12 +4,11 @@
     "type": "library",
     "keywords": [
         "ai",
-        "anthropic",
-        "claude",
         "coding",
         "assistant",
         "symfony",
-        "cli"
+        "cli",
+        "neuron-ai"
     ],
     "homepage": "https://github.com/neuron-core/maestro",
     "license": "MIT",
