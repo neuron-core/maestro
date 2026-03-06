@@ -28,7 +28,8 @@
         "php": "^8.1",
         "neuron-core/neuron-ai": "^3.0",
         "symfony/console": "^8.0",
-        "tempest/highlight": "^2.17"
+        "tempest/highlight": "^2.17",
+        "psr/event-dispatcher": "^1.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.75",
