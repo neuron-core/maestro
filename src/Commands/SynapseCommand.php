@@ -76,14 +76,12 @@ class SynapseCommand extends Command
         $orchestrator = new AgentOrchestrator(CodingAgent::make($settings), $dispatcher);
 
         $output->writeln("\n");
-        $output->writeln("<fg=cyan;options=bold>   _____</>");
-        $output->writeln("<fg=cyan;options=bold>  / ____|</>");
-        $output->writeln("<fg=cyan;options=bold> | (___  _   _ _ __   __ _ _ __  ___  ___  </>");
-        $output->writeln("<fg=cyan;options=bold>  \___ \| | | | '_ \ / _` | '_ \/ __|/ _ \ </>");
-        $output->writeln("<fg=cyan;options=bold>  ____) | |_| | | | | (_| | |_) \__ \  __/ </>");
-        $output->writeln("<fg=cyan;options=bold> |_____/ \__, |_| |_|\__,_| .__/|___/\___| </>");
-        $output->writeln("<fg=cyan;options=bold>          __/ |           | |</>");
-        $output->writeln("<fg=cyan;options=bold>         |___/            |_|</>");
+        $output->writeln("<fg=cyan;options=bold>  __  __                 _             </>");
+        $output->writeln("<fg=cyan;options=bold> |  \/  |               | |            </>");
+        $output->writeln("<fg=cyan;options=bold> | \  / | __ _  ___  ___| |_ _ __ ___  </>");
+        $output->writeln("<fg=cyan;options=bold> | |\/| |/ _` |/ _ \/ __| __| '__/ _ \ </>");
+        $output->writeln("<fg=cyan;options=bold> | |  | | (_| |  __/\__ \ |_| | | (_) |</>");
+        $output->writeln("<fg=cyan;options=bold> |_|  |_|\__,_|\___||___/\__|_|  \___/ </>");
         $output->writeln("");
         $output->writeln("<fg=white;options=bold> Coding Agent  •  Powered by Neuron AI framework (https://docs.neuron-ai.dev) </>");
         $output->writeln("\n");
