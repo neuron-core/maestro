@@ -98,8 +98,6 @@ Run the command:
 vendor/bin/synapse
 ```
 
-> **Note**: On Windows (not WSL/Git Bash), use `".\vendor\bin\synapse"` instead.
-
 ## Configuration
 
 Before using Synapse, configure your AI provider and API key.
