@@ -17,7 +17,7 @@ class SnippetRenderer implements ToolRenderer
     /**
      * @param string[] $keys Argument keys to extract and display, in order
      */
-    public function __construct(private readonly array $keys)
+    public function __construct(protected readonly array $keys)
     {
     }
 
@@ -28,11 +28,11 @@ class SnippetRenderer implements ToolRenderer
         $parts = [];
         foreach ($this->keys as $key) {
             if (isset($args[$key])) {
-                $parts[] = is_string($args[$key]) ? $args[$key] : json_encode($args[$key]);
+                $parts[] = "<info>{$key}:</info> " . (is_string($args[$key]) ? $args[$key] : json_encode($args[$key]));
             }
         }
 
-        $display = $parts !== [] ? implode(', ', $parts) : $arguments;
+        $display = $parts !== [] ? "\n".implode("\n", $parts)."\n" : $arguments;
 
         return sprintf("● %s( %s )\n", $toolName, $display);
     }
