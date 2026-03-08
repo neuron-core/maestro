@@ -167,7 +167,7 @@ class SelectMenuHelper
             }
 
             $this->output->writeln(sprintf(
-                Color::red('Invalid choice. Enter a number between 1 and %d.'),
+                (string) Color::red('Invalid choice. Enter a number between 1 and %d.'),
                 $max
             ));
         }

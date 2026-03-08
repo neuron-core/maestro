@@ -45,10 +45,10 @@ class MaestroCommand extends Command
         $settings = new Settings();
 
         if (!$settings->fileExists()) {
-            $output->writeln(Color::red('Warning: Settings file not found at ' . $settings->getSettingsPath()));
-            $output->writeln(Color::red('The agent requires AI provider connection information.'));
+            $output->writeln((string) Color::red('Warning: Settings file not found at ' . $settings->getSettingsPath()));
+            $output->writeln((string) Color::red('The agent requires AI provider connection information.'));
             $output->writeln('');
-            $output->writeln(Color::cyan('Create a settings.json file with your AI provider configuration:'));
+            $output->writeln((string) Color::cyan('Create a settings.json file with your AI provider configuration:'));
             $output->writeln(json_encode([
                 'provider' => [
                     'type' => 'openai',
@@ -61,8 +61,8 @@ class MaestroCommand extends Command
         }
 
         if (!$settings->hasValidProvider()) {
-            $output->writeln(Color::red('Warning: Settings file is missing valid provider configuration.'));
-            $output->writeln(Color::red("The 'provider.type' setting is required."));
+            $output->writeln((string) Color::red('Warning: Settings file is missing valid provider configuration.'));
+            $output->writeln((string) Color::red("The 'provider.type' setting is required."));
             $output->writeln('');
             return Command::FAILURE;
         }
@@ -97,12 +97,12 @@ class MaestroCommand extends Command
             try {
                 $orchestrator->chat($userInput);
             } catch (Exception $e) {
-                $output->writeln(Color::red('Error: ' . $e->getMessage()));
+                $output->writeln((string) Color::red('Error: ' . $e->getMessage()));
                 $output->writeln('');
             }
         }
 
-        $output->writeln(Color::cyan('Goodbye!'));
+        $output->writeln((string) Color::cyan('Goodbye!'));
         return Command::SUCCESS;
     }
 
