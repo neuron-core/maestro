@@ -6,6 +6,7 @@ namespace NeuronCore\Maestro\Commands;
 
 use Exception;
 use NeuronCore\Maestro\Agent\CodingAgent;
+use NeuronCore\Maestro\Console\Color;
 use NeuronCore\Maestro\EventBus\EventDispatcher;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
@@ -14,7 +15,6 @@ use NeuronCore\Maestro\Listeners\CliOutputListener;
 use NeuronCore\Maestro\Orchestrator\AgentOrchestrator;
 use NeuronCore\Maestro\Rendering\ToolRendererMap;
 use NeuronCore\Maestro\Settings\Settings;
-use NeuronCore\Maestro\Terminal\Color;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

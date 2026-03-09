@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Console;
 
-use NeuronCore\Maestro\Terminal\Color;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
@@ -14,6 +13,7 @@ use function defined;
 use function fgets;
 use function fread;
 use function function_exists;
+use function getmypid;
 use function max;
 use function min;
 use function pcntl_async_signals;
@@ -24,7 +24,6 @@ use function shell_exec;
 use function sprintf;
 use function stream_select;
 use function trim;
-use function getmypid;
 
 use const SIG_DFL;
 use const STDIN;

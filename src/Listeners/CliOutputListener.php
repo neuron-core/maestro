@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Listeners;
 
 use NeuronAI\Workflow\Interrupt\Action;
+use NeuronCore\Maestro\Console\Color;
 use NeuronCore\Maestro\Console\SelectMenuHelper;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
 use NeuronCore\Maestro\Rendering\ToolRendererMap;
 use NeuronCore\Maestro\Settings\SettingsInterface;
-use NeuronCore\Maestro\Terminal\Color;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

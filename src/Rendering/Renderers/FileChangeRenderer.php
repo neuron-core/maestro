@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Rendering\Renderers;
 
+use NeuronCore\Maestro\Console\Color;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
-use NeuronCore\Maestro\Terminal\Color;
 
 use function escapeshellarg;
+use function explode;
 use function fclose;
 use function file_exists;
 use function file_get_contents;
 use function fwrite;
+use function implode;
 use function json_decode;
 use function shell_exec;
 use function sprintf;
+use function str_starts_with;
 use function stream_get_meta_data;
 use function tmpfile;
-use function explode;
-use function implode;
-use function str_starts_with;
 
 use const PHP_OS_FAMILY;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace NeuronCore\Maestro\Terminal;
+namespace NeuronCore\Maestro\Console;
 
 use Stringable;
 
 use function array_merge;
+use function explode;
 use function implode;
 use function str_contains;
-use function explode;
 use function trim;
 
 final class StyledText implements Stringable

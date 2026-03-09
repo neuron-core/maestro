@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Rendering\Renderers;
 
+use NeuronCore\Maestro\Console\Color;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
-use NeuronCore\Maestro\Terminal\Color;
 
 use function implode;
 use function is_string;
 use function json_decode;
 use function json_encode;
 use function sprintf;
+use function mb_strlen;
+use function mb_substr;
 
 class SnippetRenderer implements ToolRenderer
 {
