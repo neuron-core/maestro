@@ -20,54 +20,19 @@ final class Text implements Stringable
 
     private array $styles = [];
 
-    public static function text(string $text): self
+    public function __construct(
+        private readonly string $text
+    ) {
+    }
+
+    public static function content(string $text): self
     {
         return new self($text);
     }
 
-    public static function redText(string $text): string
+    public function build(): string
     {
-        return (string) self::text($text)->red();
-    }
-
-    public static function greenText(string $text): string
-    {
-        return (string) self::text($text)->green();
-    }
-
-    public static function cyanText(string $text): string
-    {
-        return (string) self::text($text)->cyan();
-    }
-
-    public static function yellowText(string $text): string
-    {
-        return (string) self::text($text)->yellow();
-    }
-
-    public static function grayText(string $text): string
-    {
-        return (string) self::text($text)->gray();
-    }
-
-    public static function whiteText(string $text): string
-    {
-        return (string) self::text($text)->white();
-    }
-
-    public static function blueText(string $text): string
-    {
-        return (string) self::text($text)->blue();
-    }
-
-    public static function magentaText(string $text): string
-    {
-        return (string) self::text($text)->magenta();
-    }
-
-    public static function blackText(string $text): string
-    {
-        return (string) self::text($text)->black();
+        return $this->__toString();
     }
 
     public static function register(string $name, OutputFormatterStyleInterface $style): void
@@ -79,11 +44,6 @@ final class Text implements Stringable
     {
         self::$formatter ??= new OutputFormatter(true);
         return self::$formatter;
-    }
-
-    public function __construct(
-        private readonly string $text
-    ) {
     }
 
     // Colors

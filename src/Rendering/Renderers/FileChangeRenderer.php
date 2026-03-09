@@ -41,8 +41,8 @@ class FileChangeRenderer implements ToolRenderer
             if (!$this->isDiffAvailable()) {
                 return $this->header($toolName, $path)
                     . $args['content']
-                    . "\n\n" . Text::yellowText("Tip: install the \"diff\" command to see a formatted diff: "
-                    . $this->diffInstallHint());
+                    . "\n\n" . Text::content("Tip: install the \"diff\" command to see a formatted diff: "
+                    . $this->diffInstallHint())->yellow()->build();
             }
 
             $diff = $this->generateDiff($path, $current, $args['content']);
@@ -111,13 +111,13 @@ class FileChangeRenderer implements ToolRenderer
             }
             if (str_starts_with($line, '-')) {
                 // Deletions - red
-                $colored[] = Text::text($line)->red()->bold();
+                $colored[] = Text::content($line)->red()->bold()->build();
             } elseif (str_starts_with($line, '+')) {
                 // Additions - green
-                $colored[] = Text::text($line)->green()->bold();
+                $colored[] = Text::content($line)->green()->bold()->build();
             } elseif (str_starts_with($line, ' ')) {
                 // Context - gray
-                $colored[] = Text::grayText($line);
+                $colored[] = Text::content($line)->gray()->build();
             } elseif (str_starts_with($line, '\ No newline')) {
                 // Skip diff metadata lines
                 continue;

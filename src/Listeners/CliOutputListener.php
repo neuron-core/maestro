@@ -90,7 +90,7 @@ class CliOutputListener
                 $this->alwaysAllowedActions[] = $action->name;
                 $this->sessionAllowedActions[] = $action->name;
                 $this->settings->addAllowedTool($action->name);
-                $this->output->writeln(Text::cyanText("Tool '{$action->name}' is now always allowed."));
+                $this->output->writeln(Text::content("Tool '{$action->name}' is now always allowed.")->cyan()->build());
             }
         } else {
             // Prompt for feedback when rejecting
@@ -104,7 +104,7 @@ class CliOutputListener
     private function askFeedback(): ?string
     {
         $helper = new QuestionHelper();
-        $question = new Question(Text::yellowText('Tell me what to do instead (press Enter to skip): '));
+        $question = new Question(Text::content('Tell me what to do instead (press Enter to skip): ')->yellow()->build());
 
         return $helper->ask($this->input, $this->output, $question);
     }

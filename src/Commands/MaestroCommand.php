@@ -46,13 +46,13 @@ class MaestroCommand extends Command
 
         if (!$settings->fileExists()) {
             $output->writeln('');
-            $output->writeln(Text::redText('Warning: Settings file not found at ' . $settings->getSettingsPath()));
-            $output->writeln(Text::redText('The agent requires AI provider connection information.'));
+            $output->writeln(Text::content('Warning: Settings file not found at ' . $settings->getSettingsPath())->red()->build());
+            $output->writeln(Text::content('The agent requires AI provider connection information.')->red()->build());
             $output->writeln('');
-            $output->writeln(Text::cyanText('Run the interactive configuration command to get started:'));
-            $output->writeln(Text::whiteText('  maestro configure'));
+            $output->writeln(Text::content('Run the interactive configuration command to get started:')->cyan()->build());
+            $output->writeln(Text::content('  maestro configure')->white()->build());
             $output->writeln('');
-            $output->writeln(Text::cyanText('Or create a .maestro/settings.json file manually with your AI provider configuration:'));
+            $output->writeln(Text::content('Or create a .maestro/settings.json file manually with your AI provider configuration:')->cyan()->build());
             $output->writeln(json_encode([
                 'provider' => [
                     'type' => 'openai',
@@ -65,8 +65,8 @@ class MaestroCommand extends Command
         }
 
         if (!$settings->hasValidProvider()) {
-            $output->writeln(Text::redText('Warning: Settings file is missing valid provider configuration.'));
-            $output->writeln(Text::redText("The 'provider.type' setting is required."));
+            $output->writeln(Text::content('Warning: Settings file is missing valid provider configuration.')->red()->build());
+            $output->writeln(Text::content("The 'provider.type' setting is required.")->red()->build());
             $output->writeln('');
             return Command::FAILURE;
         }
@@ -81,14 +81,14 @@ class MaestroCommand extends Command
         $orchestrator = new AgentOrchestrator(CodingAgent::make($settings), $dispatcher);
 
         $output->writeln("\n");
-        $output->writeln((string) Text::text("  __  __                 _             ")->cyan()->bold());
-        $output->writeln((string) Text::text(" |  \\/  |               | |            ")->cyan()->bold());
-        $output->writeln((string) Text::text(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->cyan()->bold());
-        $output->writeln((string) Text::text(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->cyan()->bold());
-        $output->writeln((string) Text::text(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold());
-        $output->writeln((string) Text::text(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold());
+        $output->writeln(Text::content("  __  __                 _             ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" |  \\/  |               | |            ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold()->build());
+        $output->writeln(Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold()->build());
         $output->writeln("");
-        $output->writeln((string) Text::text(" Coding Agent  •  Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold());
+        $output->writeln(Text::content(" Coding Agent  •  Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build());
         $output->writeln("\n");
 
         while (true) {
@@ -101,12 +101,12 @@ class MaestroCommand extends Command
             try {
                 $orchestrator->chat($userInput);
             } catch (Exception $e) {
-                $output->writeln(Text::redText('Error: ' . $e->getMessage()));
+                $output->writeln(Text::content('Error: ' . $e->getMessage())->red()->build());
                 $output->writeln('');
             }
         }
 
-        $output->writeln(Text::cyanText('Goodbye!'));
+        $output->writeln(Text::content('Goodbye!')->cyan()->build());
         return Command::SUCCESS;
     }
 

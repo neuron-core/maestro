@@ -38,7 +38,7 @@ class EditFileRenderer implements ToolRenderer
         $diff = $this->generateSearchReplaceDiff($search, $replace);
 
         if ($diff === '') {
-            return $header . Text::cyanText("No changes (search and replace are identical)") . "\n";
+            return $header . Text::content("No changes (search and replace are identical)")->cyan()->build() . "\n";
         }
 
         // Apply ANSI colors directly to the diff
@@ -84,13 +84,13 @@ class EditFileRenderer implements ToolRenderer
             }
             if (str_starts_with($line, '-')) {
                 // Deletions - red
-                $colored[] = Text::redText($line);
+                $colored[] = Text::content($line)->red()->build();
             } elseif (str_starts_with($line, '+')) {
                 // Additions - green
-                $colored[] = Text::greenText($line);
+                $colored[] = Text::content($line)->green()->build();
             } elseif (str_starts_with($line, ' ')) {
                 // Context - gray
-                $colored[] = Text::grayText($line);
+                $colored[] = Text::content($line)->gray()->build();
             } elseif (str_starts_with($line, '\ No newline')) {
                 // Skip diff metadata lines
                 continue;
