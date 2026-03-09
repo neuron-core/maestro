@@ -23,13 +23,11 @@ While most AI coding agents are written in Python or TypeScript, Maestro demonst
 ## Requirements
 
 - PHP >= 8.1
-- Composer
+- Composer - [Install Composer](https://getcomposer.org/download/)
 
 ## Installation
 
 ### Global Installation
-
-You need to have Composer installed on your machine: [Install Composer](https://getcomposer.org/download/)
 
 Install Maestro globally to use it in any project:
 
