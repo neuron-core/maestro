@@ -27,7 +27,7 @@ While most AI coding agents are written in Python or TypeScript, Maestro demonst
 
 ## Installation
 
-If you are on a Windows machine, you should run Maestro in a WSL environment.
+If you are on a Windows machine, you should install and run Maestro in a WSL environment.
 
 ### Global Installation
 
