@@ -38,11 +38,14 @@ composer global require neuron-core/maestro
 Ensure Composer's global bin directory is in your PATH:
 
 ```bash
-# Add to your shell profile (~/.bashrc, ~/.zshrc, etc.)
-export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+# Add the composer bin path to your shell profile (~/.bashrc, ~/.zshrc, etc.)
+export PATH=$(composer global config bin-dir --absolute --quiet):$PATH
+```
 
-# Or find your global bin directory
-composer global config bin-dir --absolute
+To keep your tools up to date, run the global update:
+
+```bash
+composer global update
 ```
 
 ### Per Project Installation
