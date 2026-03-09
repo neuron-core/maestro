@@ -45,15 +45,15 @@ class ConfigureCommand extends Command
     ];
 
     private const DEFAULT_MODELS = [
-        'anthropic' => 'claude-sonnet-4-20250514',
-        'openai' => 'gpt-4',
-        'gemini' => 'gemini-pro',
-        'cohere' => 'command',
-        'mistral' => 'mistral-tiny',
-        'ollama' => 'llama2',
-        'xai' => 'grok-beta',
+        'anthropic' => 'claude-haiku-4-5',
+        'openai' => 'gpt-5',
+        'gemini' => 'gemini-3-pro-preview',
+        'cohere' => 'command-a-reasoning-08-2025',
+        'mistral' => 'mistral-medium-latest',
+        'ollama' => 'gemma3',
+        'xai' => 'grok-4',
         'deepseek' => 'deepseek-chat',
-        'openailike' => 'gpt-4',
+        'openailike' => 'gpt-5',
     ];
 
     private const PROVIDERS_REQUIRING_API_KEY = [
@@ -76,14 +76,14 @@ class ConfigureCommand extends Command
 
         $settings = new Settings();
 
-        // Check if settings file already exists
+        // Check if the settings file already exists
         if ($settings->fileExists()) {
             $output->writeln((string) Color::yellow('A settings file already exists at: ' . $settings->getSettingsPath()));
             $output->writeln((string) Color::yellow('This configuration will overwrite existing settings.'));
             $output->writeln('');
         }
 
-        // Step 1: Select provider type
+        // Step 1: Select the provider type
         $providerFactory = new ProviderFactory();
         $providerTypes = $providerFactory->getSupportedProviders();
 
