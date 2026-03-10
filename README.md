@@ -170,13 +170,8 @@ Add Model Context Protocol servers to extend the agent's capabilities:
 ```json
 {
   "mcp_servers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/workspace"]
-    },
-    "brave-search": {
-      "command": "uvx",
-      "args": ["mcp-brave-search"]
+    "tavily": {
+      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey=<your-api-key>"
     },
     "github": {
       "command": "npx",
