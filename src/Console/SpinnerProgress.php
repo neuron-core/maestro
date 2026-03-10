@@ -4,34 +4,136 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Console;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Output\OutputInterface;
+use function function_exists;
+use function pcntl_fork;
+use function pcntl_signal;
+use function pcntl_signal_dispatch;
+use function pcntl_waitpid;
+use function posix_kill;
+use function usleep;
+use function count;
+
+use const SIGTERM;
+use const SIGUSR1;
 
 class SpinnerProgress
 {
-    protected ProgressBar $progressBar;
+    private const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    private const FRAME_INTERVAL = 100000; // 100ms
 
-    public function __construct(OutputInterface $output, int $max = 0)
+    private ?int $pid = null;
+    private ?string $lastMessage = null;
+    private bool $useFork = false;
+
+    public function __construct()
     {
-        $this->progressBar = new ProgressBar($output, $max);
-        // For max=0 (indeterminate), Symfony shows an animated spinner by default
-        // Format: message followed by the spinner
-        $this->progressBar->setFormat('%message% %bar%');
-        $this->progressBar->setMessage('');
+        $this->useFork = $this->canFork();
     }
 
     public function setMessage(string $message): void
     {
-        $this->progressBar->setMessage($message);
+        $this->lastMessage = $message;
     }
 
     public function start(): void
     {
-        $this->progressBar->start();
+        if ($this->useFork) {
+            $this->startForked();
+        } else {
+            $this->startSimple();
+        }
     }
 
     public function finish(): void
     {
-        $this->progressBar->clear();
+        $this->stop();
+        $this->clearLine();
+    }
+
+    private function startForked(): void
+    {
+        $this->pid = pcntl_fork();
+
+        if ($this->pid === -1) {
+            // Fork failed, fall back to simple mode
+            $this->useFork = false;
+            $this->startSimple();
+            return;
+        }
+
+        if ($this->pid === 0) {
+            // Child process: animate spinner
+            $this->animateChild();
+            exit(0);
+        }
+
+        // Parent process: continue with the main flow
+    }
+
+    private function startSimple(): void
+    {
+        // Just show the first frame - will be static during blocking operations
+        $this->renderFrame(0);
+    }
+
+    private function animateChild(): void
+    {
+        // Set up signal handler for graceful shutdown
+        pcntl_signal(SIGTERM, static fn () => exit(0));
+        pcntl_signal(SIGUSR1, static fn () => exit(0));
+
+        $frameIndex = 0;
+
+        /** @phpstan-ignore while.alwaysTrue */
+        while (true) {
+            // Render current frame
+            $this->renderFrame($frameIndex);
+
+            // Move to next frame
+            $frameIndex = ($frameIndex + 1) % count(self::FRAMES);
+
+            // Wait before next frame
+            usleep(self::FRAME_INTERVAL);
+
+            // Check for signals
+            pcntl_signal_dispatch();
+        }
+    }
+
+    private function renderFrame(int $frameIndex): void
+    {
+        $frame = self::FRAMES[$frameIndex];
+        $message = $this->lastMessage ?? 'Thinking';
+
+        // Use ANSI escape codes to redraw the line
+        // \r moves cursor to start of line, then we overwrite with new frame
+        $output = "\r\033[K{$frame} {$message}";
+
+        // Write directly to stdout for performance
+        echo $output;
+    }
+
+    private function stop(): void
+    {
+        if ($this->pid !== null) {
+            // Send signal to child process to stop
+            posix_kill($this->pid, SIGTERM);
+            // Wait for child to exit
+            pcntl_waitpid($this->pid, $status);
+            $this->pid = null;
+        }
+    }
+
+    private function clearLine(): void
+    {
+        // Clear the entire line
+        echo "\r\033[K";
+    }
+
+    private function canFork(): bool
+    {
+        return function_exists('pcntl_fork')
+            && function_exists('posix_kill')
+            && function_exists('pcntl_waitpid');
     }
 }

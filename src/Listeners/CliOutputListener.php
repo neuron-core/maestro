@@ -38,8 +38,7 @@ class CliOutputListener
 
     public function onThinking(AgentThinkingEvent $event): void
     {
-        $this->spinner = new SpinnerProgress($this->output);
-        $this->spinner->setMessage('Thinking...');
+        $this->spinner = new SpinnerProgress();
         $this->spinner->start();
     }
 
