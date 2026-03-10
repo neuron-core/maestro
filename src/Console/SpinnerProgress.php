@@ -14,10 +14,9 @@ class SpinnerProgress
     public function __construct(OutputInterface $output, int $max = 0)
     {
         $this->progressBar = new ProgressBar($output, $max);
-        $this->progressBar->setBarCharacter('');
-        $this->progressBar->setEmptyBarCharacter('');
-        $this->progressBar->setProgressCharacter('');
-        $this->progressBar->setFormat('%message%');
+        // For max=0 (indeterminate), Symfony shows an animated spinner by default
+        // Format: message followed by the spinner
+        $this->progressBar->setFormat('%message% %bar%');
         $this->progressBar->setMessage('');
     }
 
