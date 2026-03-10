@@ -147,22 +147,6 @@ If no `context_file` is specified, the agent will look for `Agents.md` in the pr
 }
 ```
 
-The `Agents.md` (or your custom file) should contain project-specific guidelines:
-
-```markdown
-# Project Guidelines
-
-## Coding Standards
-- Use PSR-12 coding style
-- All methods must have return type declarations
-- Maximum line length: 120 characters
-
-## Architecture Notes
-- Controllers should only handle HTTP concerns
-- Business logic belongs in the Service layer
-- Use dependency injection for all dependencies
-```
-
 ### MCP Server Configuration
 
 Add Model Context Protocol servers to extend the agent's capabilities:
@@ -204,6 +188,22 @@ When the agent proposes a tool operation, you'll be prompted to approve it. Choo
 - **Allow for session**: Approve all operations of this type during the current session
 - **Always allow**: Approve permanently (saved to the settings file)
 - **Deny**: Reject this operation
+
+## Montoring Maestro sessions
+
+Neuron AI is natively integrated with [Inspector](https://inspector.dev), allowing you to monitor and analyze your AI coding sessions.
+To enable agent monitoring you just need to add the `inspector_key` field to your `.maestro/settings.json` file:
+
+```json
+{
+    "provider": {
+        ...
+    },
+    "inspector_key": "INSPECTOR_INGESTION_KEY"
+}
+```
+
+You can get an `INSPECTOR_INGESTION_KEY` from the [Inspector dashboard](https://app.inspector.dev/register).
 
 ## Architecture Overview
 
