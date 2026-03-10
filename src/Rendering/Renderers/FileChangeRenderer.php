@@ -41,8 +41,8 @@ class FileChangeRenderer implements ToolRenderer
             if (!$this->isDiffAvailable()) {
                 return $this->header($toolName, $path)
                     . $args['content']
-                    . "\n\n" . Text::content("Tip: install the \"diff\" command to see a formatted diff: "
-                    . $this->diffInstallHint())->yellow()->build();
+                    . "\n\n"
+                    . Text::content("Tip: install the \"diff\" command to see a formatted diff: " . $this->diffInstallHint())->yellow()->build();
             }
 
             $diff = $this->generateDiff($path, $current, $args['content']);

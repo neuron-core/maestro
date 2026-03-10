@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Rendering\Renderers;
 
+use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 
 use function implode;
 use function is_string;
 use function json_decode;
 use function json_encode;
-use function sprintf;
 use function mb_strlen;
 use function mb_substr;
+use function array_values;
+use function count;
 
 class SnippetRenderer implements ToolRenderer
 {
@@ -31,13 +33,22 @@ class SnippetRenderer implements ToolRenderer
         foreach ($this->keys as $key) {
             if (isset($args[$key])) {
                 $content = is_string($args[$key]) ? $args[$key] : json_encode($args[$key]);
-                $content = mb_strlen($content) > 150 ? mb_substr($content, 0, 150) . '...' : $content;
-                $parts[] = $content;
+                $content = mb_strlen($content) > 100 ? mb_substr($content, 0, 100) . '...' : $content;
+                $parts[$key] = $content;
             }
         }
 
-        $display = $parts !== [] ? implode(', ', $parts) : $arguments;
+        $display = '';
+        if (count($parts) < 2) {
+            $display = Text::content(implode(', ', array_values($parts)))->yellow()->build();
+        } else {
+            foreach ($parts as $key => $part) {
+                $display .= "\n  ".Text::content($key.': ')->blue()->build() . $part;
+            }
+        }
 
-        return sprintf("● %s( %s )\n", $toolName, $display);
+        return Text::content("● {$toolName}(")->yellow()->build()
+            . $display
+            . Text::content(")")->yellow()->build();
     }
 }
