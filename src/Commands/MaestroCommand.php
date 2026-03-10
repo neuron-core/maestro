@@ -6,6 +6,9 @@ namespace NeuronCore\Maestro\Commands;
 
 use Exception;
 use NeuronCore\Maestro\Agent\MaestroAgent;
+use NeuronCore\Maestro\Console\Inline\HelpInlineCommand;
+use NeuronCore\Maestro\Console\Inline\InitInlineCommand;
+use NeuronCore\Maestro\Console\Inline\InlineCommandRegistry;
 use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\EventBus\EventDispatcher;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
@@ -25,8 +28,11 @@ use function fgets;
 use function function_exists;
 use function in_array;
 use function json_encode;
+use function preg_split;
 use function readline;
+use function str_starts_with;
 use function trim;
+use function substr;
 
 use const JSON_PRETTY_PRINT;
 use const STDIN;
@@ -37,6 +43,18 @@ use const STDIN;
 )]
 class MaestroCommand extends Command
 {
+    protected InlineCommandRegistry $registry;
+
+    public function __construct(?string $name = null, ?callable $code = null)
+    {
+        parent::__construct($name, $code);
+
+        // Initialize inline commands
+        $this->registry = new InlineCommandRegistry();
+        $this->registry->register(new InitInlineCommand());
+        $this->registry->register(new HelpInlineCommand($this->registry));
+    }
+
     /**
      * @throws Throwable
      */
@@ -80,16 +98,7 @@ class MaestroCommand extends Command
 
         $orchestrator = new AgentOrchestrator(MaestroAgent::make($settings), $dispatcher);
 
-        $output->writeln("\n");
-        $output->writeln(Text::content("  __  __                 _             ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" |  \\/  |               | |            ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold()->build());
-        $output->writeln(Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold()->build());
-        $output->writeln("");
-        $output->writeln(Text::content(" Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build());
-        $output->writeln("\n");
+        $this->printIntro($output);
 
         while (true) {
             $userInput = trim($this->readInput('> '));
@@ -98,6 +107,27 @@ class MaestroCommand extends Command
                 break;
             }
 
+            // Handle inline commands (e.g., "/help", "/init")
+            if (str_starts_with($userInput, '/')) {
+                [$commandName, $args] = $this->readInlineCommand($userInput);
+
+                if ($this->registry->has($commandName)) {
+                    try {
+                        $this->registry->get($commandName)->execute($args, $input, $output);
+                    } catch (Exception $e) {
+                        $output->writeln(Text::content('Command error: ' . $e->getMessage())->red()->build() . "\n");
+                    } finally {
+                        continue;
+                    }
+                }
+
+                $output->writeln(Text::content("Unknown command: /{$commandName}")->yellow()->build());
+                $output->writeln(Text::content('Type /help to list available commands.')->gray()->build());
+                $output->writeln('');
+                continue;
+            }
+
+            // Regular chat input
             try {
                 $orchestrator->chat($userInput);
             } catch (Exception $e) {
@@ -109,7 +139,7 @@ class MaestroCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function readInput(string $prompt): string
+    protected function readInput(string $prompt): string
     {
         if (function_exists('readline')) {
             return (string) readline($prompt);
@@ -117,5 +147,30 @@ class MaestroCommand extends Command
 
         echo $prompt;
         return (string) fgets(STDIN);
+    }
+
+    protected function readInlineCommand(string $input): array
+    {
+        $commandString = substr($input, 1);
+        $parts = preg_split('/\s+/', $commandString, 2);
+        $commandName = $parts[0];
+        $args = $parts[1] ?? '';
+        return [$commandName, $args];
+    }
+
+    protected function printIntro(OutputInterface $output): void
+    {
+        $output->writeln("\n");
+        $output->writeln(Text::content("  __  __                 _             ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" |  \\/  |               | |            ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->cyan()->bold()->build());
+        $output->writeln(Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold()->build());
+        $output->writeln(Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold()->build());
+        $output->writeln("");
+        $output->writeln(Text::content(" Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build());
+        $output->writeln("");
+        $output->writeln(Text::content(" Tip: Type /help to see available inline commands.")->gray()->build());
+        $output->writeln("\n");
     }
 }
