@@ -45,6 +45,7 @@ class SnippetRenderer implements ToolRenderer
             foreach ($parts as $key => $part) {
                 $display .= "\n  ".Text::content($key.': ')->blue()->build() . $part;
             }
+            $display .= "\n";
         }
 
         return Text::content("● {$toolName}(")->yellow()->build()

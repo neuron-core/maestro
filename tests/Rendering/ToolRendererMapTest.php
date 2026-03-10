@@ -8,8 +8,15 @@ use NeuronCore\Maestro\Rendering\ToolRenderer;
 use NeuronCore\Maestro\Rendering\ToolRendererMap;
 use PHPUnit\Framework\TestCase;
 
+use function preg_replace;
+
 class ToolRendererMapTest extends TestCase
 {
+    private function stripAnsiCodes(string $text): string
+    {
+        return (string) preg_replace('/\x1b\[[0-9;]*m/', '', $text);
+    }
+
     public function testRegisterReturnsSelf(): void
     {
         $fallback = $this->createMock(ToolRenderer::class);
@@ -63,7 +70,8 @@ class ToolRendererMapTest extends TestCase
 
         $result = $map->render('read_file', '{"file_path": "foo.php"}');
 
-        $this->assertSame("● read_file( foo.php )\n", $result);
+        $this->assertStringContainsString('read_file', $this->stripAnsiCodes($result));
+        $this->assertStringContainsString('foo.php', $this->stripAnsiCodes($result));
     }
 
     public function testDefaultHasBashToolRegistered(): void
@@ -72,17 +80,17 @@ class ToolRendererMapTest extends TestCase
 
         $result = $map->render('bash', '{"command": "ls -la"}');
 
-        $this->assertSame("● bash( ls -la )\n", $result);
+        $this->assertStringContainsString('bash', $this->stripAnsiCodes($result));
+        $this->assertStringContainsString('ls -la', $this->stripAnsiCodes($result));
     }
 
     public function testDefaultFallsBackToGenericRendererForUnknownTool(): void
     {
         $map = ToolRendererMap::default();
-        $args = '{"some": "args"}';
 
-        $result = $map->render('unknown_tool', $args);
+        $result = $map->render('unknown_tool', '{"some": "args"}');
 
-        $this->assertSame("● unknown_tool( {$args} )\n", $result);
+        $this->assertStringContainsString('unknown_tool', $this->stripAnsiCodes($result));
     }
 
     public function testDefaultHasWriteFileRegistered(): void

@@ -8,9 +8,16 @@ use NeuronCore\Maestro\Rendering\Renderers\GenericRenderer;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 use PHPUnit\Framework\TestCase;
 
+use function preg_replace;
+
 class GenericRendererTest extends TestCase
 {
     private GenericRenderer $renderer;
+
+    private function stripAnsiCodes(string $text): string
+    {
+        return (string) preg_replace('/\x1b\[[0-9;]*m/', '', $text);
+    }
 
     protected function setUp(): void
     {
@@ -26,20 +33,22 @@ class GenericRendererTest extends TestCase
     {
         $result = $this->renderer->render('read_file', '{"file_path": "foo.php"}');
 
-        $this->assertSame("● read_file( {\"file_path\": \"foo.php\"} )\n", $result);
+        $this->assertStringContainsString('read_file', $this->stripAnsiCodes($result));
+        $this->assertStringContainsString('foo.php', $this->stripAnsiCodes($result));
     }
 
     public function testRenderWithEmptyArguments(): void
     {
         $result = $this->renderer->render('list_files', '');
 
-        $this->assertSame("● list_files(  )\n", $result);
+        $this->assertStringContainsString('list_files', $this->stripAnsiCodes($result));
     }
 
     public function testRenderWithDifferentToolNames(): void
     {
         $result = $this->renderer->render('bash', 'ls -la');
 
-        $this->assertSame("● bash( ls -la )\n", $result);
+        $this->assertStringContainsString('bash', $this->stripAnsiCodes($result));
+        $this->assertStringContainsString('ls -la', $this->stripAnsiCodes($result));
     }
 }

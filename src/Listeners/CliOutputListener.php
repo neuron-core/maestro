@@ -41,7 +41,6 @@ class CliOutputListener
         $this->spinner = new SpinnerProgress($this->output);
         $this->spinner->setMessage('Thinking...');
         $this->spinner->start();
-        $this->spinner->display();
     }
 
     public function onResponse(AgentResponseEvent $event): void
@@ -116,10 +115,10 @@ class CliOutputListener
 
     private function clearLine(): void
     {
-        $this->output->write("\r" . str_repeat(' ', 50) . "\r");
-        if ($this->spinner instanceof \NeuronCore\Maestro\Console\SpinnerProgress) {
+        if ($this->spinner instanceof SpinnerProgress) {
             $this->spinner->finish();
             $this->spinner = null;
         }
+        //$this->output->write("\r" . str_repeat(' ', 50) . "\r");
     }
 }
