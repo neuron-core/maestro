@@ -28,8 +28,6 @@ use function is_readable;
  * This middleware loads memory files from the .maestro/memories directory
  * and injects them into the AI instructions. This enables the agent to
  * remember context across sessions and improve behavior over time.
- *
- * Inspired by LangChain's MemoryMiddleware from the deepagents SDK.
  */
 class MemoryMiddleware implements WorkflowMiddleware
 {
