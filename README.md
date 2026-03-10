@@ -51,7 +51,7 @@ echo 'export PATH="$(composer config -g home)/vendor/bin:$PATH"' >> ~/.zshrc
 
 ## Future Updates
 
-To keep your tools up to date, run the global update:
+To keep the tool up to date, run the global update:
 
 ```bash
 composer global update
