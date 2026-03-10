@@ -76,7 +76,6 @@ It will start an interactive setup wizard.
         "type": "anthropic",
         "api_key": "sk-ant-your-api-key-here",
         "model": "claude-sonnet-4-6",
-        "max_tokens": 8192
     }
 }
 ```
@@ -89,7 +88,6 @@ It will start an interactive setup wizard.
         "type": "openai",
         "api_key": "sk-your-openai-key-here",
         "model": "gpt-4",
-        "max_tokens": 8192
     }
 }
 ```
@@ -102,7 +100,6 @@ It will start an interactive setup wizard.
         "type": "gemini",
         "api_key": "your-gemini-api-key",
         "model": "gemini-3-pro-preview",
-        "max_tokens": 8192
     }
 }
 ```
