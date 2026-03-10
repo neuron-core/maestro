@@ -18,7 +18,7 @@ While most AI coding agents are written in Python or TypeScript, Maestro demonst
 - **Multi-Provider AI Support**: Choose from Anthropic Claude, OpenAI, Gemini, Cohere, Mistral, Ollama, Grok, or Deepseek
 - **MCP Integration**: Extend capabilities with Model Context Protocol servers
 - **Sophisticated Output Rendering**: Beautiful diffs, colored syntax highlighting, and intuitive tool call visualization
-- **Event-Driven Design**: A clean PSR-14 event system that allows extensible observability and customization
+- **Event-Driven Design**: A clean PSR-14 event system and an inline command registry make the system easier to extend
 
 ## Requirements
 
