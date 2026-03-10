@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Agent;
 
+use Inspector\Exceptions\InspectorException;
 use NeuronAI\Agent\Agent;
 use NeuronAI\Agent\Middleware\ToolApproval;
 use NeuronAI\Agent\Nodes\ToolNode;
 use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\MCP\McpConnector;
+use NeuronAI\Observability\InspectorObserver;
 use NeuronCore\Maestro\Settings\SettingsInterface;
 use NeuronAI\Providers\AIProviderInterface;
 use NeuronAI\Tools\Toolkits\FileSystem\FileSystemToolkit;
@@ -33,11 +35,16 @@ class CodingAgent extends Agent
     /**
      * Constructor - Initialize with settings loader.
      *
-     * @throws WorkflowException
+     * @throws WorkflowException|InspectorException
      */
     public function __construct(protected SettingsInterface $settings)
     {
         parent::__construct();
+
+        $this->observe(InspectorObserver::instance(
+            key: $this->settings->get('inspector_key'),
+            autoFlush: true,
+        ));
     }
 
     protected function middleware(): array
