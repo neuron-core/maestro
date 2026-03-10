@@ -19,7 +19,7 @@ use function assert;
 class AgentOrchestrator
 {
     public function __construct(
-        private readonly MaestroAgent             $agent,
+        private readonly MaestroAgent $agent,
         private readonly EventDispatcherInterface $dispatcher,
     ) {
     }

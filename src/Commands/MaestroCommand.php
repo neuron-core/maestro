@@ -50,7 +50,7 @@ class MaestroCommand extends Command
             $output->writeln(Text::content('The agent requires AI provider connection information.')->red()->build());
             $output->writeln('');
             $output->writeln(Text::content('Run the interactive configuration command to get started:')->cyan()->build());
-            $output->writeln(Text::content('  maestro configure')->white()->build());
+            $output->writeln(Text::content('  maestro init')->white()->build());
             $output->writeln('');
             $output->writeln(Text::content('Or create a .maestro/settings.json file manually with your AI provider configuration:')->cyan()->build());
             $output->writeln(json_encode([
@@ -88,7 +88,7 @@ class MaestroCommand extends Command
         $output->writeln(Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold()->build());
         $output->writeln(Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold()->build());
         $output->writeln("");
-        $output->writeln(Text::content(" Coding Agent  •  Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build());
+        $output->writeln(Text::content(" Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build());
         $output->writeln("\n");
 
         while (true) {
@@ -101,8 +101,7 @@ class MaestroCommand extends Command
             try {
                 $orchestrator->chat($userInput);
             } catch (Exception $e) {
-                $output->writeln(Text::content('Error: ' . $e->getMessage())->red()->build());
-                $output->writeln('');
+                $output->writeln(Text::content('Error: ' . $e->getMessage())->red()->build()."\n");
             }
         }
 
