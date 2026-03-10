@@ -43,7 +43,7 @@ class SnippetRenderer implements ToolRenderer
             $display = Text::content(implode(', ', array_values($parts)))->yellow()->build();
         } else {
             foreach ($parts as $key => $part) {
-                $display .= "\n  ".Text::content($key.': ')->blue()->build() . $part;
+                $display .= "\n    ".Text::content($key.': ')->blue()->build() . $part;
             }
             $display .= "\n";
         }
