@@ -7,7 +7,7 @@ namespace NeuronCore\Maestro\Orchestrator;
 use NeuronAI\Chat\Messages\UserMessage;
 use NeuronAI\Workflow\Interrupt\ApprovalRequest;
 use NeuronAI\Workflow\Interrupt\WorkflowInterrupt;
-use NeuronCore\Maestro\Agent\CodingAgent;
+use NeuronCore\Maestro\Agent\MaestroAgent;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
@@ -19,7 +19,7 @@ use function assert;
 class AgentOrchestrator
 {
     public function __construct(
-        private readonly CodingAgent $agent,
+        private readonly MaestroAgent             $agent,
         private readonly EventDispatcherInterface $dispatcher,
     ) {
     }

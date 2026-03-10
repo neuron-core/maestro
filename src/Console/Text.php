@@ -16,12 +16,12 @@ use function trim;
 
 final class Text implements Stringable
 {
-    private static ?OutputFormatter $formatter = null;
+    protected static ?OutputFormatter $formatter = null;
 
-    private array $styles = [];
+    protected array $styles = [];
 
     public function __construct(
-        private readonly string $text
+        protected readonly string $text
     ) {
     }
 
@@ -203,7 +203,7 @@ final class Text implements Stringable
         return (string) self::formatter()->format("<{$style}>{$this->text}</>");
     }
 
-    private function buildStyleString(): string
+    protected function buildStyleString(): string
     {
         $parts = [];
 
@@ -222,7 +222,7 @@ final class Text implements Stringable
         return implode(';', $parts) ?: '';
     }
 
-    private function parseStyleString(string $style): self
+    protected function parseStyleString(string $style): self
     {
         foreach (explode(';', $style) as $part) {
             if (!str_contains($part, '=')) {

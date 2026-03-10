@@ -7,10 +7,14 @@ namespace NeuronCore\Maestro\Agent;
 use Inspector\Exceptions\InspectorException;
 use NeuronAI\Agent\Agent;
 use NeuronAI\Agent\Middleware\ToolApproval;
+use NeuronAI\Agent\Nodes\ChatNode;
+use NeuronAI\Agent\Nodes\StreamingNode;
+use NeuronAI\Agent\Nodes\StructuredOutputNode;
 use NeuronAI\Agent\Nodes\ToolNode;
 use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\MCP\McpConnector;
 use NeuronAI\Observability\InspectorObserver;
+use NeuronCore\Maestro\Agent\Middleware\MemoryMiddleware;
 use NeuronCore\Maestro\Settings\SettingsInterface;
 use NeuronAI\Providers\AIProviderInterface;
 use NeuronAI\Tools\Toolkits\FileSystem\FileSystemToolkit;
@@ -21,7 +25,7 @@ use function file_get_contents;
 use function trim;
 
 /**
- * Coding Agent - An AI-powered coding assistant using the Neuron AI framework.
+ * An AI-powered coding assistant using the Neuron AI framework.
  *
  * https://neuron-ai.dev
  *
@@ -30,7 +34,7 @@ use function trim;
  *
  * @method static static make(SettingsInterface $settings)
  */
-class CodingAgent extends Agent
+class MaestroAgent extends Agent
 {
     /**
      * Constructor - Initialize with settings loader.
@@ -49,7 +53,15 @@ class CodingAgent extends Agent
 
     protected function middleware(): array
     {
+        $memory = new MemoryMiddleware(
+            $this->settings->dirPath() . '/memories'
+        );
+
         return [
+            ChatNode::class => [$memory],
+            StreamingNode::class => [$memory],
+            StructuredOutputNode::class => [$memory],
+
             ToolNode::class => [
                 new ToolApproval()
             ],

@@ -18,12 +18,12 @@ use const SIGUSR1;
 
 class SpinnerProgress
 {
-    private const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-    private const FRAME_INTERVAL = 100000; // 100ms
+    protected const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    protected const FRAME_INTERVAL = 100000; // 100ms
 
-    private ?int $pid = null;
-    private ?string $lastMessage = null;
-    private bool $useFork = false;
+    protected ?int $pid = null;
+    protected ?string $lastMessage = null;
+    protected bool $useFork = false;
 
     public function __construct()
     {
@@ -50,7 +50,7 @@ class SpinnerProgress
         $this->clearLine();
     }
 
-    private function startForked(): void
+    protected function startForked(): void
     {
         $this->pid = pcntl_fork();
 
@@ -70,13 +70,13 @@ class SpinnerProgress
         // Parent process: continue with the main flow
     }
 
-    private function startSimple(): void
+    protected function startSimple(): void
     {
         // Just show the first frame - will be static during blocking operations
         $this->renderFrame(0);
     }
 
-    private function animateChild(): void
+    protected function animateChild(): void
     {
         // Set up signal handler for graceful shutdown
         pcntl_signal(SIGTERM, static fn () => exit(0));
@@ -100,7 +100,7 @@ class SpinnerProgress
         }
     }
 
-    private function renderFrame(int $frameIndex): void
+    protected function renderFrame(int $frameIndex): void
     {
         $frame = self::FRAMES[$frameIndex];
         $message = $this->lastMessage ?? 'Thinking';
@@ -113,7 +113,7 @@ class SpinnerProgress
         echo $output;
     }
 
-    private function stop(): void
+    protected function stop(): void
     {
         if ($this->pid !== null) {
             // Send signal to child process to stop
@@ -124,13 +124,13 @@ class SpinnerProgress
         }
     }
 
-    private function clearLine(): void
+    protected function clearLine(): void
     {
         // Clear the entire line
         echo "\r\033[K";
     }
 
-    private function canFork(): bool
+    protected function canFork(): bool
     {
         return function_exists('pcntl_fork')
             && function_exists('posix_kill')

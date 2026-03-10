@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Commands;
 
 use Exception;
-use NeuronCore\Maestro\Agent\CodingAgent;
+use NeuronCore\Maestro\Agent\MaestroAgent;
 use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\EventBus\EventDispatcher;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
@@ -78,7 +78,7 @@ class MaestroCommand extends Command
         $dispatcher->subscribe(AgentResponseEvent::class, $listener->onResponse(...));
         $dispatcher->subscribe(ToolApprovalRequestedEvent::class, $listener->onToolApprovalRequested(...));
 
-        $orchestrator = new AgentOrchestrator(CodingAgent::make($settings), $dispatcher);
+        $orchestrator = new AgentOrchestrator(MaestroAgent::make($settings), $dispatcher);
 
         $output->writeln("\n");
         $output->writeln(Text::content("  __  __                 _             ")->cyan()->bold()->build());

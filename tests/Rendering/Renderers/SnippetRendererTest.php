@@ -35,7 +35,7 @@ class SnippetRendererTest extends TestCase
         $renderer = new SnippetRenderer(['pattern', 'file_path']);
         $result = $renderer->render('grep_file_content', '{"pattern": "TODO", "file_path": "src/Foo.php"}');
 
-        $this->assertSame("● grep_file_content(\n  pattern: TODO\n  file_path: src/Foo.php\n)", $this->stripAnsiCodes($result));
+        $this->assertSame("● grep_file_content(\n    pattern: TODO\n    file_path: src/Foo.php\n)", $this->stripAnsiCodes($result));
     }
 
     public function testRenderSkipsMissingKeys(): void
