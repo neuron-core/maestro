@@ -11,7 +11,7 @@
         "neuron-ai"
     ],
     "homepage": "https://github.com/neuron-core/maestro",
-    "license": "MIT",
+    "license": "FSL-1.1-MIT",
     "authors": [
         {
             "name": "Valerio Barbera",
