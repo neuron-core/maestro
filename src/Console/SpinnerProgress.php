@@ -103,7 +103,7 @@ class SpinnerProgress
     protected function renderFrame(int $frameIndex): void
     {
         $frame = self::FRAMES[$frameIndex];
-        $message = $this->lastMessage ?? 'Thinking';
+        $message = $this->lastMessage ?? 'Working...';
 
         // Use ANSI escape codes to redraw the line
         // \r moves cursor to start of line, then we overwrite with new frame
