@@ -11,7 +11,9 @@ use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
 use NeuronCore\Maestro\Console\SpinnerProgress;
-use NeuronCore\Maestro\Rendering\ToolRendererMap;
+use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
+use NeuronCore\Maestro\Extension\Ui\SlotType;
+use NeuronCore\Maestro\Extension\Ui\UiEngine;
 use NeuronCore\Maestro\Settings\SettingsInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,15 +25,16 @@ use function str_repeat;
 
 class CliOutputListener
 {
-    private array $sessionAllowedActions = [];
-    private array $alwaysAllowedActions;
-    private ?SpinnerProgress $spinner = null;
+    protected array $sessionAllowedActions = [];
+    protected array $alwaysAllowedActions;
+    protected ?SpinnerProgress $spinner = null;
 
     public function __construct(
-        private readonly InputInterface $input,
-        private readonly OutputInterface $output,
-        private readonly SettingsInterface $settings,
-        private readonly ToolRendererMap $rendererMap,
+        protected readonly InputInterface $input,
+        protected readonly OutputInterface $output,
+        protected readonly SettingsInterface $settings,
+        protected readonly RendererRegistry $renderers,
+        protected readonly UiEngine $uiEngine,
     ) {
         $this->alwaysAllowedActions = $settings->getAllowedTools();
     }
@@ -45,7 +48,8 @@ class CliOutputListener
     public function onResponse(AgentResponseEvent $event): void
     {
         $this->clearLine();
-        $this->output->writeln($event->content);
+        $this->uiEngine->slots()->slot(SlotType::CONTENT)->add($event->content);
+        $this->renderCycle();
     }
 
     public function onToolApprovalRequested(ToolApprovalRequestedEvent $event): void
@@ -53,7 +57,10 @@ class CliOutputListener
         $this->clearLine();
 
         foreach ($event->approvalRequest->getPendingActions() as $action) {
-            $this->output->writeln($this->rendererMap->render($action->name, $action->description)."\n");
+            $this->uiEngine->slots()->slot(SlotType::CONTENT)->add(
+                $this->renderers->render($action->name, $action->description) . "\n"
+            );
+            $this->renderCycle();
 
             if (in_array($action->name, $this->alwaysAllowedActions, true) ||
                 in_array($action->name, $this->sessionAllowedActions, true)) {
@@ -66,7 +73,15 @@ class CliOutputListener
         }
     }
 
-    private function askDecision(): string
+    protected function renderCycle(): void
+    {
+        $this->uiEngine->renderContent($this->output);
+        $this->uiEngine->slots()->clear(SlotType::CONTENT);
+        $this->uiEngine->renderStatus($this->output);
+        $this->uiEngine->renderFooter($this->output);
+    }
+
+    protected function askDecision(): string
     {
         $values = ['allow', 'session', 'always', 'reject'];
 
@@ -80,7 +95,7 @@ class CliOutputListener
         return $values[$index];
     }
 
-    private function processDecision(Action $action, string $decision): void
+    protected function processDecision(Action $action, string $decision): void
     {
         if (in_array($decision, ['allow', 'session', 'always'], true)) {
             $action->approve();
@@ -96,14 +111,13 @@ class CliOutputListener
                 );
             }
         } else {
-            // Prompt for feedback when rejecting
             $feedback = $this->askFeedback();
             $action->reject($feedback ?: null);
         }
         $this->output->writeln('');
     }
 
-    private function askFeedback(): ?string
+    protected function askFeedback(): ?string
     {
         $helper = new QuestionHelper();
         $question = new Question(
@@ -113,7 +127,7 @@ class CliOutputListener
         return $helper->ask($this->input, $this->output, $question);
     }
 
-    private function clearLine(): void
+    protected function clearLine(): void
     {
         if ($this->spinner instanceof SpinnerProgress) {
             $this->spinner->finish();

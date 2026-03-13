@@ -13,15 +13,12 @@ use NeuronCore\Maestro\EventBus\EventDispatcher;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
+use NeuronCore\Maestro\Extension\Core\MaestroCoreExtension;
 use NeuronCore\Maestro\Extension\ExtensionLoader;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Listeners\CliOutputListener;
 use NeuronCore\Maestro\Orchestrator\AgentOrchestrator;
-use NeuronCore\Maestro\Rendering\Renderers\EditFileRenderer;
-use NeuronCore\Maestro\Rendering\Renderers\FileChangeRenderer;
 use NeuronCore\Maestro\Rendering\Renderers\GenericRenderer;
-use NeuronCore\Maestro\Rendering\Renderers\SnippetRenderer;
-use NeuronCore\Maestro\Rendering\ToolRendererMap;
 use NeuronCore\Maestro\Settings\Settings;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -84,27 +81,21 @@ class MaestroCommand extends Command
             return Command::FAILURE;
         }
 
-        // Create extension loader
-        $fallbackRenderer = new GenericRenderer();
-        $this->loader = ExtensionLoader::create($fallbackRenderer);
+        $this->loader = ExtensionLoader::create(new GenericRenderer());
 
-        // Create ToolRendererMap for CliOutputListener
-        $toolRendererMap = new ToolRendererMap($fallbackRenderer);
-        $this->registerCoreRenderers($toolRendererMap);
+        // Register core extensions first so user extensions can override them
+        $this->loader->registerCore(new MaestroCoreExtension());
 
-        // Load extensions from settings
+        // Load user extensions from settings
         try {
             $this->loader->load($settings->all());
         } catch (Exception $e) {
             $output->writeln(Text::content('Failed to load extensions: ' . $e->getMessage())->red()->build());
             $output->writeln('');
-            // Continue without extensions
         }
 
-        // Register core commands
         $this->registerCoreCommands($this->loader->commands());
 
-        // Register extension event handlers with the dispatcher
         $dispatcher = new EventDispatcher();
         foreach ($this->loader->events()->registeredEvents() as $event) {
             foreach ($this->loader->events()->handlersFor($event) as $handler) {
@@ -112,7 +103,13 @@ class MaestroCommand extends Command
             }
         }
 
-        $listener = new CliOutputListener($input, $output, $settings, $toolRendererMap);
+        $listener = new CliOutputListener(
+            $input,
+            $output,
+            $settings,
+            $this->loader->renderers(),
+            $this->loader->uiEngine(),
+        );
 
         $dispatcher->subscribe(AgentThinkingEvent::class, $listener->onThinking(...));
         $dispatcher->subscribe(AgentResponseEvent::class, $listener->onResponse(...));
@@ -123,7 +120,7 @@ class MaestroCommand extends Command
             $dispatcher,
         );
 
-        $this->printIntro($output);
+        $this->loader->uiEngine()->renderHeader($output);
 
         while (true) {
             $output->writeln('');
@@ -134,7 +131,6 @@ class MaestroCommand extends Command
                 break;
             }
 
-            // Handle inline commands (e.g., "/help", "/init")
             if (str_starts_with($userInput, '/')) {
                 [$commandName, $args] = $this->readInlineCommand($userInput);
 
@@ -153,7 +149,6 @@ class MaestroCommand extends Command
                 continue;
             }
 
-            // Regular chat input
             try {
                 $orchestrator->chat($userInput);
             } catch (Exception $e) {
@@ -184,45 +179,9 @@ class MaestroCommand extends Command
         return [$commandName, $args];
     }
 
-    /**
-     * Register core inline commands.
-     */
-    private function registerCoreCommands(CommandRegistry $registry): void
+    protected function registerCoreCommands(CommandRegistry $registry): void
     {
         $registry->register(new InitInlineCommand());
         $registry->register(new HelpInlineCommand($registry));
-    }
-
-    /**
-     * Register core tool renderers.
-     */
-    private function registerCoreRenderers(ToolRendererMap $map): void
-    {
-        $fileChange = new FileChangeRenderer();
-
-        $map->register('read_file', new SnippetRenderer(['file_path']));
-        $map->register('parse_file', new SnippetRenderer(['file_path']));
-        $map->register('grep_file_content', new SnippetRenderer(['pattern', 'file_path']));
-        $map->register('glob_path', new SnippetRenderer(['pattern', 'directory']));
-        $map->register('bash', new SnippetRenderer(['command']));
-        $map->register('edit_file', new EditFileRenderer());
-        $map->register('write_file', $fileChange);
-        $map->register('delete_file', $fileChange);
-    }
-
-    protected function printIntro(OutputInterface $output): void
-    {
-        $output->writeln("\n");
-        $output->writeln(Text::content("  __  __                 _             ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" |  \\/  |               | |            ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->cyan()->bold()->build());
-        $output->writeln(Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold()->build());
-        $output->writeln(Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold()->build());
-        $output->writeln("");
-        $output->writeln(Text::content(" Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build());
-        $output->writeln("");
-        $output->writeln(Text::content(" Tip: Type /help to see available commands.")->gray()->build());
-        $output->writeln("");
     }
 }

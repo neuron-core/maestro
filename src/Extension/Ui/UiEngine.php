@@ -45,7 +45,9 @@ class UiEngine
             return;
         }
 
-        $output->writeln(implode('', $content->sorted()));
+        foreach ($content->sorted() as $item) {
+            $output->writeln($item);
+        }
         $output->writeln('');
     }
 
@@ -71,7 +73,9 @@ class UiEngine
         }
 
         $output->writeln('');
-        $output->writeln(implode('', $content->sorted()));
+        foreach ($content->sorted() as $item) {
+            $output->writeln($item);
+        }
     }
 
     /**

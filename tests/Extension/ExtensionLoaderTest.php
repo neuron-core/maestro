@@ -12,6 +12,7 @@ use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
+use NeuronCore\Maestro\Extension\Ui\UiEngine;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -163,6 +164,48 @@ class ExtensionLoaderTest extends TestCase
         $loader = ExtensionLoader::create($this->createMockRenderer());
 
         $this->assertInstanceOf(ExtensionLoader::class, $loader);
+    }
+
+    public function testUiEngineReturnsUiEngineInstance(): void
+    {
+        $loader = new ExtensionLoader(
+            $this->tools,
+            $this->commands,
+            $this->renderers,
+            $this->events,
+        );
+
+        $this->assertInstanceOf(UiEngine::class, $loader->uiEngine());
+    }
+
+    public function testUiEngineReturnsSameInstance(): void
+    {
+        $loader = new ExtensionLoader(
+            $this->tools,
+            $this->commands,
+            $this->renderers,
+            $this->events,
+        );
+
+        $this->assertSame($loader->uiEngine(), $loader->uiEngine());
+    }
+
+    public function testRegisterCoreCallsRegisterOnEachExtension(): void
+    {
+        $loader = new ExtensionLoader(
+            $this->tools,
+            $this->commands,
+            $this->renderers,
+            $this->events,
+        );
+
+        $ext1 = $this->createMock(ExtensionInterface::class);
+        $ext1->expects($this->once())->method('register');
+
+        $ext2 = $this->createMock(ExtensionInterface::class);
+        $ext2->expects($this->once())->method('register');
+
+        $loader->registerCore($ext1, $ext2);
     }
 
     public function testDescriptorsReturnsLoadedDescriptors(): void

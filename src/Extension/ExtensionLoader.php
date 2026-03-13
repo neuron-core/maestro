@@ -28,8 +28,23 @@ class ExtensionLoader
     /** @var array<ExtensionDescriptor> */
     protected array $descriptors = [];
 
-    public function __construct(protected readonly ToolRegistry $tools, protected readonly CommandRegistry $commands, protected readonly RendererRegistry $renderers, protected readonly EventRegistry $events, protected ?UiEngine $uiEngine = null)
+    public function __construct(
+        protected readonly ToolRegistry $tools,
+        protected readonly CommandRegistry $commands,
+        protected readonly RendererRegistry $renderers,
+        protected readonly EventRegistry $events,
+        protected ?UiEngine $uiEngine = null,
+    ) {
+    }
+
+    /**
+     * Register core (built-in) extensions directly, without a descriptor.
+     */
+    public function registerCore(ExtensionInterface ...$extensions): void
     {
+        foreach ($extensions as $extension) {
+            $this->initializeExtension($extension);
+        }
     }
 
     /**
@@ -89,24 +104,26 @@ class ExtensionLoader
                 );
             }
 
-            $uiEngine = $this->uiEngine ??= new UiEngine(
-                new DarkTheme(),
-                new SlotRegistry(),
-                new WidgetRegistry(),
-            );
-
-            $api = new ExtensionApi(
-                tools: $this->tools,
-                commands: $this->commands,
-                renderers: $this->renderers,
-                events: $this->events,
-                ui: $uiEngine->createBuilder(),
-            );
-
-            $instance->register($api);
+            $this->initializeExtension($instance);
         } catch (Throwable $e) {
             throw new RuntimeException(sprintf('Failed to initialize extension "%s": %s', $descriptor->className, $e->getMessage()), $e->getCode(), previous: $e);
         }
+    }
+
+    /**
+     * Call register() on an extension instance with a fully wired ExtensionApi.
+     */
+    protected function initializeExtension(ExtensionInterface $extension): void
+    {
+        $api = new ExtensionApi(
+            tools: $this->tools,
+            commands: $this->commands,
+            renderers: $this->renderers,
+            events: $this->events,
+            ui: $this->uiEngine()->createBuilder(),
+        );
+
+        $extension->register($api);
     }
 
     /**
@@ -149,6 +166,18 @@ class ExtensionLoader
     public function events(): EventRegistry
     {
         return $this->events;
+    }
+
+    /**
+     * Get the UiEngine instance, creating a default one if not injected.
+     */
+    public function uiEngine(): UiEngine
+    {
+        return $this->uiEngine ??= new UiEngine(
+            new DarkTheme(),
+            new SlotRegistry(),
+            new WidgetRegistry(),
+        );
     }
 
     /**
