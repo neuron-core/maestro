@@ -11,6 +11,7 @@ use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
+use NeuronCore\Maestro\Extension\Ui\ContentType;
 use NeuronCore\Maestro\Extension\Ui\SlotRegistry;
 use NeuronCore\Maestro\Extension\Ui\Theme\DarkTheme;
 use NeuronCore\Maestro\Extension\Ui\UiBuilder;
@@ -113,7 +114,7 @@ class ExtensionApiTest extends TestCase
 
         $widget = $this->createMock(WidgetInterface::class);
         $widget->method('name')->willReturn('my_widget');
-        $widget->method('contentType')->willReturn('status');
+        $widget->method('contentType')->willReturn(ContentType::STATUS);
 
         $api->registerWidget($widget);
 

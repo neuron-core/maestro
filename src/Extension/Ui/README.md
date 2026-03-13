@@ -276,10 +276,10 @@ class DeployStatusWidget implements WidgetInterface
         return 'deploy_status';
     }
 
-    public function contentType(): string
+    public function contentType(): ContentType
     {
         // Groups this widget with others of the same type
-        return ContentType::STATUS->value;
+        return ContentType::STATUS;
     }
 
     public function render(array $data, UiBuilder $ui): string
@@ -307,16 +307,3 @@ $api->ui()->registerWidget(new DeployStatusWidget());
 Both calls write to the same `WidgetRegistry`, so the result is identical. Use the shorthand when registering from `register()` for consistency with `registerTool()` and `registerCommand()`.
 
 ---
-
-## Quick reference: UiBuilder methods
-
-| Method | Effect |
-|--------|--------|
-| `addToSlot(string $slot, string $content, int $priority = 500)` | Appends `$content` to `$slot`; higher priority renders first |
-| `clearSlot(string $slot)` | Removes all items from `$slot`, including those from other extensions |
-| `registerTheme(ThemeInterface $theme)` | Replaces the active theme globally; affects all subsequent rendering |
-| `registerWidget(WidgetInterface $widget)` | Adds widget to registry by name; replaces existing widget with the same name |
-| `theme()` | Returns the currently active `ThemeInterface` instance |
-| `slots()` | Returns the `SlotRegistry` for advanced slot manipulation |
-| `widgets()` | Returns the `WidgetRegistry` for advanced widget lookup |
-| `formatText(string $text, string $color = '', string $style = '')` | Wraps text in Symfony Console markup using the active theme |

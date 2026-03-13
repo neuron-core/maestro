@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Ui;
 
+use function array_column;
+use function usort;
+
 /**
  * Represents content to be rendered in a UI slot.
  */

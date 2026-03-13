@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Ui;
 
+use function array_filter;
+use function array_keys;
+use function array_values;
+
 /**
  * Registry for UI widgets.
  */
@@ -41,7 +45,7 @@ class WidgetRegistry
      *
      * @return array<int, WidgetInterface>
      */
-    public function forType(string $contentType): array
+    public function forType(ContentType $contentType): array
     {
         return array_values(
             array_filter(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Tests\Extension\Ui;
 
 use NeuronCore\Maestro\Extension\Ui\ColorName;
+use NeuronCore\Maestro\Extension\Ui\ContentType;
 use NeuronCore\Maestro\Extension\Ui\SlotRegistry;
 use NeuronCore\Maestro\Extension\Ui\SlotType;
 use NeuronCore\Maestro\Extension\Ui\StyleName;
@@ -101,7 +102,7 @@ class UiBuilderTest extends TestCase
 
         $widget = $this->createMock(WidgetInterface::class);
         $widget->method('name')->willReturn('test_widget');
-        $widget->method('contentType')->willReturn('status');
+        $widget->method('contentType')->willReturn(ContentType::STATUS);
 
         $builder->registerWidget($widget);
 

@@ -17,7 +17,7 @@ interface WidgetInterface
     /**
      * Get the content type this widget handles.
      */
-    public function contentType(): string;
+    public function contentType(): ContentType;
 
     /**
      * Render the widget with given data.

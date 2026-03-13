@@ -28,16 +28,8 @@ class ExtensionLoader
     /** @var array<ExtensionDescriptor> */
     protected array $descriptors = [];
 
-    protected ?UiEngine $uiEngine = null;
-
-    public function __construct(
-        protected readonly ToolRegistry $tools,
-        protected readonly CommandRegistry $commands,
-        protected readonly RendererRegistry $renderers,
-        protected readonly EventRegistry $events,
-        ?UiEngine $uiEngine = null,
-    ) {
-        $this->uiEngine = $uiEngine;
+    public function __construct(protected readonly ToolRegistry $tools, protected readonly CommandRegistry $commands, protected readonly RendererRegistry $renderers, protected readonly EventRegistry $events, protected ?UiEngine $uiEngine = null)
+    {
     }
 
     /**
@@ -175,13 +167,5 @@ class ExtensionLoader
                 new WidgetRegistry(),
             ),
         );
-    }
-
-    /**
-     * Get the UI engine.
-     */
-    public function uiEngine(): ?UiEngine
-    {
-        return $this->uiEngine;
     }
 }

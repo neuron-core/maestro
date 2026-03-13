@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Ui;
 
+use function array_keys;
+
 /**
  * Registry for managing UI slots.
  */

@@ -6,6 +6,8 @@ namespace NeuronCore\Maestro\Extension\Ui;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function implode;
+
 /**
  * Main UI engine for rendering CLI output with themes and slots.
  */

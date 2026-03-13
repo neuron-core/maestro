@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class WidgetRegistryTest extends TestCase
 {
-    private function createWidget(string $name, string $contentType): WidgetInterface
+    private function createWidget(string $name, ContentType $contentType): WidgetInterface
     {
         $mock = $this->createMock(WidgetInterface::class);
         $mock->method('name')->willReturn($name);
@@ -22,7 +22,7 @@ class WidgetRegistryTest extends TestCase
     public function testRegisterStoresWidget(): void
     {
         $registry = new WidgetRegistry();
-        $widget = $this->createWidget('test', 'tool_call');
+        $widget = $this->createWidget('test', ContentType::TOOL_CALL);
 
         $registry->register($widget);
 
@@ -40,7 +40,7 @@ class WidgetRegistryTest extends TestCase
     public function testHasReturnsCorrectly(): void
     {
         $registry = new WidgetRegistry();
-        $registry->register($this->createWidget('existing', 'tool_call'));
+        $registry->register($this->createWidget('existing', ContentType::TOOL_CALL));
 
         $this->assertTrue($registry->has('existing'));
         $this->assertFalse($registry->has('unknown'));
@@ -49,12 +49,12 @@ class WidgetRegistryTest extends TestCase
     public function testForTypeReturnsMatchingWidgets(): void
     {
         $registry = new WidgetRegistry();
-        $registry->register($this->createWidget('tool1', 'tool_call'));
-        $registry->register($this->createWidget('tool2', 'tool_call'));
-        $registry->register($this->createWidget('response', 'agent_response'));
-        $registry->register($this->createWidget('thinking', 'agent_thinking'));
+        $registry->register($this->createWidget('tool1', ContentType::TOOL_CALL));
+        $registry->register($this->createWidget('tool2', ContentType::TOOL_CALL));
+        $registry->register($this->createWidget('response', ContentType::AGENT_RESPONSE));
+        $registry->register($this->createWidget('thinking', ContentType::AGENT_THINKING));
 
-        $toolWidgets = $registry->forType('tool_call');
+        $toolWidgets = $registry->forType(ContentType::TOOL_CALL);
 
         $this->assertCount(2, $toolWidgets);
         $this->assertContainsOnlyInstancesOf(WidgetInterface::class, $toolWidgets);
@@ -63,8 +63,8 @@ class WidgetRegistryTest extends TestCase
     public function testNamesReturnsAllWidgetNames(): void
     {
         $registry = new WidgetRegistry();
-        $registry->register($this->createWidget('widget1', ContentType::TOOL_CALL->value));
-        $registry->register($this->createWidget('widget2', ContentType::TOOL_CALL->value));
+        $registry->register($this->createWidget('widget1', ContentType::TOOL_CALL));
+        $registry->register($this->createWidget('widget2', ContentType::TOOL_CALL));
 
         $this->assertSame(['widget1', 'widget2'], $registry->names());
     }
@@ -72,8 +72,8 @@ class WidgetRegistryTest extends TestCase
     public function testAllReturnsAllWidgets(): void
     {
         $registry = new WidgetRegistry();
-        $w1 = $this->createWidget('w1', ContentType::TOOL_CALL->value);
-        $w2 = $this->createWidget('w2', ContentType::TOOL_CALL->value);
+        $w1 = $this->createWidget('w1', ContentType::TOOL_CALL);
+        $w2 = $this->createWidget('w2', ContentType::TOOL_CALL);
 
         $registry->register($w1);
         $registry->register($w2);

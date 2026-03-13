@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Ui;
 
+use function sprintf;
+
 /**
  * Builder API for extensions to customize UI.
  */
@@ -32,7 +34,7 @@ class UiBuilder
      */
     public function registerTheme(ThemeInterface $theme): void
     {
-        if ($this->engine !== null) {
+        if ($this->engine instanceof \NeuronCore\Maestro\Extension\Ui\UiEngine) {
             $this->engine->setTheme($theme);
         }
         $this->theme = $theme;
@@ -67,7 +69,7 @@ class UiBuilder
      */
     public function theme(): ThemeInterface
     {
-        return $this->engine !== null ? $this->engine->theme() : $this->theme;
+        return $this->engine instanceof \NeuronCore\Maestro\Extension\Ui\UiEngine ? $this->engine->theme() : $this->theme;
     }
 
     /**

@@ -91,15 +91,15 @@ final class MyCommand implements InlineCommand
 Extensions can react to application events:
 
 ```php
-$api->on('AgentThinkingEvent', function ($event, $context) {
+$api->on(AgentThinkingEvent::class, function ($event, $context) {
     // Before AI thinks
 });
 
-$api->on('AgentResponseEvent', function ($event, $context) {
+$api->on(AgentResponseEvent::class, function ($event, $context) {
     // After AI responds
 });
 
-$api->on('ToolApprovalRequestedEvent', function ($event, $context) {
+$api->on(ToolApprovalRequestedEvent::class, function ($event, $context) {
     // When tool approval is requested
 });
 ```
