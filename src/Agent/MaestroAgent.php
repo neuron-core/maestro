@@ -98,7 +98,7 @@ class MaestroAgent extends Agent
 
     protected function chatHistory(): ChatHistoryInterface
     {
-        return new InMemoryChatHistory();
+        return new InMemoryChatHistory($this->settings->getContextWindow());
     }
 
     /**

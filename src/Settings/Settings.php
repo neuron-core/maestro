@@ -201,6 +201,26 @@ class Settings implements SettingsInterface
     }
 
     /**
+     * Get the context window size for the current provider.
+     *
+     * @return int The context window size in tokens (default: 100000)
+     */
+    public function getContextWindow(): int
+    {
+        $defaultProvider = $this->settings['default'] ?? null;
+        if ($defaultProvider === null) {
+            return 100000;
+        }
+
+        $providers = $this->settings['providers'] ?? [];
+        if (!isset($providers[$defaultProvider])) {
+            return 100000;
+        }
+
+        return $providers[$defaultProvider]['context_window'] ?? 100000;
+    }
+
+    /**
      * Enable an extension by class name.
      *
      * @param string $className The fully qualified class name of the extension

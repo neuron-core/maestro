@@ -85,4 +85,11 @@ interface SettingsInterface
      * @return bool True if disabled, false if extension not found or already disabled
      */
     public function disableExtension(string $className): bool;
+
+    /**
+     * Get the context window size for the current provider.
+     *
+     * @return int The context window size in tokens (default: 100000)
+     */
+    public function getContextWindow(): int;
 }
