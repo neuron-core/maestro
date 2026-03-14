@@ -13,8 +13,8 @@ use NeuronCore\Maestro\EventBus\EventDispatcher;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
-use NeuronCore\Maestro\Extension\Core\MaestroCoreExtension;
 use NeuronCore\Maestro\Extension\Coding\CodingExtension;
+use NeuronCore\Maestro\Extension\Core\CoreExtension;
 use NeuronCore\Maestro\Extension\ExtensionLoader;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Listeners\CliOutputListener;
@@ -34,8 +34,8 @@ use function json_encode;
 use function preg_split;
 use function readline;
 use function str_starts_with;
-use function trim;
 use function substr;
+use function trim;
 
 use const JSON_PRETTY_PRINT;
 use const STDIN;
@@ -86,7 +86,7 @@ class MaestroCommand extends Command
 
         // Register core extensions first so user extensions can override them
         $this->loader->registerCore(
-            new MaestroCoreExtension(),
+            new CoreExtension(),
             new CodingExtension(),
         );
 

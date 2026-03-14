@@ -247,4 +247,66 @@ class Settings implements SettingsInterface
 
         return file_exists($fullPath) ? $fullPath : null;
     }
+
+    /**
+     * Get all configured extensions.
+     *
+     * @return array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}>
+     */
+    public function getExtensions(): array
+    {
+        return $this->settings['extensions'] ?? [];
+    }
+
+    /**
+     * Enable an extension by class name.
+     *
+     * @param string $className The fully qualified class name of the extension
+     * @return bool True if enabled, false if extension not found or already enabled
+     */
+    public function enableExtension(string $className): bool
+    {
+        if (!isset($this->settings['extensions'])) {
+            return false;
+        }
+
+        foreach ($this->settings['extensions'] as &$extension) {
+            if (($extension['class'] ?? null) === $className) {
+                if (($extension['enabled'] ?? true) === true) {
+                    return false; // Already enabled
+                }
+                $extension['enabled'] = true;
+                $this->save();
+                return true;
+            }
+        }
+
+        return false; // Extension not found
+    }
+
+    /**
+     * Disable an extension by class name.
+     *
+     * @param string $className The fully qualified class name of the extension
+     * @return bool True if disabled, false if extension not found or already disabled
+     */
+    public function disableExtension(string $className): bool
+    {
+        if (!isset($this->settings['extensions'])) {
+            return false;
+        }
+
+        foreach ($this->settings['extensions'] as &$extension) {
+            if (($extension['class'] ?? null) === $className) {
+                if (($extension['enabled'] ?? true) === false) {
+                    return false; // Already disabled
+                }
+                $extension['enabled'] = false;
+                $this->save();
+                return true;
+            }
+        }
+
+        return false; // Extension not found
+    }
 }

@@ -7,7 +7,6 @@ namespace NeuronCore\Maestro\Extension\Coding;
 use NeuronCore\Maestro\Extension\ExtensionApi;
 use NeuronCore\Maestro\Extension\ExtensionInterface;
 
-use function dirname;
 use function realpath;
 
 /**

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Core;
 
+use NeuronCore\Maestro\Console\Inline\HelpInlineCommand;
 use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Core\Commands\ExtensionsInlineCommand;
 use NeuronCore\Maestro\Extension\ExtensionApi;
 use NeuronCore\Maestro\Extension\ExtensionInterface;
 use NeuronCore\Maestro\Extension\Ui\SlotType;
@@ -18,7 +20,7 @@ use function implode;
  * Registers all built-in Maestro defaults: intro banner and tool renderers.
  * User extensions load after this and can override any individual registration.
  */
-class MaestroCoreExtension implements ExtensionInterface
+class CoreExtension implements ExtensionInterface
 {
     public function name(): string
     {
@@ -27,8 +29,16 @@ class MaestroCoreExtension implements ExtensionInterface
 
     public function register(ExtensionApi $api): void
     {
+        $this->registerCommands($api);
         $this->registerUi($api);
         $this->registerRenderers($api);
+    }
+
+    protected function registerCommands(ExtensionApi $api): void
+    {
+        $api->registerCommand(new ExtensionsInlineCommand());
+        $api->registerCommand(new HelpInlineCommand());
+
     }
 
     protected function registerUi(ExtensionApi $api): void

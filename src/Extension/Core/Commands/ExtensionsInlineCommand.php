@@ -1,0 +1,168 @@
+<?php
+
+declare(strict_types=1);
+
+namespace NeuronCore\Maestro\Extension\Core\Commands;
+
+use NeuronCore\Maestro\Console\Inline\InlineCommand;
+use NeuronCore\Maestro\Console\SelectMenuHelper;
+use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Settings\Settings;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+use function fgets;
+use function sprintf;
+use function str_starts_with;
+use function strtolower;
+use function substr;
+use function trim;
+use function end;
+use function explode;
+use function str_ends_with;
+
+use const STDIN;
+
+/**
+ * Inline command to list and manage Maestro extensions.
+ */
+class ExtensionsInlineCommand implements InlineCommand
+{
+    public function getName(): string
+    {
+        return 'extensions';
+    }
+
+    public function getDescription(): string
+    {
+        return 'List and enable/disable Maestro extensions';
+    }
+
+    public function execute(string $args, InputInterface $input, OutputInterface $output): void
+    {
+        $settings = new Settings();
+        $extensions = $settings->getExtensions();
+
+        if ($extensions === []) {
+            $this->showNoExtensionsMessage($output);
+            return;
+        }
+
+        $this->showExtensionsList($output, $extensions);
+
+        // Ask if the user wants to toggle an extension
+        $output->writeln('');
+        $output->writeln(Text::content('Toggle an extension? (y/n): ')->yellow()->build());
+        $response = trim(fgets(STDIN));
+
+        if (strtolower($response) !== 'y') {
+            $output->writeln(Text::content('Cancelled.')->cyan()->build());
+            $output->writeln('');
+            return;
+        }
+
+        $this->toggleExtension($output, $settings, $extensions);
+    }
+
+    /**
+     * Show message when no extensions are configured.
+     */
+    protected function showNoExtensionsMessage(OutputInterface $output): void
+    {
+        $output->writeln('');
+        $output->writeln(Text::content('No extensions configured in settings.json.')->yellow()->build());
+        $output->writeln('');
+        $output->writeln(Text::content('To add an extension, add it to the extensions array:')->gray()->build());
+        $output->writeln(Text::content('  "extensions": [')->gray()->build());
+        $output->writeln(Text::content('    { "class": "Your\\\\Extension\\\\Class", "enabled": true }')->gray()->build());
+        $output->writeln(Text::content('  ]')->gray()->build());
+        $output->writeln('');
+    }
+
+    /**
+     * Show the list of extensions with their status.
+     *
+     * @param array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}> $extensions
+     */
+    protected function showExtensionsList(OutputInterface $output, array $extensions): void
+    {
+        $output->writeln('');
+        $output->writeln(Text::content('Installed Extensions:')->white()->bold()->build());
+        $output->writeln('');
+
+        foreach ($extensions as $i => $extension) {
+            $className = $extension['class'] ?? 'Unknown';
+            $enabled = $extension['enabled'] ?? true;
+            $status = $enabled
+                ? Text::content(' [ENABLED] ')->green()->bold()->build()
+                : Text::content(' [DISABLED]')->red()->bold()->build();
+            $displayName = $this->getDisplayName($className);
+
+            $output->writeln(sprintf('  %d) %s%s', $i + 1, $status, $displayName));
+            $output->writeln(Text::content('     ' . $className)->gray()->build());
+        }
+    }
+
+    /**
+     * Show a toggle menu and handle the user's selection.
+     *
+     * @param array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}> $extensions
+     */
+    protected function toggleExtension(OutputInterface $output, Settings $settings, array $extensions): void
+    {
+        $menu = new SelectMenuHelper($output);
+
+        // Build menu options with status indicators
+        $options = [];
+        foreach ($extensions as $extension) {
+            $className = $extension['class'] ?? 'Unknown';
+            $enabled = $extension['enabled'] ?? true;
+            $displayName = $this->getDisplayName($className);
+            $status = $enabled ? '[ON] ' : '[OFF]';
+            $options[] = $status . $displayName;
+        }
+
+        $output->writeln('');
+        $selectedIndex = $menu->ask(
+            Text::content('Select an extension to toggle:')->yellow()->build(),
+            $options
+        );
+
+        $selectedExtension = $extensions[$selectedIndex];
+        $className = $selectedExtension['class'] ?? '';
+        $currentlyEnabled = $selectedExtension['enabled'] ?? true;
+
+        if ($currentlyEnabled) {
+            $settings->disableExtension($className);
+            $output->writeln('');
+            $output->writeln(Text::content('Extension disabled.')->cyan()->build());
+        } else {
+            $settings->enableExtension($className);
+            $output->writeln('');
+            $output->writeln(Text::content('Extension enabled.')->cyan()->build());
+        }
+
+        $output->writeln('');
+        $output->writeln(Text::content('Note: You may need to restart Maestro for changes to take full effect.')->yellow()->build());
+        $output->writeln('');
+    }
+
+    /**
+     * Get a display-friendly name from a fully qualified class name.
+     */
+    protected function getDisplayName(string $className): string
+    {
+        if (str_starts_with($className, 'NeuronCore\\Maestro\\Extension\\')) {
+            // Strip the namespace prefix and "Extension" suffix if present
+            $name = substr($className, 31);
+            if (str_ends_with($name, 'Extension')) {
+                return substr($name, 0, -10);
+            }
+            return $name;
+        }
+
+        // Fallback to the short class name
+        $parts = explode('\\', $className);
+        return end($parts);
+    }
+}

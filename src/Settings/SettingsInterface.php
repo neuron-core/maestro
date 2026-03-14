@@ -85,4 +85,27 @@ interface SettingsInterface
      * @return string|null The file path or null if not found
      */
     public function getAgentInstructionsFile(): ?string;
+
+    /**
+     * Get all configured extensions.
+     *
+     * @return array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}>
+     */
+    public function getExtensions(): array;
+
+    /**
+     * Enable an extension by class name.
+     *
+     * @param string $className The fully qualified class name of the extension
+     * @return bool True if enabled, false if extension not found or already enabled
+     */
+    public function enableExtension(string $className): bool;
+
+    /**
+     * Disable an extension by class name.
+     *
+     * @param string $className The fully qualified class name of the extension
+     * @return bool True if disabled, false if extension not found or already disabled
+     */
+    public function disableExtension(string $className): bool;
 }
