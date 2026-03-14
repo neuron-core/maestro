@@ -43,6 +43,7 @@ class ExtensionLoader
         protected readonly EventRegistry $events,
         protected readonly MemoryRegistry $memories,
         protected ?UiEngine $uiEngine = null,
+        protected readonly string $manifestPath = self::MANIFEST_PATH,
     ) {
     }
 
@@ -77,7 +78,12 @@ class ExtensionLoader
         $extensions = $this->mergeExtensions($manifest, $settingsExtensions);
 
         foreach ($extensions as $descriptor) {
-            if ($descriptor->enabled && class_exists($descriptor->className)) {
+            // Only include extensions where the class exists
+            if (!class_exists($descriptor->className)) {
+                continue;
+            }
+
+            if ($descriptor->enabled) {
                 $this->initialize($descriptor);
             }
 
@@ -94,11 +100,11 @@ class ExtensionLoader
      */
     protected function loadManifest(): array
     {
-        if (!file_exists(self::MANIFEST_PATH)) {
+        if (!file_exists($this->manifestPath)) {
             return [];
         }
 
-        $manifest = require self::MANIFEST_PATH;
+        $manifest = require $this->manifestPath;
 
         if (!is_array($manifest)) {
             return [];
@@ -325,7 +331,7 @@ class ExtensionLoader
     /**
      * Create a loader with default registries.
      */
-    public static function create(ToolRenderer $fallbackRenderer): self
+    public static function create(ToolRenderer $fallbackRenderer, string $manifestPath = self::MANIFEST_PATH): self
     {
         return new self(
             tools: new ToolRegistry(),
@@ -338,6 +344,7 @@ class ExtensionLoader
                 new SlotRegistry(),
                 new WidgetRegistry(),
             ),
+            manifestPath: $manifestPath,
         );
     }
 }

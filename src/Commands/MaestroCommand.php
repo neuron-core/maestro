@@ -31,14 +31,12 @@ use Throwable;
 use function fgets;
 use function function_exists;
 use function in_array;
-use function json_encode;
 use function preg_split;
 use function readline;
 use function str_starts_with;
 use function substr;
 use function trim;
 
-use const JSON_PRETTY_PRINT;
 use const STDIN;
 
 #[AsCommand(

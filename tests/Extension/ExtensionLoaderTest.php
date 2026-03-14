@@ -37,15 +37,24 @@ class ExtensionLoaderTest extends TestCase
         $this->memories = new MemoryRegistry();
     }
 
-    public function testLoadWithEmptySettingsReturnsEmptyArray(): void
+    /**
+     * Create a loader instance with a non-existent manifest path for tests.
+     */
+    private function createLoader(): ExtensionLoader
     {
-        $loader = new ExtensionLoader(
+        return new ExtensionLoader(
             $this->tools,
             $this->commands,
             $this->renderers,
             $this->events,
             $this->memories,
+            manifestPath: __DIR__ . '/non-existent-manifest.php',
         );
+    }
+
+    public function testLoadWithEmptySettingsReturnsEmptyArray(): void
+    {
+        $loader = $this->createLoader();
 
         $result = $loader->load([]);
 
@@ -54,13 +63,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testLoadSkipsNonExistentClass(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $result = $loader->load([
             'extensions' => [
@@ -73,13 +76,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testLoadSkipsDisabledExtension(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $result = $loader->load([
             'extensions' => [
@@ -96,13 +93,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testLoadCallsRegisterOnEnabledExtension(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $result = $loader->load([
             'extensions' => [
@@ -119,13 +110,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testLoadPassesConfigToDescriptor(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $result = $loader->load([
             'extensions' => [
@@ -150,13 +135,7 @@ class ExtensionLoaderTest extends TestCase
             )
         );
 
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $loader->load([
             'extensions' => [
@@ -177,39 +156,21 @@ class ExtensionLoaderTest extends TestCase
 
     public function testUiEngineReturnsUiEngineInstance(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $this->assertInstanceOf(UiEngine::class, $loader->uiEngine());
     }
 
     public function testUiEngineReturnsSameInstance(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $this->assertSame($loader->uiEngine(), $loader->uiEngine());
     }
 
     public function testRegisterCoreCallsRegisterOnEachExtension(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $ext1 = $this->createMock(ExtensionInterface::class);
         $ext1->expects($this->once())->method('register');
@@ -222,13 +183,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testDescriptorsReturnsLoadedDescriptors(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $loader->load([
             'extensions' => [
@@ -244,13 +199,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testMemoriesReturnsMemoryRegistry(): void
     {
-        $loader = new ExtensionLoader(
-            $this->tools,
-            $this->commands,
-            $this->renderers,
-            $this->events,
-            $this->memories,
-        );
+        $loader = $this->createLoader();
 
         $this->assertSame($this->memories, $loader->memories());
     }
