@@ -14,6 +14,7 @@ use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
 use NeuronCore\Maestro\Extension\Core\MaestroCoreExtension;
+use NeuronCore\Maestro\Extension\Coding\CodingExtension;
 use NeuronCore\Maestro\Extension\ExtensionLoader;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Listeners\CliOutputListener;
@@ -84,7 +85,10 @@ class MaestroCommand extends Command
         $this->loader = ExtensionLoader::create(new GenericRenderer());
 
         // Register core extensions first so user extensions can override them
-        $this->loader->registerCore(new MaestroCoreExtension());
+        $this->loader->registerCore(
+            new MaestroCoreExtension(),
+            new CodingExtension(),
+        );
 
         // Load user extensions from settings
         try {
