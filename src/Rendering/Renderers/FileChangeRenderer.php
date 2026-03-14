@@ -20,6 +20,7 @@ use function sprintf;
 use function str_starts_with;
 use function stream_get_meta_data;
 use function tmpfile;
+use function substr;
 
 use const PHP_OS_FAMILY;
 

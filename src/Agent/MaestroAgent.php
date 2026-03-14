@@ -12,6 +12,8 @@ use NeuronAI\Agent\Nodes\ChatNode;
 use NeuronAI\Agent\Nodes\StreamingNode;
 use NeuronAI\Agent\Nodes\StructuredOutputNode;
 use NeuronAI\Agent\Nodes\ToolNode;
+use NeuronAI\Chat\History\ChatHistoryInterface;
+use NeuronAI\Chat\History\InMemoryChatHistory;
 use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\MCP\McpConnector;
 use NeuronAI\Observability\InspectorObserver;
@@ -75,7 +77,7 @@ class MaestroAgent extends Agent
             ToolNode::class => [
                 new ToolApproval([
                     // Disable approval for ReadFileTool by default
-                    ReadFileTool::class => fn() => false,
+                    ReadFileTool::class => fn (): bool => false,
                 ])
             ],
         ];
@@ -92,6 +94,11 @@ class MaestroAgent extends Agent
     protected function provider(): AIProviderInterface
     {
         return $this->settings->provider();
+    }
+
+    protected function chatHistory(): ChatHistoryInterface
+    {
+        return new InMemoryChatHistory();
     }
 
     /**
