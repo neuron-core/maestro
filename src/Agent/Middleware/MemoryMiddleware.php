@@ -52,14 +52,6 @@ class MemoryMiddleware implements WorkflowMiddleware
     }
 
     /**
-     * Get the path to the memories' directory.
-     */
-    public function getMemoriesDir(): string
-    {
-        return $this->memoriesDir;
-    }
-
-    /**
      * Load all memory files from the memories directory and extension-registered memories.
      *
      * @return array<string, string> Associative array of filename => content
