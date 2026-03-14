@@ -10,6 +10,7 @@ use NeuronAI\Workflow\Events\StopEvent;
 use NeuronAI\Workflow\Middleware\WorkflowMiddleware;
 use NeuronAI\Workflow\NodeInterface;
 use NeuronAI\Workflow\WorkflowState;
+use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 
 use function array_keys;
 use function file_get_contents;
@@ -26,8 +27,9 @@ use function is_readable;
  * Memory Middleware for loading and injecting agent memory into system prompts.
  *
  * This middleware loads memory files from the .maestro/memories directory
- * and injects them into the AI instructions. This enables the agent to
- * remember context across sessions and improve behavior over time.
+ * and from extension-registered memory files, injecting them into the AI
+ * instructions. This enables the agent to remember context across sessions
+ * and improve behavior over time.
  */
 class MemoryMiddleware implements WorkflowMiddleware
 {
@@ -42,8 +44,9 @@ class MemoryMiddleware implements WorkflowMiddleware
      * Create a new MemoryMiddleware instance.
      *
      * @param string $memoriesDir Path to the directory containing memory files
+     * @param MemoryRegistry|null $extensionMemories Optional registry for extension-registered memories
      */
-    public function __construct(string $memoriesDir)
+    public function __construct(string $memoriesDir, protected ?MemoryRegistry $extensionMemories = null)
     {
         $this->memoriesDir = rtrim($memoriesDir, '/');
     }
@@ -57,7 +60,7 @@ class MemoryMiddleware implements WorkflowMiddleware
     }
 
     /**
-     * Load all memory files from the memories directory.
+     * Load all memory files from the memories directory and extension-registered memories.
      *
      * @return array<string, string> Associative array of filename => content
      */
@@ -69,20 +72,31 @@ class MemoryMiddleware implements WorkflowMiddleware
 
         $memories = [];
 
-        if (!is_dir($this->memoriesDir)) {
-            $this->cachedMemories = [];
-            return [];
+        // Load memories from the directory
+        if (is_dir($this->memoriesDir)) {
+            // Get all .md files in the memories directory
+            $files = glob($this->memoriesDir . '/*.md');
+
+            foreach ($files as $file) {
+                if (is_file($file) && is_readable($file)) {
+                    $content = file_get_contents($file);
+                    if ($content !== false) {
+                        $filename = basename($file);
+                        $memories[$filename] = $content;
+                    }
+                }
+            }
         }
 
-        // Get all .md files in the memories directory
-        $files = glob($this->memoriesDir . '/*.md');
-
-        foreach ($files as $file) {
-            if (is_file($file) && is_readable($file)) {
-                $content = file_get_contents($file);
-                if ($content !== false) {
-                    $filename = basename($file);
-                    $memories[$filename] = $content;
+        // Load extension-registered memories
+        if ($this->extensionMemories instanceof \NeuronCore\Maestro\Extension\Registry\MemoryRegistry) {
+            foreach ($this->extensionMemories->all() as $key => $filePath) {
+                if (is_file($filePath) && is_readable($filePath)) {
+                    $content = file_get_contents($filePath);
+                    if ($content !== false) {
+                        // Use the key as the filename for consistency
+                        $memories[$key] = $content;
+                    }
                 }
             }
         }
@@ -135,7 +149,8 @@ class MemoryMiddleware implements WorkflowMiddleware
 </agent_memory>
 
 <memory_guidelines>
-The above <agent_memory> was loaded from files in the .maestro/memories directory.
+The above <agent_memory> was loaded from files in the .maestro/memories directory
+and from extension-registered memory files.
 As you learn from interactions with the user, you can save new knowledge by editing
 memory files using the edit_file tool.
 
@@ -169,6 +184,7 @@ memory files using the edit_file tool.
 
 **Memory file locations:**
 - Memory files are located in: .maestro/memories/
+- Extensions can also register memory files which are included automatically
 - Edit existing memories using: edit_file(".maestro/memories/FILENAME.md", "SEARCH_TEXT", "REPLACE_TEXT")
 - Create new memory files using: write_file(".maestro/memories/FILENAME.md", "CONTENT")
 - Recommended file names:

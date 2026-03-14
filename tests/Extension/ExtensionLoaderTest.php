@@ -10,6 +10,7 @@ use NeuronCore\Maestro\Extension\ExtensionInterface;
 use NeuronCore\Maestro\Extension\ExtensionLoader;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
+use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Extension\Ui\UiEngine;
@@ -25,6 +26,7 @@ class ExtensionLoaderTest extends TestCase
     private CommandRegistry $commands;
     private RendererRegistry $renderers;
     private EventRegistry $events;
+    private MemoryRegistry $memories;
 
     protected function setUp(): void
     {
@@ -32,6 +34,7 @@ class ExtensionLoaderTest extends TestCase
         $this->commands = new CommandRegistry();
         $this->renderers = new RendererRegistry($this->createMockRenderer());
         $this->events = new EventRegistry();
+        $this->memories = new MemoryRegistry();
     }
 
     public function testLoadWithEmptySettingsReturnsEmptyArray(): void
@@ -41,6 +44,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $result = $loader->load([]);
@@ -55,6 +59,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $result = $loader->load([
@@ -73,6 +78,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $result = $loader->load([
@@ -95,6 +101,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $result = $loader->load([
@@ -117,6 +124,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $result = $loader->load([
@@ -147,6 +155,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $loader->load([
@@ -173,6 +182,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $this->assertInstanceOf(UiEngine::class, $loader->uiEngine());
@@ -185,6 +195,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $this->assertSame($loader->uiEngine(), $loader->uiEngine());
@@ -197,6 +208,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $ext1 = $this->createMock(ExtensionInterface::class);
@@ -215,6 +227,7 @@ class ExtensionLoaderTest extends TestCase
             $this->commands,
             $this->renderers,
             $this->events,
+            $this->memories,
         );
 
         $loader->load([
@@ -227,6 +240,19 @@ class ExtensionLoaderTest extends TestCase
 
         $this->assertCount(1, $descriptors);
         $this->assertSame(TestExtension::class, $descriptors[0]->className);
+    }
+
+    public function testMemoriesReturnsMemoryRegistry(): void
+    {
+        $loader = new ExtensionLoader(
+            $this->tools,
+            $this->commands,
+            $this->renderers,
+            $this->events,
+            $this->memories,
+        );
+
+        $this->assertSame($this->memories, $loader->memories());
     }
 
     private function createMockRenderer(): ToolRenderer

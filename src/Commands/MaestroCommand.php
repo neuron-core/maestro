@@ -116,7 +116,7 @@ class MaestroCommand extends Command
         $dispatcher->subscribe(ToolApprovalRequestedEvent::class, $listener->onToolApprovalRequested(...));
 
         $orchestrator = new AgentOrchestrator(
-            new MaestroAgent($settings, $this->loader->tools()),
+            new MaestroAgent($settings, $this->loader->tools(), $this->loader->memories()),
             $dispatcher,
         );
 

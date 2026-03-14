@@ -9,6 +9,7 @@ use NeuronCore\Maestro\Console\Inline\InlineCommand;
 use NeuronCore\Maestro\Extension\ExtensionApi;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
+use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Extension\Ui\ContentType;
@@ -20,12 +21,17 @@ use NeuronCore\Maestro\Extension\Ui\WidgetRegistry;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 use PHPUnit\Framework\TestCase;
 
+use function file_put_contents;
+use function sys_get_temp_dir;
+use function unlink;
+
 class ExtensionApiTest extends TestCase
 {
     private ToolRegistry $tools;
     private CommandRegistry $commands;
     private RendererRegistry $renderers;
     private EventRegistry $events;
+    private MemoryRegistry $memories;
     private ExtensionApi $api;
 
     protected function setUp(): void
@@ -34,6 +40,7 @@ class ExtensionApiTest extends TestCase
         $this->commands = new CommandRegistry();
         $this->renderers = new RendererRegistry($this->createMockRenderer());
         $this->events = new EventRegistry();
+        $this->memories = new MemoryRegistry();
 
         $ui = new UiBuilder(
             new DarkTheme(),
@@ -47,6 +54,7 @@ class ExtensionApiTest extends TestCase
             $this->renderers,
             $this->events,
             $ui,
+            $this->memories,
         );
     }
 
@@ -110,7 +118,7 @@ class ExtensionApiTest extends TestCase
     {
         $widgets = new WidgetRegistry();
         $ui = new UiBuilder(new DarkTheme(), new SlotRegistry(), $widgets);
-        $api = new ExtensionApi($this->tools, $this->commands, $this->renderers, $this->events, $ui);
+        $api = new ExtensionApi($this->tools, $this->commands, $this->renderers, $this->events, $ui, $this->memories);
 
         $widget = $this->createMock(WidgetInterface::class);
         $widget->method('name')->willReturn('my_widget');
@@ -119,6 +127,24 @@ class ExtensionApiTest extends TestCase
         $api->registerWidget($widget);
 
         $this->assertTrue($widgets->has('my_widget'));
+    }
+
+    public function testRegisterMemoryAddsToRegistry(): void
+    {
+        $tempFile = sys_get_temp_dir() . '/maestro_test_memory.md';
+        file_put_contents($tempFile, 'Test memory content');
+
+        $this->api->registerMemory('extension.test', $tempFile);
+
+        $this->assertTrue($this->memories->has('extension.test'));
+        $this->assertSame($tempFile, $this->memories->get('extension.test'));
+
+        unlink($tempFile);
+    }
+
+    public function testMemoriesReturnsSameRegistry(): void
+    {
+        $this->assertSame($this->memories, $this->api->memories());
     }
 
     private function createMockTool(string $name): ToolInterface

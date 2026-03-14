@@ -7,6 +7,7 @@ namespace NeuronCore\Maestro\Extension;
 use NeuronCore\Maestro\Console\Inline\InlineCommand;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
+use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Extension\Ui\UiBuilder;
@@ -25,6 +26,7 @@ class ExtensionApi
         protected readonly RendererRegistry $renderers,
         protected readonly EventRegistry $events,
         protected readonly UiBuilder $ui,
+        protected readonly MemoryRegistry $memories,
     ) {
     }
 
@@ -69,6 +71,20 @@ class ExtensionApi
     }
 
     /**
+     * Register a memory file that will be injected into the agent's system prompt.
+     *
+     * Extensions can register memory files to provide project-specific
+     * instructions and context to the AI agent.
+     *
+     * @param string $key Unique identifier for this memory (e.g., "extension_name.memory_name")
+     * @param string $filePath Absolute path to the memory file
+     */
+    public function registerMemory(string $key, string $filePath): void
+    {
+        $this->memories->register($key, $filePath);
+    }
+
+    /**
      * Get the tool registry for advanced registration needs.
      */
     public function tools(): ToolRegistry
@@ -106,5 +122,13 @@ class ExtensionApi
     public function ui(): UiBuilder
     {
         return $this->ui;
+    }
+
+    /**
+     * Get the memory registry for advanced registration needs.
+     */
+    public function memories(): MemoryRegistry
+    {
+        return $this->memories;
     }
 }

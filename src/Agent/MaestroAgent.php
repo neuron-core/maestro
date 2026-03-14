@@ -16,6 +16,7 @@ use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\MCP\McpConnector;
 use NeuronAI\Observability\InspectorObserver;
 use NeuronCore\Maestro\Agent\Middleware\MemoryMiddleware;
+use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Settings\SettingsInterface;
 use NeuronAI\Providers\AIProviderInterface;
@@ -39,13 +40,14 @@ use function trim;
 class MaestroAgent extends Agent
 {
     /**
-     * Constructor - Initialize with settings and tool registry.
+     * Constructor - Initialize with settings, tool registry, and optional memory registry.
      *
      * @throws WorkflowException|InspectorException
      */
     public function __construct(
         protected SettingsInterface $settings,
         private readonly ToolRegistry $toolRegistry,
+        private readonly ?MemoryRegistry $memoryRegistry = null,
     ) {
         parent::__construct();
 
@@ -58,7 +60,8 @@ class MaestroAgent extends Agent
     protected function middleware(): array
     {
         $memory = new MemoryMiddleware(
-            $this->settings->dirPath() . '/memories'
+            $this->settings->dirPath() . '/memories',
+            $this->memoryRegistry,
         );
 
         $todo = new TodoPlanning();

@@ -6,6 +6,7 @@ namespace NeuronCore\Maestro\Extension;
 
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
+use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Extension\Ui\SlotRegistry;
@@ -33,6 +34,7 @@ class ExtensionLoader
         protected readonly CommandRegistry $commands,
         protected readonly RendererRegistry $renderers,
         protected readonly EventRegistry $events,
+        protected readonly MemoryRegistry $memories,
         protected ?UiEngine $uiEngine = null,
     ) {
     }
@@ -121,6 +123,7 @@ class ExtensionLoader
             renderers: $this->renderers,
             events: $this->events,
             ui: $this->uiEngine()->createBuilder(),
+            memories: $this->memories,
         );
 
         $extension->register($api);
@@ -169,6 +172,14 @@ class ExtensionLoader
     }
 
     /**
+     * Get the memory registry.
+     */
+    public function memories(): MemoryRegistry
+    {
+        return $this->memories;
+    }
+
+    /**
      * Get the UiEngine instance, creating a default one if not injected.
      */
     public function uiEngine(): UiEngine
@@ -190,6 +201,7 @@ class ExtensionLoader
             commands: new CommandRegistry(),
             renderers: new RendererRegistry($fallbackRenderer),
             events: new EventRegistry(),
+            memories: new MemoryRegistry(),
             uiEngine: new UiEngine(
                 new DarkTheme(),
                 new SlotRegistry(),
