@@ -165,6 +165,14 @@ class InitCommand extends Command
 
         $config['providers'][$selectedProvider]['model'] = $model;
 
+        // Add default extensions configuration
+        $config['extensions'] = [
+            [
+                'class' => \NeuronCore\Maestro\Extension\Coding\CodingExtension::class,
+                'enabled' => true,
+            ],
+        ];
+
         // Ensure directory exists
         $settingsDir = dirname($settings->getSettingsPath());
         if (!file_exists($settingsDir)) {
