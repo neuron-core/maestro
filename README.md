@@ -223,6 +223,32 @@ To enable agent monitoring you just need to add the `inspector_key` field to you
 
 You can get an `INSPECTOR_INGESTION_KEY` from the [Inspector dashboard](https://app.inspector.dev/register).
 
+## Creating Extensions
+
+Maestro supports a powerful extension system that allows you to customize the agent by adding custom tools, inline commands, renderers, event handlers, memory files, and UI customizations.
+
+Create an extension class that implements `ExtensionInterface`:
+
+```php
+class MyExtension implements ExtensionInterface
+{
+    public function name(): string
+    {
+        return 'my-extension';
+    }
+
+    public function register(ExtensionApi $api): void
+    {
+        // Register tools, commands, renderers, events, etc.
+        $api->registerTool($myTool);
+        $api->registerCommand($myCommand);
+        $api->registerRenderer('my_tool', $myRenderer);
+    }
+}
+```
+
+For a comprehensive guide on building extensions, including auto-discovery, UI customization, packaging, and all available APIs, see the **[Extension README](src/Extension/README.md)**.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
