@@ -56,24 +56,24 @@ class MaestroCommand extends Command
     {
         $settings = new Settings();
 
+        // Auto-run init if settings don't exist
         if (!$settings->fileExists()) {
             $output->writeln('');
-            $output->writeln(Text::content('Warning: Settings file not found at ' . $settings->getSettingsPath())->red()->build());
-            $output->writeln(Text::content('The agent requires AI provider connection information.')->red()->build());
+            $output->writeln(Text::content('Welcome to Maestro! Setting up your configuration...')->cyan()->build());
             $output->writeln('');
-            $output->writeln(Text::content('Run the interactive configuration command to get started:')->cyan()->build());
-            $output->writeln(Text::content('  maestro init')->white()->build());
-            $output->writeln('');
-            $output->writeln(Text::content('Or create a .maestro/settings.json file manually with your AI provider configuration:')->cyan()->build());
-            $output->writeln(json_encode([
-                'provider' => [
-                    'type' => 'openai',
-                    'api_key' => 'your-api-key',
-                    'model' => 'gpt-5',
-                ],
-            ], JSON_PRETTY_PRINT));
-            $output->writeln('');
-            return Command::FAILURE;
+
+            $initCommand = new InitInlineCommand();
+            $initCommand->execute('', $input, $output);
+
+            // Reload settings after init
+            $settings = new Settings();
+
+            // If init still didn't create valid settings, exit
+            if (!$settings->fileExists()) {
+                $output->writeln(Text::content('Setup cancelled. Run "maestro init" to configure Maestro.')->yellow()->build());
+                $output->writeln('');
+                return Command::FAILURE;
+            }
         }
 
         if (!$settings->hasValidProvider()) {
