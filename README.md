@@ -140,11 +140,13 @@ Add Model Context Protocol servers to extend the agent's capabilities:
 
 ## Usage
 
-### Interactive Mode
-
 Start an interactive chat session:
 
 ```bash
+# Mavigate to the project directory 
+cd path/project 
+
+# Start the maestro CLI
 maestro
 ```
 
@@ -157,7 +159,6 @@ You can Choose from:
 
 - **Allow once**: Approve this specific operation
 - **Allow for session**: Approve all operations of this type during the current session
-- **Always allow**: Approve permanently (saved to the settings file)
 - **Deny**: Reject this operation
 
 ## Monitoring Maestro sessions
