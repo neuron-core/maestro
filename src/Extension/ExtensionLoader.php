@@ -19,13 +19,20 @@ use InvalidArgumentException;
 use RuntimeException;
 
 use function class_exists;
+use function file_exists;
+use function is_array;
 use function sprintf;
+use function array_key_first;
+use function array_values;
+use function is_string;
 
 /**
  * Loads and initializes extensions from configuration.
  */
 class ExtensionLoader
 {
+    protected const MANIFEST_PATH = '.maestro/manifest.php';
+
     /** @var array<ExtensionDescriptor> */
     protected array $descriptors = [];
 
@@ -50,34 +57,27 @@ class ExtensionLoader
     }
 
     /**
-     * Load extensions from the settings array.
+     * Load extensions from the manifest and settings array.
      *
-     * @param array{extensions?: array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}>} $settings
+     * Extensions are loaded in the following order:
+     * 1. Manifest extensions (auto-discovered from composer packages)
+     * 2. Settings extensions (manually configured in settings.json)
+     *
+     * Settings can override manifest extension enabled status and config using
+     * the class name as the key.
+     *
+     * @param array{extensions?: array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}>|array<string, array{enabled?: bool, config?: array<string, mixed>}>} $settings
      * @return array<ExtensionDescriptor>
      */
     public function load(array $settings): array
     {
-        $extensions = $settings['extensions'] ?? [];
+        $manifest = $this->loadManifest();
+        $settingsExtensions = $settings['extensions'] ?? [];
 
-        foreach ($extensions as $config) {
-            $className = $config['class'] ?? null;
-            $enabled = $config['enabled'] ?? true;
-            $extensionConfig = $config['config'] ?? [];
-            if ($className === null) {
-                continue;
-            }
-            if (!class_exists($className)) {
-                continue;
-            }
+        $extensions = $this->mergeExtensions($manifest, $settingsExtensions);
 
-            $descriptor = new ExtensionDescriptor(
-                className: $className,
-                name: $className,
-                enabled: $enabled,
-                config: $extensionConfig,
-            );
-
-            if ($enabled) {
+        foreach ($extensions as $descriptor) {
+            if ($descriptor->enabled && class_exists($descriptor->className)) {
                 $this->initialize($descriptor);
             }
 
@@ -85,6 +85,137 @@ class ExtensionLoader
         }
 
         return $this->descriptors;
+    }
+
+    /**
+     * Load extensions from the auto-generated manifest file.
+     *
+     * @return array<ExtensionDescriptor>
+     */
+    protected function loadManifest(): array
+    {
+        if (!file_exists(self::MANIFEST_PATH)) {
+            return [];
+        }
+
+        $manifest = require self::MANIFEST_PATH;
+
+        if (!is_array($manifest)) {
+            return [];
+        }
+
+        $descriptors = [];
+
+        foreach ($manifest as $entry) {
+            $className = $entry['class'] ?? null;
+            $packageName = $entry['package'] ?? null;
+            $enabled = $entry['enabled'] ?? true;
+
+            if ($className === null) {
+                continue;
+            }
+
+            $descriptors[$className] = new ExtensionDescriptor(
+                className: $className,
+                name: $packageName ?? $className,
+                enabled: $enabled,
+                config: [],
+                source: 'manifest',
+            );
+        }
+
+        return $descriptors;
+    }
+
+    /**
+     * Merge manifest extensions with settings extensions.
+     *
+     * Settings can:
+     * - Override enabled status of manifest extensions
+     * - Add config to manifest extensions
+     * - Add new extensions not in the manifest
+     *
+     * Settings format can be either:
+     * - Legacy array format: [{"class": "...", "enabled": true, "config": {...}}]
+     * - New keyed format: {"Fully\\Qualified\\Class": {"enabled": false, "config": {...}}}
+     *
+     * @param array<ExtensionDescriptor> $manifest
+     * @param array<int, array{class: string, enabled?: bool, config?: array<string, mixed>}>|array<string, array{enabled?: bool, config?: array<string, mixed>}> $settingsExtensions
+     * @return array<ExtensionDescriptor>
+     */
+    protected function mergeExtensions(array $manifest, array $settingsExtensions): array
+    {
+        $merged = [];
+
+        // First, add all manifest extensions
+        foreach ($manifest as $className => $descriptor) {
+            $merged[$className] = $descriptor;
+        }
+
+        // Process settings extensions - detect format by checking if keys are strings (new format)
+        $isNewFormat = $settingsExtensions !== [] && is_string(array_key_first($settingsExtensions));
+
+        if ($isNewFormat) {
+            // New keyed format: className => {enabled, config}
+            foreach ($settingsExtensions as $className => $config) {
+                if (!is_string($className)) {
+                    continue;
+                }
+
+                if (isset($merged[$className])) {
+                    // Override existing manifest extension
+                    $descriptor = $merged[$className];
+                    $merged[$className] = new ExtensionDescriptor(
+                        className: $className,
+                        name: $descriptor->name,
+                        enabled: $config['enabled'] ?? $descriptor->enabled,
+                        config: $config['config'] ?? $descriptor->config,
+                        source: $descriptor->source,
+                    );
+                } else {
+                    // Add new extension not in manifest
+                    $merged[$className] = new ExtensionDescriptor(
+                        className: $className,
+                        name: $className,
+                        enabled: $config['enabled'] ?? true,
+                        config: $config['config'] ?? [],
+                        source: 'settings',
+                    );
+                }
+            }
+        } else {
+            // Legacy array format: [{class: "...", enabled: true, config: {...}}]
+            foreach ($settingsExtensions as $config) {
+                $className = $config['class'] ?? null;
+
+                if ($className === null) {
+                    continue;
+                }
+
+                if (isset($merged[$className])) {
+                    // Override existing manifest extension
+                    $descriptor = $merged[$className];
+                    $merged[$className] = new ExtensionDescriptor(
+                        className: $className,
+                        name: $descriptor->name,
+                        enabled: $config['enabled'] ?? $descriptor->enabled,
+                        config: $config['config'] ?? $descriptor->config,
+                        source: $descriptor->source,
+                    );
+                } else {
+                    // Add new extension not in manifest
+                    $merged[$className] = new ExtensionDescriptor(
+                        className: $className,
+                        name: $className,
+                        enabled: $config['enabled'] ?? true,
+                        config: $config['config'] ?? [],
+                        source: 'settings',
+                    );
+                }
+            }
+        }
+
+        return array_values($merged);
     }
 
     /**

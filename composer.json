@@ -46,6 +46,17 @@
             "NeuronCore\\Maestro\\Tests\\": "tests/"
         }
     },
+    "scripts-descriptions": {
+        "maestro discover": "Discover Maestro extensions from installed Composer packages"
+    },
+    "extra": {
+        "maestro": {
+            "extensions": [
+                "NeuronCore\\Maestro\\Extension\\Core\\CoreExtension",
+                "NeuronCore\\Maestro\\Extension\\Coding\\CodingExtension"
+            ]
+        }
+    },
     "bin": [
         "bin/maestro"
     ],
@@ -65,6 +76,8 @@
         ],
         "test": [
             "vendor/bin/phpunit --colors=always"
-        ]
+        ],
+        "maestro discover": "php bin/maestro discover",
+        "post-autoload-dump": "php bin/maestro discover"
     }
 }

@@ -6,6 +6,7 @@ namespace NeuronCore\Maestro\Commands;
 
 use Exception;
 use NeuronCore\Maestro\Agent\MaestroAgent;
+use NeuronCore\Maestro\Console\Inline\DiscoverInlineCommand;
 use NeuronCore\Maestro\Console\Inline\HelpInlineCommand;
 use NeuronCore\Maestro\Console\Inline\InitInlineCommand;
 use NeuronCore\Maestro\Console\Text;
@@ -186,6 +187,7 @@ class MaestroCommand extends Command
     protected function registerCoreCommands(CommandRegistry $registry): void
     {
         $registry->register(new InitInlineCommand());
+        $registry->register(new DiscoverInlineCommand());
         $registry->register(new HelpInlineCommand($registry));
     }
 }

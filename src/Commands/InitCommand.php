@@ -27,7 +27,7 @@ use function trim;
 use const JSON_PRETTY_PRINT;
 
 #[AsCommand(
-    name: 'maestro init',
+    name: 'init',
     description: 'Initialize Maestro AI provider settings interactively',
 )]
 class InitCommand extends Command

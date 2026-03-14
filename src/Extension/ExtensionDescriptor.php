@@ -14,6 +14,7 @@ class ExtensionDescriptor
         public readonly string $name,
         public bool $enabled = true,
         public array $config = [],
+        public readonly string $source = 'manual',
     ) {
     }
 

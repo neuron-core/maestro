@@ -202,13 +202,91 @@ Create a Composer package for your extension:
 }
 ```
 
+### Auto-Discovery
+
+To enable automatic extension discovery, add the `extra.maestro` field to your `composer.json`:
+
+```json
+{
+    "name": "my-vendor/my-extension",
+    "type": "library",
+    "description": "My Maestro extension",
+    "require": {
+        "neuron-core/maestro": "^1.0"
+    },
+    "extra": {
+        "maestro": {
+            "extensions": [
+                "MyVendor\\MyExtension\\MyExtension"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "MyVendor\\MyExtension\\": "src/"
+        }
+    }
+}
+```
+
+The `extra.maestro.extensions` array should contain fully qualified class names of your extension classes. When users install your package via Composer and run `composer dump-autoload`, Maestro's discovery command will automatically detect and register your extensions.
+
+**Multiple Extensions:** A single package can declare multiple extensions:
+
+```json
+{
+    "extra": {
+        "maestro": {
+            "extensions": [
+                "MyVendor\\Package\\CoreExtension",
+                "MyVendor\\Package\\AdminExtension",
+                "MyVendor\\Package\\ReportingExtension"
+            ]
+        }
+    }
+}
+```
+
+**Disabling Extensions:** Users can disable auto-discovered extensions in their `.maestro/settings.json`:
+
+```json
+{
+    "extensions": {
+        "MyVendor\\Package\\CoreExtension": {
+            "enabled": false
+        },
+        "MyVendor\\Package\\AdminExtension": {
+            "enabled": true,
+            "config": {
+                "api_key": "your-api-key"
+            }
+        }
+    }
+}
+```
+
+**Manual Registration:** Extensions can still be manually registered in `.maestro/settings.json` even if they are not auto-discovered:
+
+```json
+{
+    "extensions": {
+        "MyVendor\\AnotherExtension\\CustomExtension": {
+            "enabled": true,
+            "config": {
+                "option": "value"
+            }
+        }
+    }
+}
+```
+
 Users can then install your extension:
 
 ```bash
 composer require my-vendor/my-extension
 ```
 
-And configure it in `.maestro/settings.json`.
+After installation, run `composer dump-autoload` to trigger auto-discovery, or manually run `maestro discover`. Extensions can be configured in `.maestro/settings.json`.
 
 ## UI Customization
 
