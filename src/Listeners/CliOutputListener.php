@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Listeners;
 
 use NeuronAI\Workflow\Interrupt\Action;
-use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Console\SelectMenuHelper;
+use NeuronCore\Maestro\Console\SpinnerProgress;
+use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
-use NeuronCore\Maestro\Console\SpinnerProgress;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Ui\SlotType;
 use NeuronCore\Maestro\Extension\Ui\UiEngine;
+use NeuronCore\Maestro\Rendering\MarkdownRenderer;
 use NeuronCore\Maestro\Settings\SettingsInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,6 +37,7 @@ class CliOutputListener
         protected readonly SettingsInterface $settings,
         protected readonly RendererRegistry $renderers,
         protected readonly UiEngine $uiEngine,
+        protected readonly MarkdownRenderer $markdownRenderer,
     ) {
     }
 
@@ -48,7 +50,8 @@ class CliOutputListener
     public function onResponse(AgentResponseEvent $event): void
     {
         $this->clearLine();
-        $this->uiEngine->slots()->slot(SlotType::CONTENT)->add($event->content);
+        $content = $this->markdownRenderer->render($event->content);
+        $this->uiEngine->slots()->slot(SlotType::CONTENT)->add($content);
         $this->renderCycle();
     }
 

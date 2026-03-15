@@ -20,6 +20,7 @@ use NeuronCore\Maestro\Extension\ExtensionLoader;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Listeners\CliOutputListener;
 use NeuronCore\Maestro\Orchestrator\AgentOrchestrator;
+use NeuronCore\Maestro\Rendering\MarkdownRenderer;
 use NeuronCore\Maestro\Rendering\Renderers\GenericRenderer;
 use NeuronCore\Maestro\Settings\Settings;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -112,6 +113,7 @@ class MaestroCommand extends Command
             $settings,
             $this->loader->renderers(),
             $this->loader->uiEngine(),
+            new MarkdownRenderer($this->loader->uiEngine()->theme()),
         );
 
         $dispatcher->subscribe(AgentThinkingEvent::class, $listener->onThinking(...));

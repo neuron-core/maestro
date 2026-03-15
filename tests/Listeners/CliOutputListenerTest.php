@@ -6,12 +6,13 @@ namespace NeuronCore\Maestro\Tests\Listeners;
 
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
-use NeuronCore\Maestro\Extension\Ui\SlotType;
 use NeuronCore\Maestro\Extension\Ui\SlotRegistry;
+use NeuronCore\Maestro\Extension\Ui\SlotType;
 use NeuronCore\Maestro\Extension\Ui\Theme\DarkTheme;
 use NeuronCore\Maestro\Extension\Ui\UiEngine;
 use NeuronCore\Maestro\Extension\Ui\WidgetRegistry;
 use NeuronCore\Maestro\Listeners\CliOutputListener;
+use NeuronCore\Maestro\Rendering\MarkdownRenderer;
 use NeuronCore\Maestro\Rendering\Renderers\GenericRenderer;
 use NeuronCore\Maestro\Settings\SettingsInterface;
 use PHPUnit\Framework\TestCase;
@@ -30,6 +31,7 @@ class CliOutputListenerTest extends TestCase
             $settings,
             new RendererRegistry(new GenericRenderer()),
             $uiEngine,
+            new MarkdownRenderer($uiEngine->theme()),
         );
     }
 
