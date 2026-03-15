@@ -342,13 +342,13 @@ class ExtensionLoader
             renderers: new RendererRegistry($fallbackRenderer),
             events: new EventRegistry(),
             memories: new MemoryRegistry(),
+            settings: $settings,
             uiEngine: new UiEngine(
                 new DarkTheme(),
                 new SlotRegistry(),
                 new WidgetRegistry(),
             ),
             manifestPath: $manifestPath,
-            settings: $settings,
         );
     }
 }

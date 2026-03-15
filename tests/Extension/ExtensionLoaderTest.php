@@ -28,7 +28,7 @@ class ExtensionLoaderTest extends TestCase
     private RendererRegistry $renderers;
     private EventRegistry $events;
     private MemoryRegistry $memories;
-    private Settings $settings;
+    private \PHPUnit\Framework\MockObject\MockObject $settings;
 
     protected function setUp(): void
     {
