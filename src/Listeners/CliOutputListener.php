@@ -25,7 +25,9 @@ use function str_repeat;
 
 class CliOutputListener
 {
-    protected array $sessionAllowedActions = [];
+    protected array $sessionAllowedActions = [
+        'read_file'
+    ];
     protected ?SpinnerProgress $spinner = null;
 
     public function __construct(

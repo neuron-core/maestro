@@ -17,7 +17,6 @@ use NeuronAI\Chat\History\InMemoryChatHistory;
 use NeuronAI\Exceptions\WorkflowException;
 use NeuronAI\MCP\McpConnector;
 use NeuronAI\Observability\InspectorObserver;
-use NeuronAI\Tools\Toolkits\FileSystem\ReadFileTool;
 use NeuronCore\Maestro\Agent\Middleware\MemoryMiddleware;
 use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
@@ -75,10 +74,7 @@ class MaestroAgent extends Agent
             StructuredOutputNode::class => [$memory, $todo],
 
             ToolNode::class => [
-                new ToolApproval([
-                    // Disable approval for ReadFileTool by default
-                    ReadFileTool::class => fn (): bool => false,
-                ])
+                new ToolApproval()
             ],
         ];
     }

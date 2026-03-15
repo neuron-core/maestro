@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "neuron-agent-builder": {
+      "source": "/mnt/c/GitHub/maestro/vendor/neuron-core/neuron-ai/skills",
+      "sourceType": "local",
+      "computedHash": "45d3bc1eafb68c38ad0a8bfbf7fef1626928457d0cc8580924f610ef26810bab"
+    },
+    "neuron-tool-creator": {
+      "source": "/mnt/c/GitHub/maestro/vendor/neuron-core/neuron-ai/skills",
+      "sourceType": "local",
+      "computedHash": "71dacce7ad04c42f5b473c7953a6b2809367a18ac9f4afb2d77748eccea969b7"
+    },
+    "neuron-workflow-architect": {
+      "source": "/mnt/c/GitHub/maestro/vendor/neuron-core/neuron-ai/skills",
+      "sourceType": "local",
+      "computedHash": "df39a4a033ce2559f8c5fb6b398b5551c844bdfe88d746325bc8592038287023"
+    }
+  }
+}
