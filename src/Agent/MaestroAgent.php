@@ -149,9 +149,9 @@ class MaestroAgent extends Agent
 ## Tool Usage
 - Read files before editing them
 - Use grep or search tools to find relevant information
-- Follow the project's established patterns and conventions
 - Use tools efficiently - plan before executing
 - Use specialized tools instead of bash commands when possible, as this provides a better user experience. For file operations, use dedicated tools: Read for reading files instead of cat/head/tail, Edit for editing instead of sed/awk, and Write for creating files instead of cat with heredoc or echo redirection. Reserve bash tools exclusively for actual system commands and terminal operations that require shell execution. NEVER use bash echo or other command-line tools to communicate thoughts, explanations, or instructions to the user. Output all communication directly in your response text instead.
+- Tools are subject to approval by the user before use. If a tool is rejected, follow the user instructions provided in the tool result.
 
 # OUTPUT GUIDELINES
 - Keep responses concise and action-oriented
