@@ -20,6 +20,7 @@ use function str_contains;
 use function file_put_contents;
 use function json_encode;
 use function dirname;
+use function array_keys;
 
 use const JSON_PRETTY_PRINT;
 
@@ -270,5 +271,46 @@ class Settings implements SettingsInterface
         }
 
         return false; // Extension not found
+    }
+
+    /**
+     * Get all configured provider names.
+     *
+     * @return array<string>
+     */
+    public function getProviders(): array
+    {
+        if (!isset($this->settings['providers']) || !is_array($this->settings['providers'])) {
+            return [];
+        }
+
+        return array_keys($this->settings['providers']);
+    }
+
+    /**
+     * Get the current default provider name.
+     */
+    public function getDefaultProvider(): ?string
+    {
+        return $this->settings['default'] ?? null;
+    }
+
+    /**
+     * Set the default provider.
+     *
+     * @param string $providerName The provider name to set as default
+     * @return bool True if set successfully, false if provider doesn't exist
+     */
+    public function setDefaultProvider(string $providerName): bool
+    {
+        $providers = $this->settings['providers'] ?? [];
+
+        if (!isset($providers[$providerName])) {
+            return false;
+        }
+
+        $this->settings['default'] = $providerName;
+        $this->save();
+        return true;
     }
 }

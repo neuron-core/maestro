@@ -13,6 +13,7 @@ use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Extension\Ui\UiBuilder;
 use NeuronCore\Maestro\Extension\Ui\WidgetInterface;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
+use NeuronCore\Maestro\Settings\Settings;
 use NeuronAI\Tools\ToolInterface;
 
 /**
@@ -27,6 +28,7 @@ class ExtensionApi
         protected readonly EventRegistry $events,
         protected readonly UiBuilder $ui,
         protected readonly MemoryRegistry $memories,
+        protected readonly Settings $settings,
     ) {
     }
 
@@ -130,5 +132,13 @@ class ExtensionApi
     public function memories(): MemoryRegistry
     {
         return $this->memories;
+    }
+
+    /**
+     * Get the Settings instance for accessing configuration.
+     */
+    public function settings(): Settings
+    {
+        return $this->settings;
     }
 }

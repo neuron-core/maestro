@@ -15,6 +15,7 @@ use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
 use NeuronCore\Maestro\Extension\Ui\UiEngine;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
+use NeuronCore\Maestro\Settings\Settings;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -27,6 +28,7 @@ class ExtensionLoaderTest extends TestCase
     private RendererRegistry $renderers;
     private EventRegistry $events;
     private MemoryRegistry $memories;
+    private Settings $settings;
 
     protected function setUp(): void
     {
@@ -35,6 +37,7 @@ class ExtensionLoaderTest extends TestCase
         $this->renderers = new RendererRegistry($this->createMockRenderer());
         $this->events = new EventRegistry();
         $this->memories = new MemoryRegistry();
+        $this->settings = $this->createMock(Settings::class);
     }
 
     /**
@@ -48,7 +51,9 @@ class ExtensionLoaderTest extends TestCase
             $this->renderers,
             $this->events,
             $this->memories,
-            manifestPath: __DIR__ . '/non-existent-manifest.php',
+            $this->settings,
+            null,
+            __DIR__ . '/non-existent-manifest.php',
         );
     }
 
@@ -149,7 +154,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testCreateReturnsLoaderInstance(): void
     {
-        $loader = ExtensionLoader::create($this->createMockRenderer());
+        $loader = ExtensionLoader::create($this->createMockRenderer(), $this->settings);
 
         $this->assertInstanceOf(ExtensionLoader::class, $loader);
     }

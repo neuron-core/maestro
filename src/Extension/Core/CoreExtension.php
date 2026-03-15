@@ -6,6 +6,7 @@ namespace NeuronCore\Maestro\Extension\Core;
 
 use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Extension\Core\Commands\ExtensionsInlineCommand;
+use NeuronCore\Maestro\Extension\Core\Commands\ProviderInlineCommand;
 use NeuronCore\Maestro\Extension\ExtensionApi;
 use NeuronCore\Maestro\Extension\ExtensionInterface;
 use NeuronCore\Maestro\Extension\Ui\SlotType;
@@ -35,7 +36,8 @@ class CoreExtension implements ExtensionInterface
 
     protected function registerCommands(ExtensionApi $api): void
     {
-        $api->registerCommand(new ExtensionsInlineCommand());
+        $api->registerCommand(new ExtensionsInlineCommand($api->settings()));
+        $api->registerCommand(new ProviderInlineCommand($api->settings()));
     }
 
     protected function registerUi(ExtensionApi $api): void

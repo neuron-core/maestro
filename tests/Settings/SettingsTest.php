@@ -340,4 +340,87 @@ class SettingsTest extends TestCase
         $this->assertEmpty($settings->all());
         $this->assertNull($settings->get('any.key'));
     }
+
+    public function testGetProvidersReturnsEmptyArrayWhenNoProviders(): void
+    {
+        $config = ['default' => 'anthropic'];
+        file_put_contents($this->tempSettingsPath, json_encode($config));
+
+        $settings = new Settings($this->tempSettingsPath);
+        $providers = $settings->getProviders();
+
+        $this->assertEmpty($providers);
+    }
+
+    public function testGetProvidersReturnsProviderNames(): void
+    {
+        $config = [
+            'default' => 'anthropic',
+            'providers' => [
+                'anthropic' => ['api_key' => 'test'],
+                'openai' => ['api_key' => 'test'],
+                'gemini' => ['api_key' => 'test'],
+            ],
+        ];
+        file_put_contents($this->tempSettingsPath, json_encode($config));
+
+        $settings = new Settings($this->tempSettingsPath);
+        $providers = $settings->getProviders();
+
+        $this->assertSame(['anthropic', 'openai', 'gemini'], $providers);
+    }
+
+    public function testGetDefaultProviderReturnsNullWhenNotSet(): void
+    {
+        $settings = new Settings('/non/existent/path.json');
+
+        $this->assertNull($settings->getDefaultProvider());
+    }
+
+    public function testGetDefaultProviderReturnsValueWhenSet(): void
+    {
+        $config = [
+            'default' => 'openai',
+            'providers' => ['openai' => ['api_key' => 'test']],
+        ];
+        file_put_contents($this->tempSettingsPath, json_encode($config));
+
+        $settings = new Settings($this->tempSettingsPath);
+
+        $this->assertSame('openai', $settings->getDefaultProvider());
+    }
+
+    public function testSetDefaultProviderReturnsFalseForNonExistentProvider(): void
+    {
+        $config = [
+            'default' => 'anthropic',
+            'providers' => ['anthropic' => ['api_key' => 'test']],
+        ];
+        file_put_contents($this->tempSettingsPath, json_encode($config));
+
+        $settings = new Settings($this->tempSettingsPath);
+
+        $this->assertFalse($settings->setDefaultProvider('openai'));
+        $this->assertSame('anthropic', $settings->getDefaultProvider());
+    }
+
+    public function testSetDefaultProviderUpdatesSettings(): void
+    {
+        $config = [
+            'default' => 'anthropic',
+            'providers' => [
+                'anthropic' => ['api_key' => 'test'],
+                'openai' => ['api_key' => 'test'],
+            ],
+        ];
+        file_put_contents($this->tempSettingsPath, json_encode($config));
+
+        $settings = new Settings($this->tempSettingsPath);
+
+        $this->assertTrue($settings->setDefaultProvider('openai'));
+
+        // Reload to verify persistence
+        $reloaded = new Settings($this->tempSettingsPath);
+        $this->assertSame('openai', $reloaded->getDefaultProvider());
+    }
 }

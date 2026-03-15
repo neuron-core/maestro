@@ -27,6 +27,9 @@ use function trim;
 
 use const SIG_DFL;
 use const STDIN;
+use const SIGINT;
+use const SIGQUIT;
+use const SIGTERM;
 
 class SelectMenuHelper
 {

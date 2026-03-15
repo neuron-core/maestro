@@ -14,6 +14,7 @@ use NeuronCore\Maestro\Extension\Ui\Theme\DarkTheme;
 use NeuronCore\Maestro\Extension\Ui\UiEngine;
 use NeuronCore\Maestro\Extension\Ui\WidgetRegistry;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
+use NeuronCore\Maestro\Settings\Settings;
 use Throwable;
 use InvalidArgumentException;
 use RuntimeException;
@@ -42,6 +43,7 @@ class ExtensionLoader
         protected readonly RendererRegistry $renderers,
         protected readonly EventRegistry $events,
         protected readonly MemoryRegistry $memories,
+        protected readonly Settings $settings,
         protected ?UiEngine $uiEngine = null,
         protected readonly string $manifestPath = self::MANIFEST_PATH,
     ) {
@@ -261,6 +263,7 @@ class ExtensionLoader
             events: $this->events,
             ui: $this->uiEngine()->createBuilder(),
             memories: $this->memories,
+            settings: $this->settings,
         );
 
         $extension->register($api);
@@ -331,7 +334,7 @@ class ExtensionLoader
     /**
      * Create a loader with default registries.
      */
-    public static function create(ToolRenderer $fallbackRenderer, string $manifestPath = self::MANIFEST_PATH): self
+    public static function create(ToolRenderer $fallbackRenderer, Settings $settings, string $manifestPath = self::MANIFEST_PATH): self
     {
         return new self(
             tools: new ToolRegistry(),
@@ -345,6 +348,7 @@ class ExtensionLoader
                 new WidgetRegistry(),
             ),
             manifestPath: $manifestPath,
+            settings: $settings,
         );
     }
 }

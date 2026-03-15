@@ -28,6 +28,11 @@ use const STDIN;
  */
 class ExtensionsInlineCommand implements InlineCommand
 {
+    public function __construct(
+        protected readonly Settings $settings
+    ) {
+    }
+
     public function getName(): string
     {
         return 'extensions';
@@ -40,8 +45,7 @@ class ExtensionsInlineCommand implements InlineCommand
 
     public function execute(string $args, InputInterface $input, OutputInterface $output): void
     {
-        $settings = new Settings();
-        $extensions = $settings->getExtensions();
+        $extensions = $this->settings->getExtensions();
 
         if ($extensions === []) {
             $this->showNoExtensionsMessage($output);
@@ -61,7 +65,7 @@ class ExtensionsInlineCommand implements InlineCommand
             return;
         }
 
-        $this->toggleExtension($output, $settings, $extensions);
+        $this->toggleExtension($output, $this->settings, $extensions);
     }
 
     /**

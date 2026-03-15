@@ -19,6 +19,7 @@ use NeuronCore\Maestro\Extension\Ui\UiBuilder;
 use NeuronCore\Maestro\Extension\Ui\WidgetInterface;
 use NeuronCore\Maestro\Extension\Ui\WidgetRegistry;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
+use NeuronCore\Maestro\Settings\Settings;
 use PHPUnit\Framework\TestCase;
 
 use function file_put_contents;
@@ -32,6 +33,7 @@ class ExtensionApiTest extends TestCase
     private RendererRegistry $renderers;
     private EventRegistry $events;
     private MemoryRegistry $memories;
+    private Settings $settings;
     private ExtensionApi $api;
 
     protected function setUp(): void
@@ -41,6 +43,7 @@ class ExtensionApiTest extends TestCase
         $this->renderers = new RendererRegistry($this->createMockRenderer());
         $this->events = new EventRegistry();
         $this->memories = new MemoryRegistry();
+        $this->settings = $this->createMock(Settings::class);
 
         $ui = new UiBuilder(
             new DarkTheme(),
@@ -55,6 +58,7 @@ class ExtensionApiTest extends TestCase
             $this->events,
             $ui,
             $this->memories,
+            $this->settings,
         );
     }
 
@@ -118,7 +122,7 @@ class ExtensionApiTest extends TestCase
     {
         $widgets = new WidgetRegistry();
         $ui = new UiBuilder(new DarkTheme(), new SlotRegistry(), $widgets);
-        $api = new ExtensionApi($this->tools, $this->commands, $this->renderers, $this->events, $ui, $this->memories);
+        $api = new ExtensionApi($this->tools, $this->commands, $this->renderers, $this->events, $ui, $this->memories, $this->settings);
 
         $widget = $this->createMock(WidgetInterface::class);
         $widget->method('name')->willReturn('my_widget');
@@ -145,6 +149,11 @@ class ExtensionApiTest extends TestCase
     public function testMemoriesReturnsSameRegistry(): void
     {
         $this->assertSame($this->memories, $this->api->memories());
+    }
+
+    public function testSettingsReturnsSettingsInstance(): void
+    {
+        $this->assertSame($this->settings, $this->api->settings());
     }
 
     private function createMockTool(string $name): ToolInterface

@@ -81,7 +81,7 @@ class MaestroCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->loader = ExtensionLoader::create(new GenericRenderer());
+        $this->loader = ExtensionLoader::create(new GenericRenderer(), $settings);
 
         // Register core extensions first so user extensions can override them
         $this->loader->registerCore(
