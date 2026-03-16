@@ -7,6 +7,12 @@ with interactive tool approval.
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+> [!IMPORTANT]
+> Get early access to new features, exclusive tutorials, and expert tips for building AI agents in PHP. Join a community of PHP developers pioneering the future of AI development.
+> [Subscribe to the newsletter](https://neuron-ai.dev)
+
+> Before moving on, support the community giving a GitHub star ⭐️. Thank you!
+
 [![](assets/maestro-agent-clip.gif)](https://neuron-ai.dev)
 
 ## About Maestro
@@ -143,8 +149,8 @@ Add Model Context Protocol servers to extend the agent's capabilities:
 Start an interactive chat session:
 
 ```bash
-# Mavigate to the project directory 
-cd path/project 
+# Mavigate to the project directory
+cd path/project
 
 # Start the maestro CLI
 maestro
