@@ -13,7 +13,7 @@ with interactive tool approval.
 
 > Before moving on, support the community giving a GitHub star ⭐️. Thank you!
 
-[![](assets/maestro-agent-clip.gif)](https://neuron-ai.dev)
+[![](assets/maestro.png)](https://www.youtube.com/watch?v=F01ZQWSAsw0)
 
 ## About Maestro
 
