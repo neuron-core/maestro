@@ -9,7 +9,6 @@ use NeuronCore\Maestro\Agent\MaestroAgent;
 use NeuronCore\Maestro\Console\Inline\DiscoverInlineCommand;
 use NeuronCore\Maestro\Console\Inline\HelpInlineCommand;
 use NeuronCore\Maestro\Console\Inline\InitInlineCommand;
-use NeuronCore\Maestro\Console\RichInput;
 use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\EventBus\EventDispatcher;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
@@ -29,7 +28,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-use function function_exists;
 use function in_array;
 use function preg_split;
 use function readline;
@@ -44,7 +42,6 @@ use function trim;
 class MaestroCommand extends Command
 {
     protected ExtensionLoader $loader;
-    protected RichInput $inputReader;
 
     /**
      * @throws Throwable
@@ -78,7 +75,6 @@ class MaestroCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->inputReader = new RichInput();
         $this->loader = ExtensionLoader::create(new GenericRenderer(), $settings);
 
         // Register core extensions first so user extensions can override them
@@ -164,13 +160,8 @@ class MaestroCommand extends Command
 
     protected function readInput(string $prompt): string
     {
-        // Use native readline() if available - it provides rich line editing with cursor navigation
-        if (function_exists('readline')) {
-            return (string) readline($prompt);
-        }
-
-        // Fall back to custom implementation
-        return $this->inputReader->read($prompt);
+        // The native readline() function provides full cursor navigation and line editing out of the box.
+        return (string) readline($prompt);
     }
 
     protected function readInlineCommand(string $input): array
