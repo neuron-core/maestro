@@ -17,7 +17,7 @@ use function substr_replace;
 use function fgets;
 use function rtrim;
 
-use const STDERR;
+use const STDOUT;
 use const STDIN;
 
 /**
@@ -56,7 +56,7 @@ class RichInput
         // Check if we're in an interactive terminal
         if (!$this->isInteractive()) {
             // Fallback to simple fgets if not interactive
-            echo $prompt;
+            fwrite(STDOUT, $prompt);
             $input = (string) fgets($this->inputHandle);
             return $this->cleanUp($input);
         }
@@ -65,7 +65,7 @@ class RichInput
         $this->setRawMode();
 
         // Echo the prompt
-        fwrite(STDERR, $prompt);
+        fwrite(STDOUT, $prompt);
 
         $buffer = '';
         $cursorPos = 0;
@@ -87,14 +87,14 @@ class RichInput
 
                 // Handle Ctrl+C (interrupt)
                 if ($char === "\003") {
-                    echo "\n";
+                    fwrite(STDOUT, "\n");
                     exit(130); // Standard exit code for Ctrl+C
                 }
 
                 // Handle Ctrl+D (EOF)
                 if ($char === "\004") {
                     if ($buffer === '') {
-                        echo "\n";
+                        fwrite(STDOUT, "\n");
                         exit(0);
                     }
                     continue;
@@ -102,7 +102,7 @@ class RichInput
 
                 // Handle Enter/Return
                 if ($char === "\n" || $char === "\r") {
-                    echo "\n";
+                    fwrite(STDOUT, "\n");
                     break;
                 }
 
@@ -217,10 +217,10 @@ class RichInput
     private function redraw(string $prompt, string $buffer, int $cursorPos): void
     {
         // Clear the entire line and move to start
-        fwrite(STDERR, "\r\033[K");
+        fwrite(STDOUT, "\r\033[K");
 
         // Write prompt and buffer
-        fwrite(STDERR, $prompt . $buffer);
+        fwrite(STDOUT, $prompt . $buffer);
 
         // Move cursor to correct position
         $promptLength = strlen($prompt);
@@ -228,7 +228,7 @@ class RichInput
         if ($cursorPos < strlen($buffer)) {
             // Move cursor backward
             $diff = strlen($buffer) - $cursorPos;
-            fwrite(STDERR, "\033[{$diff}D");
+            fwrite(STDOUT, "\033[{$diff}D");
         }
     }
 
