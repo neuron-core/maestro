@@ -17,7 +17,6 @@ with interactive tool approval.
 
 ## About Maestro
 
-While most AI coding agents are written in Python or TypeScript, Maestro demonstrates that PHP can deliver a world-class agentic experience in the CLI environment. Built on the modern [Neuron AI framework](https://docs.neuron-ai.dev), Maestro provides:
 While most CLI agents are written in Python or TypeScript, Maestro demonstrates that PHP can deliver a world-class AI experience. Built on the modern [Neuron AI framework](https://docs.neuron-ai.dev), Maestro provides:
 
 - **Native PHP Architecture**: Every component—agent orchestration, CLI interface, event system—is implemented in PHP
@@ -31,7 +30,7 @@ While most CLI agents are written in Python or TypeScript, Maestro demonstrates 
 
 For a full introduction to the project architecture, you can read the article below:
 
-https://inspector.dev/building-a-coding-agent-in-php-a-walk-through-maestro/
+https://inspector.dev/maestro-a-customizable-cli-agent-built-in-php/
 
 ## Requirements
 
