@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Ui;
 
-use function sprintf;
-
 /**
  * Builder API for extensions to customize UI.
  */
@@ -86,32 +84,5 @@ class UiBuilder
     public function widgets(): WidgetRegistry
     {
         return $this->widgets;
-    }
-
-    /**
-     * Format text with theme colors.
-     */
-    public function formatText(string $text, ?ColorName $color = null, ?StyleName $style = null): string
-    {
-        $color ??= ColorName::PRIMARY;
-        $style ??= StyleName::DEFAULT;
-
-        $theme = $this->theme();
-        $colorCode = $theme->color($color);
-        $styleCode = $theme->style($style);
-
-        if ($colorCode === '' && $styleCode === '') {
-            return $text;
-        }
-
-        if ($colorCode === '') {
-            return sprintf('<%s>%s</>', $styleCode, $text);
-        }
-
-        if ($styleCode === '') {
-            return sprintf('<fg=%s>%s</>', $colorCode, $text);
-        }
-
-        return sprintf('<fg=%s;%s>%s</>', $colorCode, $styleCode, $text);
     }
 }

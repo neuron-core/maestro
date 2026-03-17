@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Rendering\Renderers;
 
-use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 
 use function implode;
@@ -40,16 +40,16 @@ class SnippetRenderer implements ToolRenderer
 
         $display = '';
         if (count($parts) < 2) {
-            $display = Text::content(implode(', ', array_values($parts)))->yellow()->build();
+            $display = Text::content(implode(', ', array_values($parts)))->warning()->build();
         } else {
             foreach ($parts as $key => $part) {
-                $display .= "\n    ".Text::content($key.': ')->blue()->build() . $part;
+                $display .= "\n    ".Text::content($key.': ')->info()->build() . $part;
             }
             $display .= "\n";
         }
 
-        return Text::content("● {$toolName}(")->yellow()->build()
+        return Text::content("● {$toolName}(")->warning()->build()
             . $display
-            . Text::content(")")->yellow()->build();
+            . Text::content(")")->warning()->build();
     }
 }

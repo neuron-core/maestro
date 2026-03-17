@@ -37,38 +37,6 @@ class UiBuilderTest extends TestCase
         return $mock;
     }
 
-    public function testFormatTextWithColor(): void
-    {
-        $theme = $this->createTheme([[ColorName::PRIMARY, 'cyan']]);
-        $builder = new UiBuilder($theme, new SlotRegistry(), new WidgetRegistry());
-
-        $this->assertSame('<fg=cyan>test</>', $builder->formatText('test', ColorName::PRIMARY));
-    }
-
-    public function testFormatTextWithStyle(): void
-    {
-        $theme = $this->createTheme([[ColorName::PRIMARY, 'blue']], [[StyleName::BOLD, 'options=bold']]);
-        $builder = new UiBuilder($theme, new SlotRegistry(), new WidgetRegistry());
-
-        $this->assertSame('<fg=blue;options=bold>test</>', $builder->formatText('test', ColorName::PRIMARY, StyleName::BOLD));
-    }
-
-    public function testFormatTextWithColorAndStyle(): void
-    {
-        $theme = $this->createTheme([[ColorName::SUCCESS, 'green']], [[StyleName::DIM, 'options=dim']]);
-        $builder = new UiBuilder($theme, new SlotRegistry(), new WidgetRegistry());
-
-        $this->assertSame('<fg=green;options=dim>test</>', $builder->formatText('test', ColorName::SUCCESS, StyleName::DIM));
-    }
-
-    public function testFormatTextWithNoFormatting(): void
-    {
-        $theme = $this->createTheme([[ColorName::PRIMARY, '']], [[StyleName::DEFAULT, '']]);
-        $builder = new UiBuilder($theme, new SlotRegistry(), new WidgetRegistry());
-
-        $this->assertSame('test', $builder->formatText('test'));
-    }
-
     public function testAddToSlot(): void
     {
         $slots = new SlotRegistry();

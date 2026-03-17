@@ -6,20 +6,17 @@ namespace NeuronCore\Maestro\Extension\Core\Commands;
 
 use NeuronCore\Maestro\Console\Inline\InlineCommand;
 use NeuronCore\Maestro\Console\SelectMenuHelper;
-use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Settings\Settings;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function fgets;
 use function sprintf;
-use function str_starts_with;
 use function strtolower;
-use function substr;
 use function trim;
 use function end;
 use function explode;
-use function str_ends_with;
 
 use const STDIN;
 
@@ -56,11 +53,11 @@ class ExtensionsInlineCommand implements InlineCommand
 
         // Ask if the user wants to toggle an extension
         $output->writeln('');
-        $output->writeln(Text::content('Toggle an extension? (y/n): ')->yellow()->build());
+        $output->writeln(Text::content('Toggle an extension? (y/n): ')->warning()->build());
         $response = trim(fgets(STDIN));
 
         if (strtolower($response) !== 'y') {
-            $output->writeln(Text::content('Cancelled.')->cyan()->build());
+            $output->writeln(Text::content('Cancelled.')->info()->build());
             $output->writeln('');
             return;
         }
@@ -74,12 +71,12 @@ class ExtensionsInlineCommand implements InlineCommand
     protected function showNoExtensionsMessage(OutputInterface $output): void
     {
         $output->writeln('');
-        $output->writeln(Text::content('No extensions configured in settings.json.')->yellow()->build());
+        $output->writeln(Text::content('No extensions configured in settings.json.')->warning()->build());
         $output->writeln('');
-        $output->writeln(Text::content('To add an extension, add it to the extensions array:')->gray()->build());
-        $output->writeln(Text::content('  "extensions": [')->gray()->build());
-        $output->writeln(Text::content('    { "class": "Your\\\\Extension\\\\Class", "enabled": true }')->gray()->build());
-        $output->writeln(Text::content('  ]')->gray()->build());
+        $output->writeln(Text::content('To add an extension, add it to the extensions array:')->muted()->build());
+        $output->writeln(Text::content('  "extensions": [')->muted()->build());
+        $output->writeln(Text::content('    { "class": "Your\\\\Extension\\\\Class", "enabled": true }')->muted()->build());
+        $output->writeln(Text::content('  ]')->muted()->build());
         $output->writeln('');
     }
 
@@ -91,19 +88,19 @@ class ExtensionsInlineCommand implements InlineCommand
     protected function showExtensionsList(OutputInterface $output, array $extensions): void
     {
         $output->writeln('');
-        $output->writeln(Text::content('Installed Extensions:')->white()->bold()->build());
+        $output->writeln(Text::content('Installed Extensions:')->bold()->build());
         $output->writeln('');
 
         foreach ($extensions as $i => $extension) {
             $className = $extension['class'] ?? 'Unknown';
             $enabled = $extension['enabled'] ?? true;
             $status = $enabled
-                ? Text::content(' [ENABLED] ')->green()->bold()->build()
-                : Text::content(' [DISABLED]')->red()->bold()->build();
+                ? Text::content(' [ENABLED] ')->success()->bold()->build()
+                : Text::content(' [DISABLED]')->error()->bold()->build();
             $displayName = $this->getDisplayName($className);
 
             $output->writeln(sprintf('  %d) %s%s', $i + 1, $status, $displayName));
-            $output->writeln(Text::content('     ' . $className)->gray()->build());
+            $output->writeln(Text::content('     ' . $className)->muted()->build());
         }
     }
 
@@ -128,7 +125,7 @@ class ExtensionsInlineCommand implements InlineCommand
 
         $output->writeln('');
         $selectedIndex = $menu->ask(
-            Text::content('Select an extension to toggle:')->yellow()->build(),
+            Text::content('Select an extension to toggle:')->warning()->build(),
             $options
         );
 
@@ -139,15 +136,15 @@ class ExtensionsInlineCommand implements InlineCommand
         if ($currentlyEnabled) {
             $settings->disableExtension($className);
             $output->writeln('');
-            $output->writeln(Text::content('Extension disabled.')->cyan()->build());
+            $output->writeln(Text::content('Extension disabled.')->info()->build());
         } else {
             $settings->enableExtension($className);
             $output->writeln('');
-            $output->writeln(Text::content('Extension enabled.')->cyan()->build());
+            $output->writeln(Text::content('Extension enabled.')->info()->build());
         }
 
         $output->writeln('');
-        $output->writeln(Text::content('Note: You may need to restart Maestro for changes to take full effect.')->yellow()->build());
+        $output->writeln(Text::content('Note: You may need to restart Maestro for changes to take full effect.')->warning()->build());
         $output->writeln('');
     }
 

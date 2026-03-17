@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Tests\Rendering\Renderers;
 
+use NeuronCore\Maestro\Extension\Ui\Theme\DarkTheme;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Rendering\Renderers\SnippetRenderer;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 use PHPUnit\Framework\TestCase;
@@ -12,9 +14,17 @@ use function preg_replace;
 
 class SnippetRendererTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Text::setTheme(new DarkTheme());
+    }
+
     private function stripAnsiCodes(string $text): string
     {
-        return (string) preg_replace('/\x1b\[[0-9;]*m/', '', $text);
+        $text = (string) preg_replace('/\x1b\[[0-9;]*m/', '', $text);
+        // Also strip Symfony Console format tags (both opening and closing)
+        return (string) preg_replace('/<(\/|fg|bg|options)[^>]*>/m', '', $text);
     }
 
     public function testImplementsToolRenderer(): void

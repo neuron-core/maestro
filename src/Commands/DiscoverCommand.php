@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Commands;
 
-use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -65,7 +65,7 @@ class DiscoverCommand extends Command
         $packages = $this->loadInstalledPackages();
 
         if ($packages === []) {
-            $output->writeln(Text::content('No installed packages found. Run `composer install` first.')->yellow()->build());
+            $output->writeln(Text::content('No installed packages found. Run `composer install` first.')->warning()->build());
             $output->writeln('');
             return Command::FAILURE;
         }
@@ -73,9 +73,9 @@ class DiscoverCommand extends Command
         $manifest = $this->scanPackagesForExtensions($packages);
 
         if ($manifest === []) {
-            $output->writeln(Text::content('No Maestro extensions discovered.')->gray()->build());
+            $output->writeln(Text::content('No Maestro extensions discovered.')->muted()->build());
             $output->writeln('');
-            $output->writeln(Text::content('To add extensions to a package, add the following to its composer.json:')->gray()->build());
+            $output->writeln(Text::content('To add extensions to a package, add the following to its composer.json:')->muted()->build());
             $output->writeln(json_encode([
                 'extra' => [
                     'maestro' => [
@@ -92,16 +92,16 @@ class DiscoverCommand extends Command
         $extensionCount = count($manifest);
         $packageCount = count(array_unique(array_map(fn (array $e): string => $e['package'], $manifest)));
 
-        $output->writeln(Text::content("Discovered {$extensionCount} extension(s) from {$packageCount} package(s):")->green()->build());
+        $output->writeln(Text::content("Discovered {$extensionCount} extension(s) from {$packageCount} package(s):")->success()->build());
         $output->writeln('');
 
         foreach ($manifest as $entry) {
-            $output->writeln(Text::content("  • {$entry['class']}")->cyan()->build());
-            $output->writeln(Text::content("    from: {$entry['package']}")->gray()->build());
+            $output->writeln(Text::content("  • {$entry['class']}")->info()->build());
+            $output->writeln(Text::content("    from: {$entry['package']}")->muted()->build());
         }
 
         $output->writeln('');
-        $output->writeln(Text::content('Manifest written to: ' . self::MANIFEST_PATH)->gray()->build());
+        $output->writeln(Text::content('Manifest written to: ' . self::MANIFEST_PATH)->muted()->build());
         $output->writeln('');
 
         return Command::SUCCESS;

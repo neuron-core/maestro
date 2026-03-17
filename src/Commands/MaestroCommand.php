@@ -9,8 +9,8 @@ use NeuronCore\Maestro\Agent\MaestroAgent;
 use NeuronCore\Maestro\Console\Inline\DiscoverInlineCommand;
 use NeuronCore\Maestro\Console\Inline\HelpInlineCommand;
 use NeuronCore\Maestro\Console\Inline\InitInlineCommand;
-use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\EventBus\EventDispatcher;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
@@ -53,7 +53,7 @@ class MaestroCommand extends Command
         // Auto-run init if settings don't exist
         if (!$settings->fileExists()) {
             $output->writeln('');
-            $output->writeln(Text::content('Welcome to Maestro settings configuration')->cyan()->build());
+            $output->writeln(Text::content('Welcome to Maestro settings configuration')->primary()->build());
             $output->writeln('');
 
             $initCommand = new InitInlineCommand();
@@ -64,13 +64,13 @@ class MaestroCommand extends Command
 
             // If init still didn't create valid settings, restart the wizard
             if (!$settings->fileExists()) {
-                $output->writeln(Text::content('Failed to initialize settings. Restarting wizard...')->red()->build());
+                $output->writeln(Text::content('Failed to initialize settings. Restarting wizard...')->error()->build());
                 $this->execute($input, $output);
             }
         }
 
         if (!$settings->hasValidProvider()) {
-            $output->writeln(Text::content('Warning: Settings file is missing a valid provider configuration.')->red()->build());
+            $output->writeln(Text::content('Warning: Settings file is missing a valid provider configuration.')->error()->build());
             $output->writeln('');
             return Command::FAILURE;
         }
@@ -78,15 +78,15 @@ class MaestroCommand extends Command
         $this->loader = ExtensionLoader::create(new GenericRenderer(), $settings);
 
         // Register core extensions first so user extensions can override them
-        $this->loader->registerCore(
+        $this->loader->register(
             new CoreExtension(),
         );
 
         // Load user extensions from settings
         try {
-            $this->loader->load($settings);
+            $this->loader->load($settings->getExtensions());
         } catch (Exception $e) {
-            $output->writeln(Text::content('Failed to load extensions: ' . $e->getMessage())->red()->build());
+            $output->writeln(Text::content('Failed to load extensions: ' . $e->getMessage())->error()->build());
             $output->writeln('');
         }
 
@@ -135,13 +135,13 @@ class MaestroCommand extends Command
                     try {
                         $this->loader->commands()->get($commandName)->execute($args, $input, $output);
                     } catch (Exception $e) {
-                        $output->writeln(Text::content('Command error: ' . $e->getMessage())->red()->build() . "\n");
+                        $output->writeln(Text::content('Command error: ' . $e->getMessage())->error()->build() . "\n");
                     }
                     continue;
                 }
 
-                $output->writeln(Text::content("Unknown command: /{$commandName}")->yellow()->build());
-                $output->writeln(Text::content('Type /help to list available commands.')->gray()->build());
+                $output->writeln(Text::content("Unknown command: /{$commandName}")->warning()->build());
+                $output->writeln(Text::content('Type /help to list available commands.')->muted()->build());
                 $output->writeln('');
                 continue;
             }
@@ -150,11 +150,11 @@ class MaestroCommand extends Command
                 $orchestrator->chat($userInput);
             } catch (Exception $e) {
 
-                $output->writeln(Text::content('Error: ' . $e->getMessage())->red()->build()."\n");
+                $output->writeln(Text::content('Error: ' . $e->getMessage())->error()->build()."\n");
             }
         }
 
-        $output->writeln(Text::content('Goodbye!')->cyan()->build());
+        $output->writeln(Text::content('Goodbye!')->primary()->build());
         return Command::SUCCESS;
     }
 

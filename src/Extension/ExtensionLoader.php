@@ -52,7 +52,7 @@ class ExtensionLoader
     /**
      * Register core (built-in) extensions directly, without a descriptor.
      */
-    public function registerCore(ExtensionInterface ...$extensions): void
+    public function register(ExtensionInterface ...$extensions): void
     {
         foreach ($extensions as $extension) {
             $this->initializeExtension($extension);
@@ -71,12 +71,11 @@ class ExtensionLoader
      *
      * @return array<ExtensionDescriptor>
      */
-    public function load(Settings $settings): array
+    public function load(array $extensions): array
     {
         $manifest = $this->loadManifest();
-        $settingsExtensions = $settings->getExtensions();
 
-        $extensions = $this->mergeExtensions($manifest, $settingsExtensions);
+        $extensions = $this->mergeExtensions($manifest, $extensions);
 
         foreach ($extensions as $descriptor) {
             // Only include extensions where the class exists

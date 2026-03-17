@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Console\Inline;
 
 use NeuronCore\Maestro\Commands\DiscoverCommand;
-use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,8 +44,8 @@ class DiscoverInlineCommand implements InlineCommand
 
         // Note about reloading
         $output->writeln('');
-        $output->writeln(Text::content('Extensions will be loaded on the next Maestro restart.')->cyan()->build());
-        $output->writeln(Text::content('To reload extensions immediately, exit and restart Maestro.')->gray()->build());
+        $output->writeln(Text::content('Extensions will be loaded on the next Maestro restart.')->info()->build());
+        $output->writeln(Text::content('To reload extensions immediately, exit and restart Maestro.')->muted()->build());
         $output->writeln('');
     }
 }

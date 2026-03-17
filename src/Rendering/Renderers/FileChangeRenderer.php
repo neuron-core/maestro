@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Rendering\Renderers;
 
-use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Rendering\ToolRenderer;
 
 use function escapeshellarg;
@@ -43,7 +43,7 @@ class FileChangeRenderer implements ToolRenderer
                 return $this->header($toolName, $path)
                     . $args['content']
                     . "\n\n"
-                    . Text::content("Tip: install the \"diff\" command to see a formatted diff: " . $this->diffInstallHint())->yellow()->build();
+                    . Text::content("Tip: install the \"diff\" command to see a formatted diff: " . $this->diffInstallHint())->warning()->build();
             }
 
             $diff = $this->generateDiff($path, $current, $args['content']);
@@ -112,13 +112,13 @@ class FileChangeRenderer implements ToolRenderer
             }
             if (str_starts_with($line, '-')) {
                 // Deletions - red
-                $colored[] = Text::content(substr($line, 0, 1) . '    ' . substr($line, 1))->red()->bold()->build();
+                $colored[] = Text::content(substr($line, 0, 1) . '    ' . substr($line, 1))->error()->bold()->build();
             } elseif (str_starts_with($line, '+')) {
                 // Additions - green
-                $colored[] = Text::content(substr($line, 0, 1) . '    ' . substr($line, 1))->green()->bold()->build();
+                $colored[] = Text::content(substr($line, 0, 1) . '    ' . substr($line, 1))->success()->bold()->build();
             } elseif (str_starts_with($line, ' ')) {
                 // Context - gray
-                $colored[] = Text::content('    '.$line)->gray()->build();
+                $colored[] = Text::content('    '.$line)->muted()->build();
             } elseif (str_starts_with($line, '\ No newline')) {
                 // Skip diff metadata lines
                 continue;

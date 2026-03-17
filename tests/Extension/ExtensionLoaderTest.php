@@ -65,7 +65,7 @@ class ExtensionLoaderTest extends TestCase
             ->method('getExtensions')
             ->willReturn([]);
 
-        $result = $loader->load($this->settings);
+        $result = $loader->load($this->settings->getExtensions());
 
         $this->assertSame([], $result);
     }
@@ -80,7 +80,7 @@ class ExtensionLoaderTest extends TestCase
                 ['class' => 'NonExistent\\Class'],
             ]);
 
-        $result = $loader->load($this->settings);
+        $result = $loader->load($this->settings->getExtensions());
 
         $this->assertSame([], $result);
     }
@@ -98,7 +98,7 @@ class ExtensionLoaderTest extends TestCase
                 ],
             ]);
 
-        $result = $loader->load($this->settings);
+        $result = $loader->load($this->settings->getExtensions());
 
         $this->assertCount(1, $result);
         $this->assertFalse($this->commands->has('test_command'));
@@ -117,7 +117,7 @@ class ExtensionLoaderTest extends TestCase
                 ],
             ]);
 
-        $result = $loader->load($this->settings);
+        $result = $loader->load($this->settings->getExtensions());
 
         $this->assertCount(1, $result);
         $this->assertTrue($this->commands->has('test_command'));
@@ -136,7 +136,7 @@ class ExtensionLoaderTest extends TestCase
                 ],
             ]);
 
-        $result = $loader->load($this->settings);
+        $result = $loader->load($this->settings->getExtensions());
 
         $this->assertCount(1, $result);
         $this->assertSame(['key' => 'value'], $result[0]->config);
@@ -163,7 +163,7 @@ class ExtensionLoaderTest extends TestCase
                 ],
             ]);
 
-        $loader->load($this->settings);
+        $loader->load($this->settings->getExtensions());
     }
 
     public function testCreateReturnsLoaderInstance(): void
@@ -197,7 +197,7 @@ class ExtensionLoaderTest extends TestCase
         $ext2 = $this->createMock(ExtensionInterface::class);
         $ext2->expects($this->once())->method('register');
 
-        $loader->registerCore($ext1, $ext2);
+        $loader->register($ext1, $ext2);
     }
 
     public function testDescriptorsReturnsLoadedDescriptors(): void
@@ -210,7 +210,7 @@ class ExtensionLoaderTest extends TestCase
                 ['class' => TestExtension::class],
             ]);
 
-        $loader->load($this->settings);
+        $loader->load($this->settings->getExtensions());
 
         $descriptors = $loader->descriptors();
 

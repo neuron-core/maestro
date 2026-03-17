@@ -6,7 +6,7 @@ namespace NeuronCore\Maestro\Extension\Core\Commands;
 
 use NeuronCore\Maestro\Console\Inline\InlineCommand;
 use NeuronCore\Maestro\Console\SelectMenuHelper;
-use NeuronCore\Maestro\Console\Text;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Settings\Settings;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -55,9 +55,9 @@ class ProviderInlineCommand implements InlineCommand
     protected function showNoProvidersMessage(OutputInterface $output): void
     {
         $output->writeln('');
-        $output->writeln(Text::content('No providers configured in settings.json.')->yellow()->build());
+        $output->writeln(Text::content('No providers configured in settings.json.')->warning()->build());
         $output->writeln('');
-        $output->writeln(Text::content('Run /init to set up your provider configuration.')->gray()->build());
+        $output->writeln(Text::content('Run /init to set up your provider configuration.')->muted()->build());
         $output->writeln('');
     }
 
@@ -71,26 +71,26 @@ class ProviderInlineCommand implements InlineCommand
         $defaultProvider = $this->settings->getDefaultProvider();
 
         $output->writeln('');
-        $output->writeln(Text::content('Configured Providers:')->white()->bold()->build());
+        $output->writeln(Text::content('Configured Providers:')->bold()->build());
         $output->writeln('');
 
         foreach ($providers as $provider) {
             $isDefault = $provider === $defaultProvider;
             $prefix = $isDefault ? '  * ' : '    ';
             $label = $isDefault
-                ? Text::content($prefix . $provider . ' (default)')->green()->bold()->build()
-                : Text::content($prefix . $provider)->white()->build();
+                ? Text::content($prefix . $provider . ' (default)')->success()->bold()->build()
+                : Text::content($prefix . $provider)->build();
 
             $output->writeln($label);
         }
 
         // Ask if the user wants to change the default
         $output->writeln('');
-        $output->writeln(Text::content('Change default provider? (y/n): ')->yellow()->build());
+        $output->writeln(Text::content('Change default provider? (y/n): ')->warning()->build());
         $response = trim(fgets(STDIN));
 
         if (strtolower($response) !== 'y') {
-            $output->writeln(Text::content('Cancelled.')->cyan()->build());
+            $output->writeln(Text::content('Cancelled.')->info()->build());
             $output->writeln('');
             return;
         }
@@ -121,7 +121,7 @@ class ProviderInlineCommand implements InlineCommand
 
         $output->writeln('');
         $selectedIndex = $menu->ask(
-            Text::content('Select default provider:')->yellow()->build(),
+            Text::content('Select default provider:')->warning()->build(),
             $options,
             $defaultIndex
         );
@@ -130,7 +130,7 @@ class ProviderInlineCommand implements InlineCommand
 
         if ($selectedProvider === $defaultProvider) {
             $output->writeln('');
-            $output->writeln(Text::content('No change. The selected provider is already the default.')->yellow()->build());
+            $output->writeln(Text::content('No change. The selected provider is already the default.')->warning()->build());
             $output->writeln('');
             return;
         }
@@ -139,12 +139,12 @@ class ProviderInlineCommand implements InlineCommand
 
         if ($success) {
             $output->writeln('');
-            $output->writeln(Text::content('Default provider changed to: ' . $selectedProvider)->green()->build());
+            $output->writeln(Text::content('Default provider changed to: ' . $selectedProvider)->success()->build());
             $output->writeln('');
-            $output->writeln(Text::content('Note: Restart Maestro for the change to take effect.')->yellow()->build());
+            $output->writeln(Text::content('Note: Restart Maestro for the change to take effect.')->warning()->build());
         } else {
             $output->writeln('');
-            $output->writeln(Text::content('Failed to set default provider.')->red()->build());
+            $output->writeln(Text::content('Failed to set default provider.')->error()->build());
         }
 
         $output->writeln('');

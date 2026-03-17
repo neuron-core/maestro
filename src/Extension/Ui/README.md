@@ -200,26 +200,17 @@ Use the `ColorName` enum for the standard names that all themes are expected to 
 
 ## Formatting text
 
-`UiBuilder::formatText()` wraps a string in Symfony Console markup using the active theme's colors and styles:
+The `Text` class wraps a string with appropriate markup using the active theme's colors and styles:
 
 ```php
-use NeuronCore\Maestro\Extension\Ui\ColorName;
-use NeuronCore\Maestro\Extension\Ui\StyleName;
+use NeuronCore\Maestro\Extension\Ui\Text;
 
-// Color only → <fg=cyan>text</>
-$line = $api->ui()->formatText('text', ColorName::PRIMARY);
+$primary = Text::content('text')->primary()->build();
 
-// Style only → <options=bold>text</>
-$line = $api->ui()->formatText('text', style: StyleName::BOLD);
-
-// Color + style → <fg=cyan;options=bold>text</>
-$line = $api->ui()->formatText('text', ColorName::PRIMARY,StyleName::BOLD);
-
-// No formatting (empty strings returned by theme) → text
-$line = $api->ui()->formatText('text');
+$warning = Text::content('text')->warning()->build();
 ```
 
-The formatted string can be passed directly to a slot or returned from a widget's `render()` method. Symfony Console interprets the markup tags when writing to an output that supports ANSI codes; on non-TTY outputs they are stripped automatically.
+The formatted string can be passed directly to a slot or returned from a widget's `render()` method. Maestro interprets the markup tags when writing to an output that supports ANSI codes; on non-TTY outputs they are stripped automatically.
 
 To read an icon from the current theme:
 
@@ -227,7 +218,7 @@ To read an icon from the current theme:
 use NeuronCore\Maestro\Extension\Ui\IconName;
 
 $icon = $api->ui()->theme()->icon(IconName::SUCCESS);
-$line = $api->ui()->formatText("{$icon} Done", ColorName::SUCCESS);
+$line = Text::content("{$icon} Done")->success()->build();
 ```
 
 ---
@@ -287,7 +278,7 @@ class DeployStatusWidget implements WidgetInterface
         $icon = $ui->theme()->icon(IconName::SUCCESS);
         $env  = $data['environment'] ?? 'unknown';
 
-        return $ui->formatText("{$icon} Deployed to: {$env}", ColorName::SUCCESS);
+        return Text::content("{$icon} Deployed to: {$env}")->success()->build();
     }
 }
 ```

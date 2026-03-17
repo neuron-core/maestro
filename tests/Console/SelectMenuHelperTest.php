@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Tests\Console;
 
 use NeuronCore\Maestro\Console\SelectMenuHelper;
+use NeuronCore\Maestro\Extension\Ui\Theme\DarkTheme;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -14,6 +16,12 @@ use function tmpfile;
 
 class SelectMenuHelperTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Text::setTheme(new DarkTheme());
+    }
+
     /**
      * Returns a SelectMenuHelper that always uses the fallback (non-interactive) path.
      *

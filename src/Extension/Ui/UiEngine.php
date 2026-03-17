@@ -18,6 +18,8 @@ class UiEngine
         protected readonly SlotRegistry $slots,
         protected readonly WidgetRegistry $widgets,
     ) {
+        Text::setTheme($this->theme);
+
         // Initialize default slots
         $this->slots->slot(SlotType::HEADER);
         $this->slots->slot(SlotType::STATUS_BAR);
@@ -136,6 +138,7 @@ class UiEngine
     public function setTheme(ThemeInterface $theme): void
     {
         $this->theme = $theme;
+        Text::setTheme($theme);
     }
 
     /**

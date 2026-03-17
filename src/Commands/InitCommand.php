@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Commands;
 
-use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Console\SelectMenuHelper;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Extension\Coding\CodingExtension;
 use NeuronCore\Maestro\Settings\ProviderFactory;
 use NeuronCore\Maestro\Settings\Settings;
@@ -74,15 +74,15 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('');
-        $output->writeln(Text::content('Welcome to Maestro Configuration')->cyan()->bold()->build());
+        $output->writeln(Text::content('Welcome to Maestro Configuration')->primary()->bold()->build());
         $output->writeln('');
 
         $settings = new Settings();
 
         // Check if the settings file already exists
         if ($settings->fileExists()) {
-            $output->writeln(Text::content('A settings file already exists at: ' . $settings->getSettingsPath())->yellow()->build());
-            $output->writeln(Text::content('This configuration will overwrite existing settings.')->yellow()->build());
+            $output->writeln(Text::content('A settings file already exists at: ' . $settings->getSettingsPath())->warning()->build());
+            $output->writeln(Text::content('This configuration will overwrite existing settings.')->warning()->build());
             $output->writeln('');
         }
 
@@ -109,7 +109,7 @@ class InitCommand extends Command
 
         if (in_array($selectedProvider, self::PROVIDERS_REQUIRING_BOTH, true)) {
             // Providers requiring both API key and base URL
-            $apiKeyQuestion = new Question(Text::content('Enter API Key: ')->yellow()->build());
+            $apiKeyQuestion = new Question(Text::content('Enter API Key: ')->warning()->build());
             $apiKeyQuestion->setHidden(true);
             $apiKeyQuestion->setHiddenFallback(false);
 
@@ -117,13 +117,13 @@ class InitCommand extends Command
             $output->writeln('');
 
             $urlQuestion = new Question(
-                Text::content('Enter Base URL: ')->yellow()->build(),
+                Text::content('Enter Base URL: ')->warning()->build(),
             );
             $baseUrl = trim((string) $questionHelper->ask($input, $output, $urlQuestion));
             $output->writeln('');
         } elseif (in_array($selectedProvider, self::PROVIDERS_REQUIRING_API_KEY, true)) {
             // Providers requiring only the API key
-            $apiKeyQuestion = new Question(Text::content('Enter API Key: ')->yellow()->build());
+            $apiKeyQuestion = new Question(Text::content('Enter API Key: ')->warning()->build());
             $apiKeyQuestion->setHidden(true);
             $apiKeyQuestion->setHiddenFallback(false);
 
@@ -132,20 +132,20 @@ class InitCommand extends Command
         } elseif (in_array($selectedProvider, self::PROVIDERS_REQUIRING_BASE_URL, true)) {
             // Providers requiring only base URL
             $urlQuestion = new Question(
-                Text::content('Enter Base URL [http://localhost:11434]: ')->yellow()->build(),
+                Text::content('Enter Base URL [http://localhost:11434]: ')->warning()->build(),
                 'http://localhost:11434'
             );
             $baseUrl = trim((string) $questionHelper->ask($input, $output, $urlQuestion));
             $output->writeln('');
         } else {
-            $output->writeln(Text::content('Unknown provider type selected.')->red()->build());
+            $output->writeln(Text::content('Unknown provider type selected.')->error()->build());
             return Command::FAILURE;
         }
 
         // Step 3: Collect model name
         $defaultModel = self::DEFAULT_MODELS[$selectedProvider];
         $modelQuestion = new Question(
-            Text::content('Enter Model [' . $defaultModel . ']: ')->yellow()->build(),
+            Text::content('Enter Model [' . $defaultModel . ']: ')->warning()->build(),
             $defaultModel
         );
         $model = trim((string) $questionHelper->ask($input, $output, $modelQuestion));
@@ -188,8 +188,8 @@ class InitCommand extends Command
             json_encode($config, JSON_PRETTY_PRINT)
         );
 
-        $output->writeln(Text::content('Configuration saved successfully!')->green()->build());
-        $output->writeln(Text::content('Settings file: ' . $settings->getSettingsPath())->cyan()->build());
+        $output->writeln(Text::content('Configuration saved successfully!')->success()->build());
+        $output->writeln(Text::content('Settings file: ' . $settings->getSettingsPath())->primary()->build());
         $output->writeln('');
 
         return Command::SUCCESS;

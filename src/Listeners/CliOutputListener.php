@@ -7,9 +7,9 @@ namespace NeuronCore\Maestro\Listeners;
 use NeuronAI\Workflow\Interrupt\Action;
 use NeuronCore\Maestro\Console\SelectMenuHelper;
 use NeuronCore\Maestro\Console\SpinnerProgress;
-use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Events\AgentResponseEvent;
 use NeuronCore\Maestro\Events\AgentThinkingEvent;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Events\ToolApprovalRequestedEvent;
 use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Ui\SlotType;
@@ -115,7 +115,7 @@ class CliOutputListener
     {
         $helper = new QuestionHelper();
         $question = new Question(
-            Text::content('Tell me what to do instead (press Enter to skip): ')->yellow()->build()
+            Text::content('Tell me what to do instead (press Enter to skip): ')->warning()->build()
         );
 
         return $helper->ask($this->input, $this->output, $question);

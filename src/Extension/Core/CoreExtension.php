@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Extension\Core;
 
-use NeuronCore\Maestro\Console\Text;
 use NeuronCore\Maestro\Extension\Core\Commands\ExtensionsInlineCommand;
 use NeuronCore\Maestro\Extension\Core\Commands\ProviderInlineCommand;
 use NeuronCore\Maestro\Extension\ExtensionApi;
 use NeuronCore\Maestro\Extension\ExtensionInterface;
 use NeuronCore\Maestro\Extension\Ui\SlotType;
+use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Rendering\Renderers\EditFileRenderer;
 use NeuronCore\Maestro\Rendering\Renderers\FileChangeRenderer;
 use NeuronCore\Maestro\Rendering\Renderers\SnippetRenderer;
@@ -63,16 +63,16 @@ class CoreExtension implements ExtensionInterface
     {
         return implode("\n", [
             '',
-            Text::content("  __  __                 _             ")->cyan()->bold()->build(),
-            Text::content(" |  \\/  |               | |            ")->cyan()->bold()->build(),
-            Text::content(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->cyan()->bold()->build(),
-            Text::content(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->cyan()->bold()->build(),
-            Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->cyan()->bold()->build(),
-            Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->cyan()->bold()->build(),
+            Text::content("  __  __                 _             ")->accent()->bold()->build(),
+            Text::content(" |  \\/  |               | |            ")->accent()->bold()->build(),
+            Text::content(" | \\  / | __ _  ___  ___| |_ _ __ ___  ")->accent()->bold()->build(),
+            Text::content(" | |\\/| |/ _` |/ _ \\/ __| __| '__/ _ \\ ")->accent()->bold()->build(),
+            Text::content(" | |  | | (_| |  __/\\__ \\ |_| | | (_) |")->accent()->bold()->build(),
+            Text::content(" |_|  |_|\\__,_|\\___||___/\\__|_|  \\___/ ")->accent()->bold()->build(),
             '',
-            Text::content(" Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->white()->bold()->build(),
+            Text::content(" Powered by Neuron AI framework (https://docs.neuron-ai.dev) ")->primary()->bold()->build(),
             '',
-            Text::content(" Tip: Type /help to see available commands.")->gray()->build(),
+            Text::content(" Tip: Type /help to see available commands.")->muted()->build(),
         ]);
     }
 }
