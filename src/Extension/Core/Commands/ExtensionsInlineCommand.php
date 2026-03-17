@@ -156,15 +156,6 @@ class ExtensionsInlineCommand implements InlineCommand
      */
     protected function getDisplayName(string $className): string
     {
-        if (str_starts_with($className, 'NeuronCore\\Maestro\\Extension\\')) {
-            // Strip the namespace prefix and "Extension" suffix if present
-            $name = substr($className, 31);
-            if (str_ends_with($name, 'Extension')) {
-                return substr($name, 0, -10);
-            }
-            return $name;
-        }
-
         // Fallback to the short class name
         $parts = explode('\\', $className);
         return end($parts);
