@@ -36,7 +36,7 @@ class MyExtension implements ExtensionInterface
         $api->registerRenderer('my_tool', $myRenderer);
 
         // Register an event handler
-        $api->on('AgentResponseEvent', function ($event, $context) {
+        $api->on(AgentResponseEvent::class, function ($event, $context) {
             // Handle event
         });
     }
