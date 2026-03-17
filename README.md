@@ -1,4 +1,4 @@
-# Maestro - The First PHP-Based AI CLI Agent
+# Maestro - The First CLI Agent built in PHP
 
 **Maestro** is the first CLI agent built entirely in PHP with the [Neuron AI framework](https://docs.neuron-ai.dev).
 It brings powerful agentic capabilities to the PHP ecosystem through an elegant CLI tool that combines intelligent analysis
