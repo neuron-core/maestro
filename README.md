@@ -5,7 +5,6 @@ It brings powerful agentic capabilities to the PHP ecosystem through an elegant 
 with interactive tool approval.
 
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 > [!IMPORTANT]
 > Get early access to new features, exclusive tutorials, and expert tips for building AI agents in PHP. Join a community of PHP developers pioneering the future of AI development.
