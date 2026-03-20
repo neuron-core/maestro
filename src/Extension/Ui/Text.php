@@ -123,7 +123,12 @@ class Text implements Stringable
             return $this->text;
         }
 
-        $theme = self::theme();
+        // If no theme is set, fall back to plain text
+        if (self::$theme === null) {
+            return $this->text;
+        }
+
+        $theme = self::$theme;
         $colorCode = $this->color instanceof ColorName ? $theme->color($this->color) : '';
         $styleCode = $this->style instanceof StyleName ? $theme->style($this->style) : '';
 
