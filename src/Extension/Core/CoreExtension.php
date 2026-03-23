@@ -43,6 +43,7 @@ class CoreExtension implements ExtensionInterface
     protected function registerUi(ExtensionApi $api): void
     {
         $api->ui()->addToSlot(SlotType::HEADER, $this->buildIntro(), priority: 1000);
+        $api->ui()->addToSlot(SlotType::STATUS_BAR, $api->settings()->get('default'));
     }
 
     protected function registerRenderers(ExtensionApi $api): void

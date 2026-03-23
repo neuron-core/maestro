@@ -32,7 +32,7 @@ class UiBuilder
      */
     public function registerTheme(ThemeInterface $theme): void
     {
-        if ($this->engine instanceof \NeuronCore\Maestro\Extension\Ui\UiEngine) {
+        if ($this->engine instanceof UiEngine) {
             $this->engine->setTheme($theme);
         }
         $this->theme = $theme;
@@ -67,7 +67,7 @@ class UiBuilder
      */
     public function theme(): ThemeInterface
     {
-        return $this->engine instanceof \NeuronCore\Maestro\Extension\Ui\UiEngine ? $this->engine->theme() : $this->theme;
+        return $this->engine instanceof UiEngine ? $this->engine->theme() : $this->theme;
     }
 
     /**
