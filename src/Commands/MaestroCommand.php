@@ -112,6 +112,7 @@ class MaestroCommand extends Command
         );
 
         $this->loader->uiEngine()->renderHeader($output);
+        $this->loader->uiEngine()->renderStatus($output);
 
         while (true) {
             $output->writeln('');
