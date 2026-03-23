@@ -209,7 +209,7 @@ class ExtensionLoader
                         source: $descriptor->source,
                     );
                 } else {
-                    // Add new extension not in manifest
+                    // Add new extensions not in manifest
                     $merged[$className] = new ExtensionDescriptor(
                         className: $className,
                         name: $className,

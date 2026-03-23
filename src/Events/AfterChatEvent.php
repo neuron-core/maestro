@@ -23,28 +23,4 @@ class AfterChatEvent
         public readonly string $responseContent,
     ) {
     }
-
-    /**
-     * Get the agent instance for accessing chat history and state.
-     */
-    public function agent(): MaestroAgent
-    {
-        return $this->agent;
-    }
-
-    /**
-     * Get the user input that was sent to the agent.
-     */
-    public function userInput(): string
-    {
-        return $this->userInput;
-    }
-
-    /**
-     * Get the response content returned by the agent.
-     */
-    public function responseContent(): string
-    {
-        return $this->responseContent;
-    }
 }

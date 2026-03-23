@@ -17,12 +17,4 @@ class AgentThinkingEvent
         public readonly MaestroAgent $agent,
     ) {
     }
-
-    /**
-     * Get the agent instance for accessing chat history and state.
-     */
-    public function agent(): MaestroAgent
-    {
-        return $this->agent;
-    }
 }
