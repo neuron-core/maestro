@@ -1,7 +1,7 @@
 {
     "name": "neuron-core/maestro",
     "description": "AI Coding Assistant built entirely in PHP with Neuron AI framework",
-    "type": "library",
+    "type": "composer-plugin",
     "keywords": [
         "ai",
         "coding",
