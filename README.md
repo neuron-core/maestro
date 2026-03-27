@@ -70,11 +70,12 @@ composer global update
 
 ## Configuration
 
-Before using Maestro, you need to configure your AI provider and API key.
-Navigate to the project directory you want to use Maestro in and run the command below:
+When you run Maestro on a filesystem directory for the first time, it will ask you to configure your AI provider and API key.
 
 ```bash
-maestro init
+cd /your/project/folder
+
+maestro
 ```
 
 It will start an interactive setup wizard that guides you through the configuration process.
