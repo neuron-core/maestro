@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Extension\Core\Commands;
 
 use NeuronCore\Maestro\Console\Inline\InlineCommand;
-use NeuronCore\Maestro\Console\SelectMenuHelper;
-use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Settings\Settings;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function fgets;
-use function strtolower;
-use function trim;
-
-use const STDIN;
-
 /**
- * Inline command to list and select the default AI provider.
+ * Lists configured AI providers. Output-only (the default provider is changed
+ * by editing settings.json and restarting — interactive selection does not fit
+ * the raw-mode TUI).
  */
 class ProviderInlineCommand implements InlineCommand
 {
@@ -34,119 +28,37 @@ class ProviderInlineCommand implements InlineCommand
 
     public function getDescription(): string
     {
-        return 'List and select the default AI provider';
+        return 'List configured AI providers';
     }
 
     public function execute(string $args, InputInterface $input, OutputInterface $output): void
     {
         $providers = $this->settings->getProviders();
 
+        $output->writeln('');
+
         if ($providers === []) {
-            $this->showNoProvidersMessage($output);
+            $output->writeln('<comment>No providers configured in settings.json.</comment>');
+            $output->writeln('');
+
             return;
         }
 
-        $this->showProvidersList($output, $providers);
-    }
+        $default = $this->settings->getDefaultProvider();
 
-    /**
-     * Show message when no providers are configured.
-     */
-    protected function showNoProvidersMessage(OutputInterface $output): void
-    {
-        $output->writeln('');
-        $output->writeln(Text::content('No providers configured in settings.json.')->warning()->build());
-        $output->writeln('');
-        $output->writeln(Text::content('Run /init to set up your provider configuration.')->muted()->build());
-        $output->writeln('');
-    }
-
-    /**
-     * Show the list of providers and allow selection.
-     *
-     * @param array<string> $providers
-     */
-    protected function showProvidersList(OutputInterface $output, array $providers): void
-    {
-        $defaultProvider = $this->settings->getDefaultProvider();
-
-        $output->writeln('');
-        $output->writeln(Text::content('Configured Providers:')->bold()->build());
+        $output->writeln('<options=bold>Configured Providers:</>');
         $output->writeln('');
 
         foreach ($providers as $provider) {
-            $isDefault = $provider === $defaultProvider;
-            $prefix = $isDefault ? '  * ' : '    ';
-            $label = $isDefault
-                ? Text::content($prefix . $provider . ' (default)')->success()->bold()->build()
-                : Text::content($prefix . $provider)->build();
-
-            $output->writeln($label);
-        }
-
-        // Ask if the user wants to change the default
-        $output->writeln('');
-        $output->writeln(Text::content('Change default provider? (y/n): ')->warning()->build());
-        $response = trim(fgets(STDIN));
-
-        if (strtolower($response) !== 'y') {
-            $output->writeln(Text::content('Cancelled.')->info()->build());
-            $output->writeln('');
-            return;
-        }
-
-        $this->selectProvider($output, $providers, $defaultProvider);
-    }
-
-    /**
-     * Show a selection menu and handle the user's choice.
-     *
-     * @param array<string> $providers
-     */
-    protected function selectProvider(OutputInterface $output, array $providers, ?string $defaultProvider): void
-    {
-        $menu = new SelectMenuHelper($output);
-
-        // Build menu options with default indicator
-        $options = [];
-        $defaultIndex = 0;
-        foreach ($providers as $i => $provider) {
-            $isDefault = $provider === $defaultProvider;
-            $label = $isDefault ? $provider . ' (current)' : $provider;
-            $options[] = $label;
-            if ($isDefault) {
-                $defaultIndex = $i;
+            if ($provider === $default) {
+                $output->writeln('<info>  * ' . $provider . ' (default)</info>');
+            } else {
+                $output->writeln('    ' . $provider);
             }
         }
 
         $output->writeln('');
-        $selectedIndex = $menu->ask(
-            Text::content('Select default provider:')->warning()->build(),
-            $options,
-            $defaultIndex
-        );
-
-        $selectedProvider = $providers[$selectedIndex];
-
-        if ($selectedProvider === $defaultProvider) {
-            $output->writeln('');
-            $output->writeln(Text::content('No change. The selected provider is already the default.')->warning()->build());
-            $output->writeln('');
-            return;
-        }
-
-        $success = $this->settings->setDefaultProvider($selectedProvider);
-
-        if ($success) {
-            $output->writeln('');
-            $output->writeln(Text::content('Default provider changed to: ' . $selectedProvider)->success()->build());
-            $output->writeln('');
-            $output->writeln(Text::content('Note: Restart Maestro for the change to take effect.')->warning()->build());
-        } else {
-            $output->writeln('');
-            $output->writeln(Text::content('Failed to set default provider.')->error()->build());
-        }
-
+        $output->writeln('<comment>Edit settings.json to change the default provider, then restart.</comment>');
         $output->writeln('');
     }
 }

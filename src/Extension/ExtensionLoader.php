@@ -7,13 +7,7 @@ namespace NeuronCore\Maestro\Extension;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
 use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
-use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
-use NeuronCore\Maestro\Extension\Ui\SlotRegistry;
-use NeuronCore\Maestro\Extension\Ui\Theme\DarkTheme;
-use NeuronCore\Maestro\Extension\Ui\UiEngine;
-use NeuronCore\Maestro\Extension\Ui\WidgetRegistry;
-use NeuronCore\Maestro\Rendering\ToolRenderer;
 use NeuronCore\Maestro\Settings\Settings;
 use Throwable;
 use InvalidArgumentException;
@@ -40,11 +34,9 @@ class ExtensionLoader
     public function __construct(
         protected readonly ToolRegistry $tools,
         protected readonly CommandRegistry $commands,
-        protected readonly RendererRegistry $renderers,
         protected readonly EventRegistry $events,
         protected readonly MemoryRegistry $memories,
         protected readonly Settings $settings,
-        protected ?UiEngine $uiEngine = null,
         protected readonly string $manifestPath = self::MANIFEST_PATH,
     ) {
     }
@@ -257,9 +249,7 @@ class ExtensionLoader
         $api = new ExtensionApi(
             tools: $this->tools,
             commands: $this->commands,
-            renderers: $this->renderers,
             events: $this->events,
-            ui: $this->uiEngine()->createBuilder(),
             memories: $this->memories,
             settings: $this->settings,
         );
@@ -294,14 +284,6 @@ class ExtensionLoader
     }
 
     /**
-     * Get the renderer registry.
-     */
-    public function renderers(): RendererRegistry
-    {
-        return $this->renderers;
-    }
-
-    /**
      * Get the event registry.
      */
     public function events(): EventRegistry
@@ -318,34 +300,16 @@ class ExtensionLoader
     }
 
     /**
-     * Get the UiEngine instance, creating a default one if not injected.
-     */
-    public function uiEngine(): UiEngine
-    {
-        return $this->uiEngine ??= new UiEngine(
-            new DarkTheme(),
-            new SlotRegistry(),
-            new WidgetRegistry(),
-        );
-    }
-
-    /**
      * Create a loader with default registries.
      */
-    public static function create(ToolRenderer $fallbackRenderer, Settings $settings, string $manifestPath = self::MANIFEST_PATH): self
+    public static function create(Settings $settings, string $manifestPath = self::MANIFEST_PATH): self
     {
         return new self(
             tools: new ToolRegistry(),
             commands: new CommandRegistry(),
-            renderers: new RendererRegistry($fallbackRenderer),
             events: new EventRegistry(),
             memories: new MemoryRegistry(),
             settings: $settings,
-            uiEngine: new UiEngine(
-                new DarkTheme(),
-                new SlotRegistry(),
-                new WidgetRegistry(),
-            ),
             manifestPath: $manifestPath,
         );
     }

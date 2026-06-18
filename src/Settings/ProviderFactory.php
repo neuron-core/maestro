@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NeuronCore\Maestro\Settings;
 
+use NeuronAI\HttpClient\AmpHttpClient;
+use NeuronAI\HttpClient\HttpClientInterface;
 use NeuronAI\Providers\AIProviderInterface;
 use NeuronAI\Providers\Anthropic\Anthropic;
 use NeuronAI\Providers\OpenAI\OpenAI;
@@ -79,6 +81,19 @@ class ProviderFactory implements ProviderFactoryInterface
     }
 
     /**
+     * Non-blocking HTTP client shared by every provider.
+     *
+     * The TUI runs on PHP Fibers + the Revolt event loop. Amp's HTTP client
+     * suspends the fiber on network I/O so the loop keeps rendering (live token
+     * streaming, animated spinner) while inference is in flight. Guzzle would
+     * block the fiber and freeze the UI.
+     */
+    protected function nonBlockingHttpClient(): HttpClientInterface
+    {
+        return new AmpHttpClient();
+    }
+
+    /**
      * Register all default provider factories.
      */
     private function registerDefaultFactories(): void
@@ -106,6 +121,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'claude-sonnet-4-20250514',
             max_tokens: $settings['max_tokens'] ?? 8192,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -125,6 +141,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'gpt-4',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -150,6 +167,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'gpt-4',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -169,6 +187,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'gemini-pro',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -188,6 +207,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'command',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -207,6 +227,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'mistral-tiny',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -221,6 +242,7 @@ class ProviderFactory implements ProviderFactoryInterface
             url: $settings['base_url'] ?? 'http://localhost:11434',
             model: $settings['model'] ?? 'llama2',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -240,6 +262,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'grok-beta',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -259,6 +282,7 @@ class ProviderFactory implements ProviderFactoryInterface
             key: $apiKey,
             model: $settings['model'] ?? 'deepseek-chat',
             parameters: $parameters,
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 
@@ -272,6 +296,7 @@ class ProviderFactory implements ProviderFactoryInterface
         return new ZAI(
             key: $apiKey,
             model: $settings['model'] ?? 'glm-4.7',
+            httpClient: $this->nonBlockingHttpClient(),
         );
     }
 }

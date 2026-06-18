@@ -32,7 +32,7 @@ use NeuronCore\Maestro\Commands\InitCommand;
 use NeuronCore\Maestro\Commands\MaestroCommand;
 use Symfony\Component\Console\Application;
 
-$app = new Application('Maestro', '1.x');
+$app = new Application('Maestro', '2.x');
 $app->addCommand(new DiscoverCommand());
 $app->addCommand(new InitCommand());
 $app->addCommand(new MaestroCommand());

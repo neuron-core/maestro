@@ -11,10 +11,7 @@ use NeuronCore\Maestro\Extension\ExtensionLoader;
 use NeuronCore\Maestro\Extension\Registry\CommandRegistry;
 use NeuronCore\Maestro\Extension\Registry\EventRegistry;
 use NeuronCore\Maestro\Extension\Registry\MemoryRegistry;
-use NeuronCore\Maestro\Extension\Registry\RendererRegistry;
 use NeuronCore\Maestro\Extension\Registry\ToolRegistry;
-use NeuronCore\Maestro\Extension\Ui\UiEngine;
-use NeuronCore\Maestro\Rendering\ToolRenderer;
 use NeuronCore\Maestro\Settings\Settings;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -25,7 +22,6 @@ class ExtensionLoaderTest extends TestCase
 {
     private ToolRegistry $tools;
     private CommandRegistry $commands;
-    private RendererRegistry $renderers;
     private EventRegistry $events;
     private MemoryRegistry $memories;
     private Settings&\PHPUnit\Framework\MockObject\MockObject $settings;
@@ -34,25 +30,19 @@ class ExtensionLoaderTest extends TestCase
     {
         $this->tools = new ToolRegistry();
         $this->commands = new CommandRegistry();
-        $this->renderers = new RendererRegistry($this->createMockRenderer());
         $this->events = new EventRegistry();
         $this->memories = new MemoryRegistry();
         $this->settings = $this->createMock(Settings::class);
     }
 
-    /**
-     * Create a loader instance with a non-existent manifest path for tests.
-     */
     private function createLoader(): ExtensionLoader
     {
         return new ExtensionLoader(
             $this->tools,
             $this->commands,
-            $this->renderers,
             $this->events,
             $this->memories,
             $this->settings,
-            null,
             __DIR__ . '/non-existent-manifest.php',
         );
     }
@@ -65,9 +55,7 @@ class ExtensionLoaderTest extends TestCase
             ->method('getExtensions')
             ->willReturn([]);
 
-        $result = $loader->load($this->settings->getExtensions());
-
-        $this->assertSame([], $result);
+        $this->assertSame([], $loader->load($this->settings->getExtensions()));
     }
 
     public function testLoadSkipsNonExistentClass(): void
@@ -80,9 +68,7 @@ class ExtensionLoaderTest extends TestCase
                 ['class' => 'NonExistent\\Class'],
             ]);
 
-        $result = $loader->load($this->settings->getExtensions());
-
-        $this->assertSame([], $result);
+        $this->assertSame([], $loader->load($this->settings->getExtensions()));
     }
 
     public function testLoadSkipsDisabledExtension(): void
@@ -146,10 +132,7 @@ class ExtensionLoaderTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(
-            sprintf(
-                'Failed to initialize extension "%s"',
-                InvalidExtension::class
-            )
+            sprintf('Failed to initialize extension "%s"', InvalidExtension::class)
         );
 
         $loader = $this->createLoader();
@@ -168,23 +151,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testCreateReturnsLoaderInstance(): void
     {
-        $loader = ExtensionLoader::create($this->createMockRenderer(), $this->settings);
-
-        $this->assertInstanceOf(ExtensionLoader::class, $loader);
-    }
-
-    public function testUiEngineReturnsUiEngineInstance(): void
-    {
-        $loader = $this->createLoader();
-
-        $this->assertInstanceOf(UiEngine::class, $loader->uiEngine());
-    }
-
-    public function testUiEngineReturnsSameInstance(): void
-    {
-        $loader = $this->createLoader();
-
-        $this->assertSame($loader->uiEngine(), $loader->uiEngine());
+        $this->assertInstanceOf(ExtensionLoader::class, ExtensionLoader::create($this->settings));
     }
 
     public function testRegisterCoreCallsRegisterOnEachExtension(): void
@@ -220,14 +187,7 @@ class ExtensionLoaderTest extends TestCase
 
     public function testMemoriesReturnsMemoryRegistry(): void
     {
-        $loader = $this->createLoader();
-
-        $this->assertSame($this->memories, $loader->memories());
-    }
-
-    private function createMockRenderer(): ToolRenderer
-    {
-        return $this->createMock(ToolRenderer::class);
+        $this->assertSame($this->memories, $this->createLoader()->memories());
     }
 }
 

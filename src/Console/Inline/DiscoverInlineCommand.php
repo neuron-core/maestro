@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Console\Inline;
 
 use NeuronCore\Maestro\Commands\DiscoverCommand;
-use NeuronCore\Maestro\Extension\Ui\Text;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Inline wrapper for DiscoverCommand.
  *
- * Allows running "maestro discover" from within the interactive console via "/discover".
+ * Allows running "maestro discover" from within the session via "/discover".
  */
 class DiscoverInlineCommand implements InlineCommand
 {
@@ -38,14 +37,12 @@ class DiscoverInlineCommand implements InlineCommand
     {
         $output->writeln('');
 
-        // Run DiscoverCommand directly
         $commandInput = new ArrayInput([]);
         $this->discoverCommand->run($commandInput, $output);
 
-        // Note about reloading
         $output->writeln('');
-        $output->writeln(Text::content('Extensions will be loaded on the next Maestro restart.')->info()->build());
-        $output->writeln(Text::content('To reload extensions immediately, exit and restart Maestro.')->muted()->build());
+        $output->writeln('<info>Extensions will be loaded on the next Maestro restart.</info>');
+        $output->writeln('To reload extensions immediately, exit and restart Maestro.');
         $output->writeln('');
     }
 }

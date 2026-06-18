@@ -7,7 +7,6 @@ namespace NeuronCore\Maestro\Agent;
 use Inspector\Exceptions\InspectorException;
 use NeuronAI\Agent\Agent;
 use NeuronAI\Agent\Middleware\TodoPlanning;
-use NeuronAI\Agent\Middleware\ToolApproval;
 use NeuronAI\Agent\Nodes\ChatNode;
 use NeuronAI\Agent\Nodes\StreamingNode;
 use NeuronAI\Agent\Nodes\StructuredOutputNode;
@@ -50,6 +49,7 @@ class MaestroAgent extends Agent
         protected SettingsInterface $settings,
         private readonly ToolRegistry $toolRegistry,
         private readonly ?MemoryRegistry $memoryRegistry = null,
+        private readonly ?ToolApprovalPolicy $approvalPolicy = null,
     ) {
         parent::__construct();
 
@@ -76,7 +76,7 @@ class MaestroAgent extends Agent
             StructuredOutputNode::class => [$memory, $todo],
 
             ToolNode::class => [
-                new ToolApproval()
+                new MaestroToolApproval($this->approvalPolicy ?? new ToolApprovalPolicy()),
             ],
         ];
     }

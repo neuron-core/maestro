@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NeuronCore\Maestro\Console\Inline;
 
 use NeuronCore\Maestro\Commands\InitCommand;
-use NeuronCore\Maestro\Extension\Ui\Text;
 use NeuronCore\Maestro\Settings\Settings;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +19,9 @@ use const STDIN;
 /**
  * Inline wrapper for the InitCommand.
  *
- * Allows running "maestro init" from within the interactive console via "/init".
+ * The settings wizard is interactive and runs against a normal (non-raw)
+ * terminal — it is used by the bootstrap before the TUI starts, and is not
+ * routed inside the TUI.
  */
 class InitInlineCommand implements InlineCommand
 {
@@ -45,32 +46,26 @@ class InitInlineCommand implements InlineCommand
     {
         $settings = new Settings();
 
-        // Check if settings already exist
         if ($settings->fileExists()) {
             $output->writeln('');
-            $output->writeln(Text::content('Settings file already exists:')->warning()->build());
-            $output->writeln(Text::content('  ' . $settings->getSettingsPath())->build());
-            $output->writeln('');
-            $output->writeln(Text::content('Re-running init will overwrite your existing settings.')->warning()->build());
-            $output->writeln('');
-            $output->writeln(Text::content('Continue? (y/n): ')->warning()->build());
+            $output->writeln('<comment>Settings file already exists: ' . $settings->getSettingsPath() . '</comment>');
+            $output->writeln('<comment>Re-running init will overwrite it. Continue? (y/n):</comment>');
 
-            $response = trim(fgets(STDIN));
+            $response = trim((string) fgets(STDIN));
             if (strtolower($response) !== 'y') {
-                $output->writeln(Text::content('Cancelled.')->info()->build());
+                $output->writeln('<info>Cancelled.</info>');
                 $output->writeln('');
+
                 return;
             }
         }
 
-        // Run the InitCommand directly
         $commandInput = new ArrayInput([]);
         $commandInput->setInteractive(true);
         $this->initCommand->run($commandInput, $output);
 
-        // Show a message about restarting
         $output->writeln('');
-        $output->writeln(Text::content('Settings updated. You can continue using Maestro.')->info()->build());
+        $output->writeln('<info>Settings updated. You can continue using Maestro.</info>');
         $output->writeln('');
     }
 }
