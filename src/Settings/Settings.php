@@ -119,6 +119,15 @@ class Settings implements SettingsInterface
         }
 
         foreach ($this->settings['mcp_servers'] as $name => $config) {
+            // McpConnector::make() is lazy (it never validates), so we filter out
+            // malformed configs here rather than deferring the failure to tool-call time.
+            if (!is_array($config)
+                || !(isset($config['transport']) || isset($config['command']) || isset($config['url']))
+            ) {
+                error_log(sprintf('Skipping malformed MCP server "%s": missing "command", "url", or "transport"', $name));
+                continue;
+            }
+
             try {
                 $connectors[$name] = McpConnector::make($config);
             } catch (Throwable $e) {

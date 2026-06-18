@@ -294,7 +294,6 @@ class SettingsTest extends TestCase
             ],
             'mcp_servers' => [
                 'filesystem' => [
-                    'command' => 'echo',
                     'args' => ['test'],
                 ],
             ],
